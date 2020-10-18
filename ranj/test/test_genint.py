@@ -50,3 +50,27 @@ class TestGenint(unittest.TestCase):
         self.assertEqual(genint(schema), 5)
         self.assertEqual(genint(schema), 5)
         self.assertEqual(genint(schema), 5)
+
+    def test_genint_with_tight_min_max_exMinTrue(self):
+        schema = {
+            "minimum": 4,
+            "exclusiveMinimum": True,
+            "maximum": 5,
+        }
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+
+    def test_genint_with_tight_min_max_exMaxTrue(self):
+        schema = {
+            "minimum": 5,
+            "maximum": 6,
+            "exclusiveMaximum": True,
+        }
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)
+        self.assertEqual(genint(schema), 5)

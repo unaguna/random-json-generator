@@ -34,6 +34,11 @@ def __normalize_schema(schema: dict) -> dict:
     # 生成する数値の最小値
     inclusiveMinimum = schema.get("minimum", None)
     exclusiveMinimum = schema.get("exclusiveMinimum", None)
+    if exclusiveMinimum == True:
+        exclusiveMinimum = inclusiveMinimum
+        inclusiveMinimum = None
+    elif exclusiveMinimum == False:
+        exclusiveMinimum = None
     minimum = 0
     if inclusiveMinimum is not None and exclusiveMinimum is not None:
         minimum = max(inclusiveMinimum, exclusiveMinimum + 1)
@@ -45,6 +50,11 @@ def __normalize_schema(schema: dict) -> dict:
     # 生成する数値の最大値
     inclusiveMaximum = schema.get("maximum", None)
     exclusiveMaximum = schema.get("exclusiveMaximum", None)
+    if exclusiveMaximum == True:
+        exclusiveMaximum = inclusiveMaximum
+        inclusiveMaximum = None
+    elif exclusiveMaximum == False:
+        exclusiveMaximum = None
     maximum = 100
     if inclusiveMaximum is not None and exclusiveMaximum is not None:
         maximum = min(inclusiveMaximum, exclusiveMaximum - 1)
