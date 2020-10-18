@@ -8,7 +8,12 @@ __default_schema = {
     "exclusiveMaximum": float('inf'),
 }
 
-def gennum(schema: dict) -> float:
+__default_options = {
+    # 生成のやり直し回数の上限値
+    "regenerate_limit": 50,
+}
+
+def gennum(schema: dict, options: dict = {}) -> float:
     """スキーマに適合する浮動小数点数を生成する。
 
     Args:
@@ -19,6 +24,7 @@ def gennum(schema: dict) -> float:
     """
 
     schema = __normalize_schema(schema)
+    options = __normalize_options(options)
 
     # 生成する数値の最小値
     minimum = max(schema["minimum"], schema["exclusiveMinimum"])
@@ -36,11 +42,17 @@ def gennum(schema: dict) -> float:
     # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
     # Schema に合致する値を引くまで生成を繰り返す。
     generated = None
-    while(not __validate(generated, schema)):
+    for i in range(options["regenerate_limit"]):
         generated = random.uniform(minimum, maximum)
 
         if generated == float("inf") or generated == float("-inf"):
             raise Exception("Error by too large maximum and too small minimum")
+
+        if __validate(generated, schema):
+            break
+
+    if not __validate(generated, schema):
+        raise Exception("No valid value generated on loop.")
 
     return generated
 
@@ -58,6 +70,21 @@ def __normalize_schema(schema: dict) -> dict:
     nSchema.update(schema)
 
     return nSchema
+
+def __normalize_options(options: dict) -> dict:
+    """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。
+
+    Args:
+        options (dict): 乱数生成のオプションを表現するマップ
+
+    Returns:
+        dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
+    """
+
+    nOptions = __default_options.copy()
+    nOptions.update(options)
+
+    return nOptions
 
 def __validate(value: float, schema: dict) -> bool:
     """値がスキーマに適合するかどうかチェックする。
