@@ -19,17 +19,19 @@ class TestGennum(unittest.TestCase):
     
     def test_gennum_with_required_and_properties(self):
         schema = {
-            "required": ["aaa", "bbb", "ccc"],
+            "required": ["aaa", "bbb", "ccc", "ddd"],
             "properties": {
                 "aaa": {"type": "number"},
                 "bbb": {"type": "object"},
                 "ccc": {"type": "string"},
+                "ddd": {"type": "boolean"},
             },
         }
         generated = gendict(schema)
         self.assertIsInstance(generated, dict)
-        self.assertSetEqual(set(generated.keys()), set(["aaa", "bbb", "ccc"]))
+        self.assertSetEqual(set(generated.keys()), set(["aaa", "bbb", "ccc", "ddd"]))
         self.assertIsInstance(generated["aaa"], float)
         self.assertIsInstance(generated["bbb"], dict)
         self.assertDictEqual(generated["bbb"], {})
         self.assertIsInstance(generated["ccc"], str)
+        self.assertIsInstance(generated["ddd"], bool)

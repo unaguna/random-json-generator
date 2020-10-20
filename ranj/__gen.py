@@ -1,6 +1,7 @@
 import ranj.__gendict as __gendict
 import ranj.__genint as __genint
 import ranj.__gennum as __gennum
+import ranj.__genbool as __genbool
 import ranj.__genstr as __genstr
 
 def gen(schema: dict):
@@ -11,6 +12,8 @@ def gen(schema: dict):
         return __genint.genint(schema)
     if schema["type"] == "number":
         return __gennum.gennum(schema)
+    if schema["type"] == "boolean":
+        return __genbool.genbool(schema)
     if schema["type"] == "string":
         return __genstr.genstr(schema)
     if schema["type"] == "object":
