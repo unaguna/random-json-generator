@@ -1,4 +1,5 @@
 import ranj.__gendict as __gendict
+import ranj.__genlist as __genlist
 import ranj.__genint as __genint
 import ranj.__gennum as __gennum
 import ranj.__gennone as __gennone
@@ -7,7 +8,7 @@ import ranj.__genstr as __genstr
 
 def gen(schema: dict):
 
-    # Type が複数の場合の処理
+    # TODO: Type が複数の場合の処理
 
     if schema["type"] == "null":
         return __gennone.gennone(schema)
@@ -21,5 +22,7 @@ def gen(schema: dict):
         return __genstr.genstr(schema)
     if schema["type"] == "object":
         return __gendict.gendict(schema)
+    if schema["type"] == "array":
+        return __genlist.genlist(schema)
     else:
         raise Exception("Unsuported type: {}".format(schema["type"]))
