@@ -1,4 +1,4 @@
-import ranjg.__gen as __gen
+import ranjg
 
 # 使用するスキーマ
 __default_schema = {
@@ -6,4 +6,4 @@ __default_schema = {
 }
 
 def genany(schema: dict):
-    return __gen.gen(__default_schema)
+    return ranjg.gen(__default_schema)

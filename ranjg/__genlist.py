@@ -1,6 +1,6 @@
 import collections
 import random
-import ranjg.__gen as __gen
+import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
 
@@ -36,7 +36,7 @@ def genlist(schema: dict) -> list:
 
     # 要素を1つずつ生成
     for item_schema in item_schema_list:
-        result.append(__gen.gen(item_schema))
+        result.append(ranjg.gen(item_schema))
 
     return result
 
