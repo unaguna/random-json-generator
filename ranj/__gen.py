@@ -5,11 +5,14 @@ import ranj.__gennum as __gennum
 import ranj.__gennone as __gennone
 import ranj.__genbool as __genbool
 import ranj.__genstr as __genstr
+import ranj.__genany as __genany
 
 def gen(schema: dict):
 
     # TODO: Type が複数の場合の処理
 
+    if "type" not in schema:
+        return __genany.genany(schema)
     if schema["type"] == "null":
         return __gennone.gennone(schema)
     if schema["type"] == "integer":
