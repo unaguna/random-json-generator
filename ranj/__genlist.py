@@ -75,24 +75,24 @@ def __get_range_of_length(schema: dict) -> [int, int]:
         items = list(schema.get("items"))
         additional_items = schema.get("additionalItems")
 
-        if len(items) < dfor(minItems, len(items)):
-            raise Exception("Schema Contradiction: In tupple validation, \"minItems\" must be less than or equal to size of \"items\".")
+        if additional_items is False and len(items) < dfor(minItems, len(items)):
+            raise Exception("Schema Contradiction: In tupple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to size of \"items\".")
         if len(items) > dfor(maxItems, len(items)):
             raise Exception("Schema Contradiction: In tupple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
-        if additional_items is False and len(items) != dfor(maxItems, len(items)):
-            raise Exception("Schema Contradiction: In tupple validation, when \"additionalItems\" is false, \"maxItems\" must be equal to size of \"items\".")
-            
+
 
         # タプル指定に合わせて、生成する list の大きさの最小値を設定
-        minItems = len(items)
+        if minItems is None or minItems < len(items):
+            minItems = len(items)
 
         # タプル指定に合わせて、生成する list の大きさの最大値を設定
-        # 追加の要素 (additionalItems) が許されないか指定がない場合は、追加の要素を生成しない
+        # 追加の要素 (additionalItems) が許されないか指定がない場合は、最低限しか追加の要素を生成しない
         if additional_items is False or additional_items is None:
-            maxItems = len(items)
+            maxItems = minItems
         # 追加の要素を作る場合で、maxItem の指定がない場合は追加の要素を最大5個とする。
+        # ただし、minItems がそれより大きい場合はそれに準ずる。
         elif maxItems is None:
-            maxItems = len(items) + 5
+            maxItems = max(minItems, len(items) + 5)
 
     if minItems is None:
         if maxItems is None:
