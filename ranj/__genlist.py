@@ -1,5 +1,8 @@
+import collections
 import random
 import ranj.__gen as ranjg
+from ranj.util.listutil import fix_length
+from ranj.util.nonesafe import dfor
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
 # items に指定がない場合に使用する。
@@ -23,22 +26,35 @@ def genlist(schema: dict) -> list:
     result = []
 
     # 生成する list の大きさの範囲
-    [min_items, max_items] = __get_length(schema)
+    [min_items, max_items] = __get_range_of_length(schema)
 
     # 生成する list の大きさ
     item_count = random.randint(min_items, max_items)
 
-    # 要素のスキーマ
-    items_schema = schema.get("items", __default_items_schema)
+    # 各要素のスキーマ
+    item_schema_list = __get_items_schema_list(schema, item_count)
 
     # 要素を1つずつ生成
-    for i in range(item_count):
-        result.append(ranjg.gen(items_schema))
+    for item_schema in item_schema_list:
+        result.append(ranjg.gen(item_schema))
 
     return result
 
-def __get_length(schema: dict) -> [int, int]:
-    """スキーマから minLength, maxLength の値を読み取る。
+def __schema_is_tuple_validation(schema: dict) -> bool:
+    """スキーマがタプル指定かどうかを判定する。
+
+    Args:
+        schema (dict): array 型についての JsonSchema を表現するマップ
+
+    Returns:
+        bool: schema がタプル指定であれば True、リスト指定 (指定なしも含む) であれば False。
+    """
+
+    items = schema.get("items")
+    return isinstance(items, collections.abc.Sequence)
+
+def __get_range_of_length(schema: dict) -> [int, int]:
+    """スキーマから、生成するlistの大きさの範囲を決定する。
 
     スキーマに指定がない場合でも、None は返さず2つの正整数値を返す。
     一方のみが None (null) である場合、もう一方に矛盾しない整数値を代わりに返す。
@@ -54,6 +70,30 @@ def __get_length(schema: dict) -> [int, int]:
     minItems: int = schema.get("minItems")
     maxItems: int = schema.get("maxItems")
 
+    # schema がタプル指定である場合
+    if __schema_is_tuple_validation(schema):
+        items = list(schema.get("items"))
+        additional_items = schema.get("additionalItems")
+
+        if len(items) < dfor(minItems, len(items)):
+            raise Exception("Schema Contradiction: In tupple validation, \"minItems\" must be less than or equal to size of \"items\".")
+        if len(items) > dfor(maxItems, len(items)):
+            raise Exception("Schema Contradiction: In tupple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
+        if additional_items is False and len(items) != dfor(maxItems, len(items)):
+            raise Exception("Schema Contradiction: In tupple validation, when \"additionalItems\" is false, \"maxItems\" must be equal to size of \"items\".")
+            
+
+        # タプル指定に合わせて、生成する list の大きさの最小値を設定
+        minItems = len(items)
+
+        # タプル指定に合わせて、生成する list の大きさの最大値を設定
+        # 追加の要素 (additionalItems) が許されないか指定がない場合は、追加の要素を生成しない
+        if additional_items is False or additional_items is None:
+            maxItems = len(items)
+        # 追加の要素を作る場合で、maxItem の指定がない場合は追加の要素を最大5個とする。
+        elif maxItems is None:
+            maxItems = len(items) + 5
+
     if minItems is None:
         if maxItems is None:
             minItems = 1
@@ -67,3 +107,30 @@ def __get_length(schema: dict) -> [int, int]:
             maxItems = max(5, minItems)
     
     return [minItems, maxItems]
+
+def __get_items_schema_list(schema: dict, item_count: int):
+    """genlist で生成する list の各要素を生成する際のスキーマからなるリストを生成する。
+
+    schema がタプル指定である場合、items リストと同様のリストを生成して返す。
+    ただし、items の大きさが item_count に満たない場合、足りない部分には schema.additionalItems を使用する。
+
+    schema がリスト指定である場合、items オブジェクトを item_count 個持つリストを返す。
+
+    Args:
+        schema (dict): array 型についての JsonSchema を表現するマップ
+        item_count (int): genlist で生成する配列の大きさ
+
+    Returns:
+        List[dict]: 各要素の生成に用いるスキーマからなるリスト
+    """
+
+    # タプル指定である場合
+    if __schema_is_tuple_validation(schema):
+        additional_items = schema.get('additionalItems')
+        if additional_items is None or isinstance(additional_items, bool):
+            additional_items = __default_items_schema
+
+        return fix_length(schema["items"], item_count, padding_item = additional_items)
+    # リスト指定である場合
+    else:
+        return item_count * [schema.get("items", __default_items_schema)]
