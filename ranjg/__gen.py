@@ -1,3 +1,4 @@
+import json
 from .__gennone import gennone
 from .__genbool import genbool
 from .__genint import genint
@@ -6,8 +7,19 @@ from .__genstr import genstr
 from .__gendict import gendict
 from .__genlist import genlist
 from .__genany import genany
+from .util.nonesafe import dfor
 
-def gen(schema: dict):
+def gen(schema: dict = None, schema_file: str = None):
+    # TODO: schema と schema_file がともに None であるとき、エラー
+
+    schema = dfor(schema, {})
+
+    # スキーマファイルを読み込み
+    if(schema_file is not None):
+        with open(schema_file) as fp:
+            loaded_schema = json.load(fp)
+            loaded_schema.update(schema)
+            schema = loaded_schema
 
     # TODO: Type が複数の場合の処理
 
