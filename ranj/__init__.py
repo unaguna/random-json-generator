@@ -6,6 +6,7 @@ import ranj.__gennum as __gennum
 import ranj.__genstr as __genstr
 import ranj.__gendict as __gendict
 import ranj.__genlist as __genlist
+import ranj.__genany as __genany
 
 gen = __gen.gen
 gennone = __gennone.gennone
@@ -15,3 +16,4 @@ gennum = __gennum.gennum
 genstr = __genstr.genstr
 gendict = __gendict.gendict
 genlist = __genlist.genlist
+genany = __genany.genany
