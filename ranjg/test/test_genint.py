@@ -1,5 +1,5 @@
 import unittest
-from ranj import genint
+from ranjg import genint
 
 class TestGenint(unittest.TestCase):
 

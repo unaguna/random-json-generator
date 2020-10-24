@@ -1,5 +1,5 @@
 import unittest
-from ranj import genbool
+from ranjg import genbool
 
 class TestGenbool(unittest.TestCase):
 

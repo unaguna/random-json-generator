@@ -1,6 +1,6 @@
 import random
-import ranj.__gen as ranjg
-from ranj.util.listutil import diff
+import ranjg.__gen as __gen
+from ranjg.util.listutil import diff
 
 # required 項目の値の生成に使用するスキーマのデフォルト値。
 # properties に当該キーの指定がない場合に使用する。
@@ -34,7 +34,7 @@ def gendict(schema: dict, options: dict = {}) -> dict:
         if generatedKeys.get(required_key) is True:
             continue
 
-        generated[required_key] = ranjg.gen(properties.get(required_key, __default_required_schema))
+        generated[required_key] = __gen.gen(properties.get(required_key, __default_required_schema))
         generatedKeys[required_key] = True
 
     # 必須でない項目を生成する
@@ -48,7 +48,7 @@ def gendict(schema: dict, options: dict = {}) -> dict:
             generatedKeys[prop_key] = False
             continue
 
-        generated[prop_key] = ranjg.gen(properties[prop_key])
+        generated[prop_key] = __gen.gen(properties[prop_key])
         generatedKeys[prop_key] = True
 
     return generated

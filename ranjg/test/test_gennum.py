@@ -1,5 +1,5 @@
 import unittest
-from ranj import gennum
+from ranjg import gennum
 
 class TestGennum(unittest.TestCase):
 
