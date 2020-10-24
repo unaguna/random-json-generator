@@ -46,7 +46,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_tight_length(self):
         schema = {
             "type": "array",
-            "additional_items": True,
+            "additionalItems": True,
             "minItems": 5,
             "maxItems": 5,
             "items": [
@@ -64,7 +64,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_tight_length_and_additional_schema(self):
         schema = {
             "type": "array",
-            "additional_items": { "type": "bool" },
+            "additionalItems": { "type": "boolean" },
             "minItems": 5,
             "maxItems": 5,
             "items": [
@@ -101,7 +101,7 @@ class TestGenlist(unittest.TestCase):
         schema = {
             "type": "array",
             "maxItems": 3,
-            "additional_items": { "type": "bool" },
+            "additionalItems": { "type": "boolean" },
             "items": [
                 { "type": "string" },
                 { "type": "null" },
@@ -118,7 +118,7 @@ class TestGenlist(unittest.TestCase):
         schema = {
             "type": "array",
             "maxItems": 3,
-            "additional_items": True,
+            "additionalItems": True,
             "items": [
                 { "type": "string" },
                 { "type": "null" },
@@ -146,7 +146,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_schema(self):
         schema = {
             "type": "array",
-            "additional_items": { "type": "bool" },
+            "additionalItems": { "type": "boolean" },
             "maxItems": 2,
             "items": [
                 { "type": "string" },
@@ -159,7 +159,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_true(self):
         schema = {
             "type": "array",
-            "additional_items": True,
+            "additionalItems": True,
             "maxItems": 2,
             "items": [
                 { "type": "string" },
@@ -172,7 +172,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_false(self):
         schema = {
             "type": "array",
-            "additional_items": False,
+            "additionalItems": False,
             "maxItems": 2,
             "items": [
                 { "type": "string" },
@@ -185,7 +185,7 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_too_great_minItems_and_additional_false(self):
         schema = {
             "type": "array",
-            "additional_items": False,
+            "additionalItems": False,
             "minItems": 4,
             "items": [
                 { "type": "string" },
