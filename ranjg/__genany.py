@@ -1,4 +1,4 @@
-import ranj.__gen as ranjg
+import ranjg
 
 # 使用するスキーマ
 __default_schema = {

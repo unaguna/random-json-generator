@@ -1,8 +1,8 @@
 import collections
 import random
-import ranj.__gen as ranjg
-from ranj.util.listutil import fix_length
-from ranj.util.nonesafe import dfor
+import ranjg
+from ranjg.util.listutil import fix_length
+from ranjg.util.nonesafe import dfor
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
 # items に指定がない場合に使用する。

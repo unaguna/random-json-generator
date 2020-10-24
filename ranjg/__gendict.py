@@ -1,6 +1,6 @@
 import random
-import ranj.__gen as ranjg
-from ranj.util.listutil import diff
+import ranjg
+from ranjg.util.listutil import diff
 
 # required 項目の値の生成に使用するスキーマのデフォルト値。
 # properties に当該キーの指定がない場合に使用する。
