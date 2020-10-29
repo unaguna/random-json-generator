@@ -9,7 +9,7 @@ from .__genlist import genlist
 from .__genany import genany
 from .util.nonesafe import dfor
 
-def gen(schema: dict = None, schema_file: str = None):
+def gen(schema: dict = None, schema_file: str = None, output_file: str = None):
     # TODO: schema と schema_file がともに None であるとき、エラー
 
     schema = dfor(schema, {})
@@ -42,5 +42,10 @@ def gen(schema: dict = None, schema_file: str = None):
         generated = genlist(schema)
     else:
         raise Exception("Unsuported type: {}".format(schema["type"]))
+
+    # 出力先指定がある場合、JSONとして出力する
+    if output_file is not None:
+        with open(output_file, "w+") as fp:
+            json.dump(generated, fp)
 
     return generated
