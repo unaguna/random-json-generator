@@ -23,21 +23,24 @@ def gen(schema: dict = None, schema_file: str = None):
 
     # TODO: Type が複数の場合の処理
 
+    generated = None
     if "type" not in schema:
-        return genany(schema)
-    if schema["type"] == "null":
-        return gennone(schema)
-    if schema["type"] == "integer":
-        return genint(schema)
-    if schema["type"] == "number":
-        return gennum(schema)
-    if schema["type"] == "boolean":
-        return genbool(schema)
-    if schema["type"] == "string":
-        return genstr(schema)
-    if schema["type"] == "object":
-        return gendict(schema)
-    if schema["type"] == "array":
-        return genlist(schema)
+        generated = genany(schema)
+    elif schema["type"] == "null":
+        generated = gennone(schema)
+    elif schema["type"] == "integer":
+        generated = genint(schema)
+    elif schema["type"] == "number":
+        generated = gennum(schema)
+    elif schema["type"] == "boolean":
+        generated = genbool(schema)
+    elif schema["type"] == "string":
+        generated = genstr(schema)
+    elif schema["type"] == "object":
+        generated = gendict(schema)
+    elif schema["type"] == "array":
+        generated = genlist(schema)
     else:
         raise Exception("Unsuported type: {}".format(schema["type"]))
+
+    return generated
