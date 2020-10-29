@@ -15,7 +15,7 @@ def gen(schema: dict = None, schema_file: str = None):
     schema = dfor(schema, {})
 
     # スキーマファイルを読み込み
-    if(schema_file is not None):
+    if schema_file is not None:
         with open(schema_file) as fp:
             loaded_schema = json.load(fp)
             loaded_schema.update(schema)
