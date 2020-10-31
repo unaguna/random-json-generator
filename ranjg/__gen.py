@@ -8,6 +8,7 @@ from .__gendict import gendict
 from .__genlist import genlist
 from .__genany import genany
 from .util.nonesafe import dfor
+from .error import InvalidSchemaError
 
 def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp = None):
     # TODO: schema と schema_file がともに None であるとき、エラー
@@ -42,7 +43,7 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     elif schema["type"] == "array":
         generated = genlist(schema)
     else:
-        raise Exception("Unsuported type: {}".format(schema["type"]))
+        raise InvalidSchemaError("Unsuported type: {}".format(schema["type"]))
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
