@@ -39,5 +39,6 @@ class TestGen(unittest.TestCase):
                 output_fp=fp)
         
         self.assertTrue(path.exists(output_file))
-
-
+    
+    def test_gen_without_schema(self):
+        self.assertRaises(ValueError, lambda: gen())
