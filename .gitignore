@@ -1,2 +1,7 @@
+.venv/
 .vscode/
 __pycache__/
+
+dist/
+build/
+ranjg.egg-info/
