@@ -1,0 +1,2 @@
+class SchemaConfrictionError(Exception):
+    pass

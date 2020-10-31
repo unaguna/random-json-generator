@@ -1,5 +1,6 @@
 import sys
 import random
+from .error import SchemaConfrictionError
 
 __default_schema = {
     "minimum": -sys.float_info.max / 2,
@@ -31,13 +32,13 @@ def gennum(schema: dict, options: dict = {}) -> float:
     maximum = min(schema["maximum"], schema["exclusiveMaximum"])
 
     if(minimum > maximum):
-        raise Exception("Minimum value must be lower than or equal to the maximum value.")
+        raise SchemaConfrictionError("Minimum value must be lower than or equal to the maximum value.")
 
     if(maximum == schema["exclusiveMinimum"]):
-        raise Exception("ExclusiveMinimum value must be lower than the maximum value.")
+        raise SchemaConfrictionError("ExclusiveMinimum value must be lower than the maximum value.")
 
     if(minimum == schema["exclusiveMaximum"]):
-        raise Exception("ExclusiveMaximum value must be greater than the minimum value.")
+        raise SchemaConfrictionError("ExclusiveMaximum value must be greater than the minimum value.")
 
     # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
     # Schema に合致する値を引くまで生成を繰り返す。
@@ -46,6 +47,7 @@ def gennum(schema: dict, options: dict = {}) -> float:
         generated = random.uniform(minimum, maximum)
 
         if generated == float("inf") or generated == float("-inf"):
+            # TODO: nan になる場合も同様にエラー
             raise Exception("Error by too large maximum and too small minimum")
 
         if __validate(generated, schema):

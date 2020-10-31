@@ -1,5 +1,6 @@
 import unittest
 from ranjg import genlist
+from ranjg.error import SchemaConfrictionError
 
 class TestGenlist(unittest.TestCase):
 
@@ -141,7 +142,7 @@ class TestGenlist(unittest.TestCase):
                 { "type": "integer" },
             ]
         }
-        self.assertRaises(Exception, lambda: genlist(schema))
+        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_schema(self):
         schema = {
@@ -154,7 +155,7 @@ class TestGenlist(unittest.TestCase):
                 { "type": "integer" },
             ]
         }
-        self.assertRaises(Exception, lambda: genlist(schema))
+        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_true(self):
         schema = {
@@ -167,7 +168,7 @@ class TestGenlist(unittest.TestCase):
                 { "type": "integer" },
             ]
         }
-        self.assertRaises(Exception, lambda: genlist(schema))
+        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_false(self):
         schema = {
@@ -180,7 +181,7 @@ class TestGenlist(unittest.TestCase):
                 { "type": "integer" },
             ]
         }
-        self.assertRaises(Exception, lambda: genlist(schema))
+        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_great_minItems_and_additional_false(self):
         schema = {
@@ -193,4 +194,4 @@ class TestGenlist(unittest.TestCase):
                 { "type": "integer" },
             ]
         }
-        self.assertRaises(Exception, lambda: genlist(schema))
+        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))

@@ -1,5 +1,6 @@
 import sys
 import random
+from .error import SchemaConfrictionError
 
 def genint(schema: dict) -> int:
     """スキーマに適合する整数を生成する。
@@ -17,7 +18,7 @@ def genint(schema: dict) -> int:
     maximum: int = schema["maximum"]
 
     if(minimum > maximum):
-        raise Exception("Minimum value must be lower than or equal to the maximum value.")
+        raise SchemaConfrictionError("Minimum value must be lower than or equal to the maximum value.")
 
     return random.randint(minimum, maximum)
 
