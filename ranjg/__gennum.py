@@ -51,8 +51,7 @@ def gennum(schema: dict, options: dict = {}) -> float:
 
         if __validate(generated, schema):
             break
-
-    if not __validate(generated, schema):
+    else:
         raise GenerateError("No valid value generated on loop.")
 
     return generated
