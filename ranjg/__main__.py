@@ -2,6 +2,15 @@ import sys
 import argparse
 from . import gen
 
+def main():
+    # 引数を取得
+    args = parse_args()
+
+    # 出力先を決定
+    output_file, output_fp = get_output_target(args)
+
+    gen(schema_file=args.schema_file_path, output_file=output_file, output_fp=output_fp)
+
 def parse_args():
     parser = argparse.ArgumentParser(description="Generate json file randomly according to json schema.")
 
@@ -16,9 +25,5 @@ def get_output_target(args):
     else:
         return None, sys.stdout
 
-args = parse_args()
-
-# 出力先を決定
-output_file, output_fp = get_output_target(args)
-
-gen(schema_file=args.schema_file_path, output_file=output_file, output_fp=output_fp)
+if __name__ == "__main__":
+    main()
