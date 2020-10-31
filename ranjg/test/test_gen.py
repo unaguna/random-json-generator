@@ -42,3 +42,14 @@ class TestGen(unittest.TestCase):
     
     def test_gen_without_schema(self):
         self.assertRaises(ValueError, lambda: gen())
+
+    def test_gen_with_output_file_and_output_fp(self):
+        schema = {}
+        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output.json")
+
+        with open(output_file, "w") as fp:
+            self.assertRaises(ValueError,
+                              lambda: gen(schema, 
+                                          output_file=output_file,
+                                          output_fp=fp))
+            

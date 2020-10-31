@@ -13,7 +13,8 @@ from .error import InvalidSchemaError
 def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp = None):
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
-    # TODO: output_file と output_fp がともに指定されたとき、エラー
+    if output_file is not None and output_fp is not None:
+        raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
 
     schema = dfor(schema, {})
 
