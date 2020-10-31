@@ -26,26 +26,27 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
             schema = loaded_schema
 
     # TODO: Type が複数の場合の処理
+    gen_type = schema.get("type")
 
     generated = None
-    if "type" not in schema:
+    if gen_type is None:
         generated = genany(schema)
-    elif schema["type"] == "null":
+    elif gen_type == "null":
         generated = gennone(schema)
-    elif schema["type"] == "integer":
+    elif gen_type == "integer":
         generated = genint(schema)
-    elif schema["type"] == "number":
+    elif gen_type == "number":
         generated = gennum(schema)
-    elif schema["type"] == "boolean":
+    elif gen_type == "boolean":
         generated = genbool(schema)
-    elif schema["type"] == "string":
+    elif gen_type == "string":
         generated = genstr(schema)
-    elif schema["type"] == "object":
+    elif gen_type == "object":
         generated = gendict(schema)
-    elif schema["type"] == "array":
+    elif gen_type == "array":
         generated = genlist(schema)
     else:
-        raise InvalidSchemaError("Unsuported type: {}".format(schema["type"]))
+        raise InvalidSchemaError(f"Unsuported type: {gen_type}")
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
