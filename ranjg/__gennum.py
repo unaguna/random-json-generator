@@ -1,6 +1,6 @@
 import sys
 import random
-from .error import SchemaConfrictionError
+from .error import GenerateError, SchemaConfrictionError
 
 __default_schema = {
     "minimum": -sys.float_info.max / 2,
@@ -48,13 +48,13 @@ def gennum(schema: dict, options: dict = {}) -> float:
 
         if generated == float("inf") or generated == float("-inf"):
             # TODO: nan になる場合も同様にエラー
-            raise Exception("Error by too large maximum and too small minimum")
+            raise GenerateError("Error by too large maximum and too small minimum")
 
         if __validate(generated, schema):
             break
 
     if not __validate(generated, schema):
-        raise Exception("No valid value generated on loop.")
+        raise GenerateError("No valid value generated on loop.")
 
     return generated
 

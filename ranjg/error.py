@@ -3,3 +3,6 @@ class InvalidSchemaError(Exception):
 
 class SchemaConfrictionError(Exception):
     pass
+
+class GenerateError(Exception):
+    pass
