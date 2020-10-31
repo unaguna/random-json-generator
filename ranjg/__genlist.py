@@ -3,6 +3,7 @@ import random
 import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
+from .error import SchemaConfrictionError
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
 # items に指定がない場合に使用する。
@@ -76,9 +77,9 @@ def __get_range_of_length(schema: dict) -> [int, int]:
         additional_items = schema.get("additionalItems")
 
         if additional_items is False and len(items) < dfor(minItems, len(items)):
-            raise Exception("Schema Contradiction: In tupple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to size of \"items\".")
+            raise SchemaConfrictionError("In tupple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to size of \"items\".")
         if len(items) > dfor(maxItems, len(items)):
-            raise Exception("Schema Contradiction: In tupple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
+            raise SchemaConfrictionError("In tupple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
 
 
         # タプル指定に合わせて、生成する list の大きさの最小値を設定

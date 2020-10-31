@@ -8,10 +8,13 @@ from .__gendict import gendict
 from .__genlist import genlist
 from .__genany import genany
 from .util.nonesafe import dfor
+from .error import InvalidSchemaError
 
 def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp = None):
-    # TODO: schema と schema_file がともに None であるとき、エラー
-    # TODO: output_file と output_fp がともに指定されたとき、エラー
+    if schema is None and schema_file is None:
+        raise ValueError("schema or schema_file must be specified.")
+    if output_file is not None and output_fp is not None:
+        raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
 
     schema = dfor(schema, {})
 
@@ -23,26 +26,27 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
             schema = loaded_schema
 
     # TODO: Type が複数の場合の処理
+    gen_type = schema.get("type")
 
     generated = None
-    if "type" not in schema:
+    if gen_type is None:
         generated = genany(schema)
-    elif schema["type"] == "null":
+    elif gen_type == "null":
         generated = gennone(schema)
-    elif schema["type"] == "integer":
+    elif gen_type == "integer":
         generated = genint(schema)
-    elif schema["type"] == "number":
+    elif gen_type == "number":
         generated = gennum(schema)
-    elif schema["type"] == "boolean":
+    elif gen_type == "boolean":
         generated = genbool(schema)
-    elif schema["type"] == "string":
+    elif gen_type == "string":
         generated = genstr(schema)
-    elif schema["type"] == "object":
+    elif gen_type == "object":
         generated = gendict(schema)
-    elif schema["type"] == "array":
+    elif gen_type == "array":
         generated = genlist(schema)
     else:
-        raise Exception("Unsuported type: {}".format(schema["type"]))
+        raise InvalidSchemaError(f"Unsuported type: {gen_type}")
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
