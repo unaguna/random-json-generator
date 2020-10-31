@@ -46,9 +46,8 @@ def gennum(schema: dict, options: dict = {}) -> float:
     for i in range(options["regenerate_limit"]):
         generated = random.uniform(minimum, maximum)
 
-        if generated == float("inf") or generated == float("-inf"):
-            # TODO: nan になる場合も同様にエラー
-            raise GenerateError("Error by too large maximum and too small minimum")
+        if generated == float("inf") or generated == float("-inf") or generated == float("NaN"):
+            raise GenerateError("Error by too large or too small maximum or minimum")
 
         if __validate(generated, schema):
             break
