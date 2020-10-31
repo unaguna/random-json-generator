@@ -9,8 +9,9 @@ from .__genlist import genlist
 from .__genany import genany
 from .util.nonesafe import dfor
 
-def gen(schema: dict = None, schema_file: str = None, output_file: str = None):
+def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp = None):
     # TODO: schema と schema_file がともに None であるとき、エラー
+    # TODO: output_file と output_fp がともに指定されたとき、エラー
 
     schema = dfor(schema, {})
 
@@ -47,5 +48,7 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None):
     if output_file is not None:
         with open(output_file, "w+") as fp:
             json.dump(generated, fp)
+    if output_fp is not None:
+        json.dump(generated, output_fp)
 
     return generated

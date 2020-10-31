@@ -31,5 +31,13 @@ class TestGen(unittest.TestCase):
         
         self.assertTrue(path.exists(output_file))
 
+    def test_gen_with_output_fp(self):
+        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_fp_output.json")
+
+        with open(output_file, "w") as fp:
+            gen(schema_file="./test-resources/schema-legal-user_object.json", 
+                output_fp=fp)
+        
+        self.assertTrue(path.exists(output_file))
 
 
