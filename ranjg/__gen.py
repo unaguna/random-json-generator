@@ -29,7 +29,6 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     # TODO: Type が複数の場合の処理
     gen_type = schema.get("type")
 
-    generated = None
     if gen_type is None:
         generated = genany(schema)
     elif gen_type == "null":

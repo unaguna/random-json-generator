@@ -45,7 +45,6 @@ def gennum(schema: dict, options: dict = None) -> float:
 
     # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
     # Schema に合致する値を引くまで生成を繰り返す。
-    generated = None
     for i in range(options["regenerate_limit"]):
         generated = random.uniform(minimum, maximum)
 

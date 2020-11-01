@@ -25,8 +25,6 @@ def genstr(schema: dict) -> str:
     min_length = schema["minLength"]
     max_length = schema["maxLength"]
 
-    generated = ""
-
     # pattern の指定がある場合、それを使用する
     if pattern is not None:
         generated = rstr.xeger(pattern)
