@@ -1,6 +1,7 @@
 import unittest
 from ranjg import genint
 
+
 class TestGenint(unittest.TestCase):
 
     def test_genint_with_empty_schema(self):

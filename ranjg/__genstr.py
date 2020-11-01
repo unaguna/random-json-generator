@@ -8,6 +8,7 @@ __default_schema = {
     "maxLength": 100,
 }
 
+
 def genstr(schema: dict) -> str:
     """スキーマに適合する文字列を生成する。
 
@@ -19,24 +20,23 @@ def genstr(schema: dict) -> str:
     """
 
     schema = __normalize_schema(schema)
-    
-    pattern = re.compile(schema["pattern"]) if schema["pattern"] is not None else None
-    minLength = schema["minLength"]
-    maxLength = schema["maxLength"]
 
-    generated = ""
+    pattern = re.compile(schema["pattern"]) if schema["pattern"] is not None else None
+    min_length = schema["minLength"]
+    max_length = schema["maxLength"]
 
     # pattern の指定がある場合、それを使用する
     if pattern is not None:
         generated = rstr.xeger(pattern)
     # maxLength が 0 の場合、空文字でよい
-    elif maxLength is not None and maxLength <= 0:
+    elif max_length is not None and max_length <= 0:
         generated = ""
     # いずれにも当てはまらない場合、英字列を生成する。
     else:
-        generated = rstr.rstr(string.ascii_letters, start_range=minLength, end_range=maxLength)
+        generated = rstr.rstr(string.ascii_letters, start_range=min_length, end_range=max_length)
 
     return generated
+
 
 def __normalize_schema(schema: dict) -> dict:
     """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
@@ -48,11 +48,11 @@ def __normalize_schema(schema: dict) -> dict:
         dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
     """
 
-    nSchema = __default_schema.copy()
-    nSchema.update(schema)
+    n_schema = __default_schema.copy()
+    n_schema.update(schema)
 
     # maxLength = 0 の場合、minLength は無視する。
-    if nSchema["maxLength"] <= 0:
-        nSchema["minLength"] = None
+    if n_schema["maxLength"] <= 0:
+        n_schema["minLength"] = None
 
-    return nSchema
+    return n_schema

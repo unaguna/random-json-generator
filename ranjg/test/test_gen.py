@@ -5,10 +5,10 @@ import shutil
 import unittest
 from ranjg import gen
 
-class TestGen(unittest.TestCase):
 
+class TestGen(unittest.TestCase):
     TEST_TMP_DIR = "./test-tmp/test_gen"
-    TEST_TMP_DIR_PRE = path.join(TEST_TMP_DIR, f"{random.randint(0,2**64):X}")
+    TEST_TMP_DIR_PRE = path.join(TEST_TMP_DIR, f"{random.randint(0, 2 ** 64):X}")
 
     @classmethod
     def setUpClass(cls):
@@ -26,20 +26,20 @@ class TestGen(unittest.TestCase):
     def test_gen_with_output_file_path(self):
         output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output.json")
 
-        gen(schema_file="./test-resources/schema-legal-user_object.json", 
+        gen(schema_file="./test-resources/schema-legal-user_object.json",
             output_file=output_file)
-        
+
         self.assertTrue(path.exists(output_file))
 
     def test_gen_with_output_fp(self):
         output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_fp_output.json")
 
         with open(output_file, "w") as fp:
-            gen(schema_file="./test-resources/schema-legal-user_object.json", 
+            gen(schema_file="./test-resources/schema-legal-user_object.json",
                 output_fp=fp)
-        
+
         self.assertTrue(path.exists(output_file))
-    
+
     def test_gen_without_schema(self):
         self.assertRaises(ValueError, lambda: gen())
 
@@ -49,7 +49,6 @@ class TestGen(unittest.TestCase):
 
         with open(output_file, "w") as fp:
             self.assertRaises(ValueError,
-                              lambda: gen(schema, 
+                              lambda: gen(schema,
                                           output_file=output_file,
                                           output_fp=fp))
-            

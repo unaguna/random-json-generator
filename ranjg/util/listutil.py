@@ -1,4 +1,7 @@
-def diff(base: list, removed: list) -> list: 
+from collections import Iterable
+
+
+def diff(base: Iterable, removed: Iterable) -> list:
     result = list(base).copy()
     for value in removed:
         try:
@@ -6,8 +9,9 @@ def diff(base: list, removed: list) -> list:
         except ValueError:
             # do nothing
             continue
-    
+
     return result
+
 
 def fix_length(base: list, length: int, padding_item) -> list:
     """リストの長さを変更したものを生成して返す。
@@ -25,7 +29,7 @@ def fix_length(base: list, length: int, padding_item) -> list:
 
     Returns:
         list: base をもとにして生成される、長さ length のリスト
-    """    
+    """
 
     if len(base) >= length:
         return base[:length]
