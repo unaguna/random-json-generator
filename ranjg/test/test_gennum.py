@@ -57,7 +57,3 @@ class TestGennum(unittest.TestCase):
         generated = gennum(schema)
         self.assertIsInstance(generated, float)
         self.assertLess(generated, 1.23)
-
-
-if __name__ == '__main__':
-    unittest.main()

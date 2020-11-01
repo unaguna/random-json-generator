@@ -109,14 +109,3 @@ def __validate(value: float, schema: dict) -> bool:
 
     return schema["exclusiveMinimum"] < value < schema["exclusiveMaximum"] and \
            schema["minimum"] <= value <= schema["maximum"]
-
-
-if __name__ == "__main__":
-    schema1 = {
-        "type": "number",
-        "minimum": 0.0,
-        "exclusiveMaximum": 1.0,
-    }
-
-    num1 = gennum(schema1)
-    print(num1)

@@ -71,22 +71,3 @@ def __normalize_options(options: dict) -> dict:
 
     return n_options
 
-
-if __name__ == "__main__":
-    schema = {
-        "required": ["aaa", "bbb"],
-        "properties": {
-            "bbb": {
-                "type": "object",
-                "required": ["bbb_aaa"],
-            },
-            "ccc": {
-                "type": "number",
-                "minimum": 1,
-            },
-        },
-    }
-    dict1 = gendict(schema)
-    print(dict1)
-    dict2 = gendict({})
-    print(dict2)
