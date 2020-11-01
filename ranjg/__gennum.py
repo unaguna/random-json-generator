@@ -1,5 +1,7 @@
 import sys
 import random
+
+from ranjg.util.nonesafe import dfor
 from .error import GenerateError, SchemaConflictError
 
 __default_schema = {
@@ -15,7 +17,7 @@ __default_options = {
 }
 
 
-def gennum(schema: dict, options: dict = {}) -> float:
+def gennum(schema: dict, options: dict = None) -> float:
     """スキーマに適合する浮動小数点数を生成する。
 
     Args:
@@ -83,6 +85,7 @@ def __normalize_options(options: dict) -> dict:
     Returns:
         dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
     """
+    options = dfor(options, {})
 
     n_options = __default_options.copy()
     n_options.update(options)

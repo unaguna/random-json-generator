@@ -1,6 +1,7 @@
 import random
 import ranjg
 from ranjg.util.listutil import diff
+from ranjg.util.nonesafe import dfor
 
 # required 項目の値の生成に使用するスキーマのデフォルト値。
 # properties に当該キーの指定がない場合に使用する。
@@ -15,7 +16,7 @@ __default_options = {
 }
 
 
-def gendict(schema: dict, options: dict = {}) -> dict:
+def gendict(schema: dict, options: dict = None) -> dict:
     generated = dict()
 
     options = __normalize_options(options)
@@ -63,6 +64,7 @@ def __normalize_options(options: dict) -> dict:
     Returns:
         dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
     """
+    options = dfor(options, {})
 
     n_options = __default_options.copy()
     n_options.update(options)
