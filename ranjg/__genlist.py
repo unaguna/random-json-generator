@@ -3,7 +3,7 @@ import random
 import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
-from .error import SchemaConfrictionError
+from .error import SchemaConflictError
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
 # items に指定がない場合に使用する。
@@ -12,6 +12,7 @@ __default_items_schema = {
     "minimum": 0,
     "maximum": 0,
 }
+
 
 def genlist(schema: dict) -> list:
     """スキーマに適合するリストを生成する。
@@ -41,6 +42,7 @@ def genlist(schema: dict) -> list:
 
     return result
 
+
 def __schema_is_tuple_validation(schema: dict) -> bool:
     """スキーマがタプル指定かどうかを判定する。
 
@@ -53,6 +55,7 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
 
     items = schema.get("items")
     return isinstance(items, collections.abc.Sequence)
+
 
 def __get_range_of_length(schema: dict) -> [int, int]:
     """スキーマから、生成するlistの大きさの範囲を決定する。
@@ -68,46 +71,49 @@ def __get_range_of_length(schema: dict) -> [int, int]:
         [int, int]: 生成するリストの大きさの最小値と最大値
     """
 
-    minItems: int = schema.get("minItems")
-    maxItems: int = schema.get("maxItems")
+    min_items: int = schema.get("minItems")
+    max_items: int = schema.get("maxItems")
 
     # schema がタプル指定である場合
     if __schema_is_tuple_validation(schema):
         items = list(schema.get("items"))
         additional_items = schema.get("additionalItems")
 
-        if additional_items is False and len(items) < dfor(minItems, len(items)):
-            raise SchemaConfrictionError("In tupple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to size of \"items\".")
-        if len(items) > dfor(maxItems, len(items)):
-            raise SchemaConfrictionError("In tupple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
-
+        if additional_items is False and len(items) < dfor(min_items, len(items)):
+            raise SchemaConflictError(
+                "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to "
+                "size of \"items\".")
+        if len(items) > dfor(max_items, len(items)):
+            raise SchemaConflictError(
+                "In tuple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
 
         # タプル指定に合わせて、生成する list の大きさの最小値を設定
-        if minItems is None or minItems < len(items):
-            minItems = len(items)
+        if min_items is None or min_items < len(items):
+            min_items = len(items)
 
         # タプル指定に合わせて、生成する list の大きさの最大値を設定
         # 追加の要素 (additionalItems) が許されないか指定がない場合は、最低限しか追加の要素を生成しない
         if additional_items is False or additional_items is None:
-            maxItems = minItems
+            max_items = min_items
         # 追加の要素を作る場合で、maxItem の指定がない場合は追加の要素を最大5個とする。
         # ただし、minItems がそれより大きい場合はそれに準ずる。
-        elif maxItems is None:
-            maxItems = max(minItems, len(items) + 5)
+        elif max_items is None:
+            max_items = max(min_items, len(items) + 5)
 
-    if minItems is None:
-        if maxItems is None:
-            minItems = 1
+    if min_items is None:
+        if max_items is None:
+            min_items = 1
         else:
-            minItems = min(1, maxItems)
-    
-    if maxItems is None:
-        if minItems is None:
-            maxItems = 5
+            min_items = min(1, max_items)
+
+    if max_items is None:
+        if min_items is None:
+            max_items = 5
         else:
-            maxItems = max(5, minItems)
-    
-    return [minItems, maxItems]
+            max_items = max(5, min_items)
+
+    return [min_items, max_items]
+
 
 def __get_items_schema_list(schema: dict, item_count: int):
     """genlist で生成する list の各要素を生成する際のスキーマからなるリストを生成する。
@@ -131,7 +137,7 @@ def __get_items_schema_list(schema: dict, item_count: int):
         if additional_items is None or isinstance(additional_items, bool):
             additional_items = __default_items_schema
 
-        return fix_length(schema["items"], item_count, padding_item = additional_items)
+        return fix_length(schema["items"], item_count, padding_item=additional_items)
     # リスト指定である場合
     else:
         return item_count * [schema.get("items", __default_items_schema)]

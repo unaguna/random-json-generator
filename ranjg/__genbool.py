@@ -1,5 +1,6 @@
 import random
 
+
 def genbool(schema: dict) -> bool:
     """スキーマに適合する真偽値を生成する。
 

@@ -1,6 +1,6 @@
 import sys
 import random
-from .error import GenerateError, SchemaConfrictionError
+from .error import GenerateError, SchemaConflictError
 
 __default_schema = {
     "minimum": -sys.float_info.max / 2,
@@ -13,6 +13,7 @@ __default_options = {
     # 生成のやり直し回数の上限値
     "regenerate_limit": 50,
 }
+
 
 def gennum(schema: dict, options: dict = {}) -> float:
     """スキーマに適合する浮動小数点数を生成する。
@@ -31,14 +32,14 @@ def gennum(schema: dict, options: dict = {}) -> float:
     minimum = max(schema["minimum"], schema["exclusiveMinimum"])
     maximum = min(schema["maximum"], schema["exclusiveMaximum"])
 
-    if(minimum > maximum):
-        raise SchemaConfrictionError("Minimum value must be lower than or equal to the maximum value.")
+    if minimum > maximum:
+        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.")
 
-    if(maximum == schema["exclusiveMinimum"]):
-        raise SchemaConfrictionError("ExclusiveMinimum value must be lower than the maximum value.")
+    if maximum == schema["exclusiveMinimum"]:
+        raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.")
 
-    if(minimum == schema["exclusiveMaximum"]):
-        raise SchemaConfrictionError("ExclusiveMaximum value must be greater than the minimum value.")
+    if minimum == schema["exclusiveMaximum"]:
+        raise SchemaConflictError("ExclusiveMaximum value must be greater than the minimum value.")
 
     # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
     # Schema に合致する値を引くまで生成を繰り返す。
@@ -56,6 +57,7 @@ def gennum(schema: dict, options: dict = {}) -> float:
 
     return generated
 
+
 def __normalize_schema(schema: dict) -> dict:
     """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
 
@@ -66,10 +68,11 @@ def __normalize_schema(schema: dict) -> dict:
         dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
     """
 
-    nSchema = __default_schema.copy()
-    nSchema.update(schema)
+    n_schema = __default_schema.copy()
+    n_schema.update(schema)
 
-    return nSchema
+    return n_schema
+
 
 def __normalize_options(options: dict) -> dict:
     """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。
@@ -81,10 +84,11 @@ def __normalize_options(options: dict) -> dict:
         dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
     """
 
-    nOptions = __default_options.copy()
-    nOptions.update(options)
+    n_options = __default_options.copy()
+    n_options.update(options)
 
-    return nOptions
+    return n_options
+
 
 def __validate(value: float, schema: dict) -> bool:
     """値がスキーマに適合するかどうかチェックする。
@@ -100,8 +104,9 @@ def __validate(value: float, schema: dict) -> bool:
     if value is None:
         return False
 
-    return schema["exclusiveMinimum"] < value < schema["exclusiveMaximum"] \
-        and schema["minimum"] <= value <= schema["maximum"]
+    return schema["exclusiveMinimum"] < value < schema["exclusiveMaximum"] and \
+           schema["minimum"] <= value <= schema["maximum"]
+
 
 if __name__ == "__main__":
     schema1 = {

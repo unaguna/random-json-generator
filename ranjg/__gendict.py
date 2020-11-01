@@ -14,8 +14,8 @@ __default_options = {
     "prob_not_required_properties": 0.5,
 }
 
-def gendict(schema: dict, options: dict = {}) -> dict:
 
+def gendict(schema: dict, options: dict = {}) -> dict:
     generated = dict()
 
     options = __normalize_options(options)
@@ -52,6 +52,7 @@ def gendict(schema: dict, options: dict = {}) -> dict:
         generatedKeys[prop_key] = True
 
     return generated
+
 
 def __normalize_options(options: dict) -> dict:
     """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。

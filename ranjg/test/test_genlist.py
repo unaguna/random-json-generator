@@ -1,6 +1,7 @@
 import unittest
 from ranjg import genlist
-from ranjg.error import SchemaConfrictionError
+from ranjg.error import SchemaConflictError
+
 
 class TestGenlist(unittest.TestCase):
 
@@ -33,9 +34,9 @@ class TestGenlist(unittest.TestCase):
         schema = {
             "type": "array",
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -51,9 +52,9 @@ class TestGenlist(unittest.TestCase):
             "minItems": 5,
             "maxItems": 5,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -65,13 +66,13 @@ class TestGenlist(unittest.TestCase):
     def test_genlist_with_tuple_items_and_tight_length_and_additional_schema(self):
         schema = {
             "type": "array",
-            "additionalItems": { "type": "boolean" },
+            "additionalItems": {"type": "boolean"},
             "minItems": 5,
             "maxItems": 5,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -87,9 +88,9 @@ class TestGenlist(unittest.TestCase):
             "type": "array",
             "maxItems": 3,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -102,11 +103,11 @@ class TestGenlist(unittest.TestCase):
         schema = {
             "type": "array",
             "maxItems": 3,
-            "additionalItems": { "type": "boolean" },
+            "additionalItems": {"type": "boolean"},
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -121,9 +122,9 @@ class TestGenlist(unittest.TestCase):
             "maxItems": 3,
             "additionalItems": True,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
         generated = genlist(schema)
@@ -137,25 +138,25 @@ class TestGenlist(unittest.TestCase):
             "type": "array",
             "maxItems": 2,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_schema(self):
         schema = {
             "type": "array",
-            "additionalItems": { "type": "boolean" },
+            "additionalItems": {"type": "boolean"},
             "maxItems": 2,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_true(self):
         schema = {
@@ -163,12 +164,12 @@ class TestGenlist(unittest.TestCase):
             "additionalItems": True,
             "maxItems": 2,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_false(self):
         schema = {
@@ -176,12 +177,12 @@ class TestGenlist(unittest.TestCase):
             "additionalItems": False,
             "maxItems": 2,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
 
     def test_genlist_with_tuple_items_and_too_great_minItems_and_additional_false(self):
         schema = {
@@ -189,9 +190,9 @@ class TestGenlist(unittest.TestCase):
             "additionalItems": False,
             "minItems": 4,
             "items": [
-                { "type": "string" },
-                { "type": "null" },
-                { "type": "integer" },
+                {"type": "string"},
+                {"type": "null"},
+                {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConfrictionError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: genlist(schema))

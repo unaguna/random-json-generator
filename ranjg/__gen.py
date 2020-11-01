@@ -10,7 +10,8 @@ from .__genany import genany
 from .util.nonesafe import dfor
 from .error import InvalidSchemaError
 
-def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp = None):
+
+def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp=None):
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
     if output_file is not None and output_fp is not None:
@@ -46,7 +47,7 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     elif gen_type == "array":
         generated = genlist(schema)
     else:
-        raise InvalidSchemaError(f"Unsuported type: {gen_type}")
+        raise InvalidSchemaError(f"Unsupported type: {gen_type}")
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:

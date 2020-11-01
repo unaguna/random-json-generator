@@ -1,6 +1,6 @@
-import sys
 import random
-from .error import SchemaConfrictionError
+from .error import SchemaConflictError
+
 
 def genint(schema: dict) -> int:
     """スキーマに適合する整数を生成する。
@@ -17,10 +17,11 @@ def genint(schema: dict) -> int:
     minimum: int = schema["minimum"]
     maximum: int = schema["maximum"]
 
-    if(minimum > maximum):
-        raise SchemaConfrictionError("Minimum value must be lower than or equal to the maximum value.")
+    if minimum > maximum:
+        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.")
 
     return random.randint(minimum, maximum)
+
 
 def __normalize_schema(schema: dict) -> dict:
     """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
@@ -33,36 +34,36 @@ def __normalize_schema(schema: dict) -> dict:
     """
 
     # 生成する数値の最小値
-    inclusiveMinimum = schema.get("minimum", None)
-    exclusiveMinimum = schema.get("exclusiveMinimum", None)
-    if exclusiveMinimum == True:
-        exclusiveMinimum = inclusiveMinimum
-        inclusiveMinimum = None
-    elif exclusiveMinimum == False:
-        exclusiveMinimum = None
+    inclusive_minimum = schema.get("minimum", None)
+    exclusive_minimum = schema.get("exclusiveMinimum", None)
+    if exclusive_minimum == True:
+        exclusive_minimum = inclusive_minimum
+        inclusive_minimum = None
+    elif exclusive_minimum == False:
+        exclusive_minimum = None
     minimum = 0
-    if inclusiveMinimum is not None and exclusiveMinimum is not None:
-        minimum = max(inclusiveMinimum, exclusiveMinimum + 1)
-    elif exclusiveMinimum is not None:
-        minimum = exclusiveMinimum + 1
-    elif inclusiveMinimum is not None:
-        minimum = inclusiveMinimum
+    if inclusive_minimum is not None and exclusive_minimum is not None:
+        minimum = max(inclusive_minimum, exclusive_minimum + 1)
+    elif exclusive_minimum is not None:
+        minimum = exclusive_minimum + 1
+    elif inclusive_minimum is not None:
+        minimum = inclusive_minimum
 
     # 生成する数値の最大値
-    inclusiveMaximum = schema.get("maximum", None)
-    exclusiveMaximum = schema.get("exclusiveMaximum", None)
-    if exclusiveMaximum == True:
-        exclusiveMaximum = inclusiveMaximum
-        inclusiveMaximum = None
-    elif exclusiveMaximum == False:
-        exclusiveMaximum = None
+    inclusive_maximum = schema.get("maximum", None)
+    exclusive_maximum = schema.get("exclusiveMaximum", None)
+    if exclusive_maximum == True:
+        exclusive_maximum = inclusive_maximum
+        inclusive_maximum = None
+    elif exclusive_maximum == False:
+        exclusive_maximum = None
     maximum = 100
-    if inclusiveMaximum is not None and exclusiveMaximum is not None:
-        maximum = min(inclusiveMaximum, exclusiveMaximum - 1)
-    elif exclusiveMaximum is not None:
-        maximum = exclusiveMaximum - 1
-    elif inclusiveMaximum is not None:
-        maximum = inclusiveMaximum
+    if inclusive_maximum is not None and exclusive_maximum is not None:
+        maximum = min(inclusive_maximum, exclusive_maximum - 1)
+    elif exclusive_maximum is not None:
+        maximum = exclusive_maximum - 1
+    elif inclusive_maximum is not None:
+        maximum = inclusive_maximum
 
     return {
         "minimum": minimum,

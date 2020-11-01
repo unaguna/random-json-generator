@@ -1,8 +1,10 @@
 class InvalidSchemaError(Exception):
     pass
 
-class SchemaConfrictionError(Exception):
+
+class SchemaConflictError(Exception):
     pass
+
 
 class GenerateError(Exception):
     pass
