@@ -120,7 +120,7 @@ When `output_file` is specified, the generated JSON string will be written to th
 
 Supported keywords of schema
 ------------------
-This package generates JSON string according to JSON-shcema-**LIKE** object. *JSON-shcema-LIKE object* is like general JSON schema, but it doesN'T SUPPORT some keywords of general JSON schema.
+This package generates JSON string according to JSON-schema-**LIKE** object. *JSON-schema-LIKE object* is like general JSON schema, but it doesN'T SUPPORT some keywords of general JSON schema.
 
 The following keywords can be used in much the same way as in regular JSON schema. (If you want to know the effect of each keyword, please read [JSON Schema Reference](https://json-schema.org/understanding-json-schema/reference/index.html).)
 

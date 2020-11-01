@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
+
 def load_readme() -> str:
     with open("README.md", encoding="utf-8") as f:
         return f.read()
+
 
 setup(
     name='ranjg',
