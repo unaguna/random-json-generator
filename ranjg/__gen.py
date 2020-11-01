@@ -32,13 +32,13 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     if gen_type is None:
         generated = genany(schema)
     elif gen_type == "null":
-        generated = gennone(schema)
+        generated = gennone()
     elif gen_type == "integer":
         generated = genint(schema)
     elif gen_type == "number":
         generated = gennum(schema)
     elif gen_type == "boolean":
-        generated = genbool(schema)
+        generated = genbool()
     elif gen_type == "string":
         generated = genstr(schema)
     elif gen_type == "object":
