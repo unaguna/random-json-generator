@@ -1,4 +1,7 @@
-def diff(base: list, removed: list) -> list:
+from collections import Iterable
+
+
+def diff(base: Iterable, removed: Iterable) -> list:
     result = list(base).copy()
     for value in removed:
         try:
