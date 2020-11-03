@@ -1,8 +1,10 @@
+import json
 import os
 from os import path
 import random
 import shutil
 import unittest
+import jsonschema
 from ranjg import gen
 
 
@@ -36,8 +38,8 @@ class TestGen(unittest.TestCase):
             When the schema is empty, ``gen(schema)`` returns without exception.
         """
         schema = {}
-        gen(schema)
-        # TODO: 取得した値がスキーマに合致することを確かめる。
+        generated = gen(schema)
+        jsonschema.validate(generated, schema)
 
     def test_gen_with_schema_file_path(self):
         """ Normalized System Test
@@ -48,8 +50,12 @@ class TestGen(unittest.TestCase):
             When the schema defined by ``schema_file`` has ``type: string``, ``gen(schema_file)`` returns a ``str``
             value.
         """
-        gen(schema_file="./test-resources/schema-legal-type_str.json")
-        # TODO: 取得した値がスキーマに合致することを確かめる。
+        schema_file = "./test-resources/schema-legal-type_str.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+
+        generated = gen(schema_file=schema_file)
+        jsonschema.validate(generated, schema)
 
     def test_gen_with_output_file_path(self):
         """ Normalized System Test
@@ -62,15 +68,22 @@ class TestGen(unittest.TestCase):
             ``output_file`` is made and the generated value is written to the file as JSON.
 
         """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
         output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output.json")
 
-        # TODO: 戻り値についても assert する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        gen(schema_file="./test-resources/schema-legal-user_object.json",
-            output_file=output_file)
+        generated = gen(schema_file=schema_file, output_file=output_file)
 
-        # TODO: 出力ファイルの内容についても assert する。（スキーマに合致すること、gen の戻り値と一致すること）
+        # validate return value
+        jsonschema.validate(generated, schema)
+
+        # validate output
         self.assertTrue(path.exists(output_file))
+        with open(output_file) as fp:
+            output = json.load(fp)
+        jsonschema.validate(output, schema)
+        self.assertDictEqual(generated, output)
 
     def test_gen_with_output_fp(self):
         """ Normalized System Test
@@ -83,16 +96,23 @@ class TestGen(unittest.TestCase):
             the generated value is written as JSON to the file bound from ``output_fp``.
 
         """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
         output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_fp_output.json")
 
         with open(output_file, "w") as fp:
-            # TODO: 戻り値についても assert する。
-            # TODO: 取得した値がスキーマに合致することを確かめる。
-            gen(schema_file="./test-resources/schema-legal-user_object.json",
-                output_fp=fp)
+            generated = gen(schema_file="./test-resources/schema-legal-user_object.json",
+                            output_fp=fp)
 
-        # TODO: 出力ファイルの内容についても assert する。（スキーマに合致すること、gen の戻り値と一致すること）
-        self.assertTrue(path.exists(output_file))
+        # validate return value
+        jsonschema.validate(generated, schema)
+
+        # validate output
+        with open(output_file) as fp:
+            output = json.load(fp)
+        jsonschema.validate(output, schema)
+        self.assertDictEqual(generated, output)
 
     # TODO: schema と schema_file をともに指定する場合のテスト
 
