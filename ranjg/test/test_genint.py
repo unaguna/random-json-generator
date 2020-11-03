@@ -1,5 +1,7 @@
 import unittest
+import jsonschema
 from ranjg import genint
+from ranjg.error import SchemaConflictError
 
 
 class TestGenint(unittest.TestCase):
@@ -17,18 +19,198 @@ class TestGenint(unittest.TestCase):
             When the schema is empty, ``genint(schema)`` returns ``int`` value.
         """
         schema = {}
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        self.assertIsInstance(genint(schema), int)
+        generated = genint(schema)
+        self.assertIsInstance(generated, int)
+        jsonschema.validate(generated, schema)
 
-    # TODO: minimum のみを指定するテスト
-    # TODO: maximum のみを指定するテスト
-    # TODO: exclusiveMinimum (int) のみを指定するテスト
-    # TODO: exclusiveMaximum (int) のみを指定するテスト
+    def test_genint_with_param_minimum(self):
+        """ Normalized System Test
+
+        When ``properties.minimum`` is specified, the result number ``x`` satisfies `` x >= minimum``.
+
+        assert that:
+            When the schema has ``minimum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
+            `` x >= minimum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        # TODO: 整数でない数を指定するテスト
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "minimum": threshold,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_param_maximum(self):
+        """ Normalized System Test
+
+        When ``properties.maximum`` is specified, the result number ``x`` satisfies `` x <= maximum``.
+
+        assert that:
+            When the schema has ``maximum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
+            `` x <= maximum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        # TODO: 整数でない数を指定するテスト
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "maximum": threshold,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertLessEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_param_exclusiveMinimum(self):
+        """ Normalized System Test
+
+        When ``properties.exclusiveMinimum`` is specified by a number, the result number ``x`` satisfies
+        `` x > exclusiveMinimum``.
+
+        assert that:
+            When the schema has ``properties.exclusiveMinimum`` as number, ``genint(schema)`` returns ``int`` value
+            ``x`` and it satisfies `` x > exclusiveMinimum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "exclusiveMinimum": threshold,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertGreater(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_param_exclusiveMaximum(self):
+        """ Normalized System Test
+
+        When ``properties.exclusiveMaximum`` is specified by a number, the result number ``x`` satisfies
+        `` x < exclusiveMaximum``.
+
+        assert that:
+            When the schema has ``properties.exclusiveMaximum`` as number, ``genint(schema)`` returns ``int`` value
+            ``x`` and it satisfies `` x < exclusiveMaximum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "exclusiveMaximum": threshold,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertLess(generated, threshold)
+                jsonschema.validate(generated, schema)
+
     # TODO: exclusiveMinimum (bool) のみを指定するテスト
     # TODO: exclusiveMaximum (bool) のみを指定するテスト
-    # TODO: minimum, exclusiveMinimum (bool) のみを指定するテスト
+
+    def test_genint_with_min_exMin_true(self):
+        """ Normalized System Test
+
+        When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``True``, the result number ``x``
+        satisfies `` x > minimum``.
+
+        assert that:
+            When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``True``, ``genint(schema)`` returns
+            ``int`` value ``x`` and it satisfies `` x > minimum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "minimum": threshold,
+                    "exclusiveMinimum": True,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertGreater(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_min_exMin_false(self):
+        """ Normalized System Test
+
+        When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``False``, the result number ``x``
+        satisfies `` x >= minimum``.
+
+        assert that:
+            When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``False``, ``genint(schema)``
+            returns ``int`` value ``x`` and it satisfies `` x >= minimum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "minimum": threshold,
+                    "exclusiveMinimum": False,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_max_exMax_true(self):
+        """ Normalized System Test
+
+        When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``True``, the result number ``x``
+        satisfies `` x < maximum``.
+
+        assert that:
+            When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``True``, ``genint(schema)`` returns
+            ``int`` value ``x`` and it satisfies `` x < maximum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "maximum": threshold,
+                    "exclusiveMaximum": True,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertLess(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_max_exMax_false(self):
+        """ Normalized System Test
+
+        When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``False``, the result number ``x``
+        satisfies `` x <= maximum``.
+
+        assert that:
+            When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``False``, ``genint(schema)``
+            returns ``int`` value ``x`` and it satisfies `` x <= maximum``.
+        """
+        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "maximum": threshold,
+                    "exclusiveMaximum": False,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertLessEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
+
     # TODO: maximum, exclusiveMinimum (bool) のみを指定するテスト
-    # TODO: maximum, exclusiveMaximum (bool) のみを指定するテスト
     # TODO: minimum, exclusiveMaximum (bool) のみを指定するテスト
 
     def test_genint_with_tight_min_max(self):
@@ -41,17 +223,17 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``schema.minimum`` equals ``schema.maximum``, ``genint(schema)`` returns ``int`` value equal to them.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "minimum": 5,
-            "maximum": 5,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "minimum": threshold,
+                    "maximum": threshold,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_exMax(self):
         """ Normalized System Test
@@ -64,17 +246,17 @@ class TestGenint(unittest.TestCase):
             When ``schema.minimum`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns ``int`` value
             equal to ``minimum``.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "minimum": 5,
-            "exclusiveMaximum": 6,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "minimum": threshold,
+                    "exclusiveMaximum": threshold + 1,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_exMin_max(self):
         """ Normalized System Test
@@ -87,17 +269,17 @@ class TestGenint(unittest.TestCase):
             When ``schema.maximum`` equals ``schema.exclusiveMinimum + 1``, ``genint(schema)`` returns ``int`` value
             equal to ``maximum``.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "exclusiveMinimum": 4,
-            "maximum": 5,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "exclusiveMinimum": threshold - 1,
+                    "maximum": threshold,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_exMin_exMax(self):
         """ Normalized System Test
@@ -110,17 +292,17 @@ class TestGenint(unittest.TestCase):
             When ``schema.exclusiveMinimum + 1`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns
             ``int`` value equal to them.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "exclusiveMinimum": 4,
-            "exclusiveMaximum": 6,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "exclusiveMinimum": threshold - 1,
+                    "exclusiveMaximum": threshold + 1,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_max_exMinTrue(self):
         """ Normalized System Test
@@ -133,18 +315,19 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMinimum`` is ``True`` and ``schema.maximum`` equals ``schema.minimum + 1``,
             ``genint(schema)`` returns ``int`` value equal to ``maximum``.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "minimum": 4,
-            "exclusiveMinimum": True,
-            "maximum": 5,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "minimum": threshold - 1,
+                    "exclusiveMinimum": True,
+                    "maximum": threshold,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_max_exMaxTrue(self):
         """ Normalized System Test
@@ -157,27 +340,248 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMaximum`` is ``True`` and ``schema.minimum`` equals ``schema.maximum - 1``,
             ``genint(schema)`` returns ``int`` value equal to ``minimum``.
         """
-        # TODO: 複数の値を使って試験する。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {
-            "minimum": 5,
-            "maximum": 6,
-            "exclusiveMaximum": True,
-        }
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
-        self.assertEqual(genint(schema), 5)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
-    # TODO: 矛盾する minimum, maximum を指定するテスト
-    # TODO: 矛盾する minimum, exclusiveMaximum (int) を指定するテスト
-    # TODO: 矛盾する minimum, maximum, exclusiveMaximum (True) を指定するテスト
-    # TODO: 矛盾する minimum, maximum, exclusiveMaximum (False) を指定するテスト
-    # TODO: タイトで矛盾しない minimum, maximum, exclusiveMaximum (False) を指定するテスト
-    # TODO: 矛盾する exclusiveMinimum (int), maximum を指定するテスト
-    # TODO: 矛盾する minimum, exclusiveMinimum (True), maximum を指定するテスト
-    # TODO: 矛盾する minimum, exclusiveMinimum (False), maximum を指定するテスト
-    # TODO: タイトで矛盾しない minimum, exclusiveMinimum (False), maximum を指定するテスト
-    # TODO: minimum, exclusiveMinimum (int) の両方を指定するテスト
-    # TODO: maximum, exclusiveMaximum (int) の両方を指定するテスト
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "$schema": "http://json-schema.org/draft-04/schema",
+                    "minimum": threshold,
+                    "maximum": threshold + 1,
+                    "exclusiveMaximum": True,
+                }
+                generated = genint(schema)
+                self.assertEqual(generated, threshold)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_param_conflict_min_max(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.maximum`` are specified, the result number
+        ``x`` satisfies ``minimum <= x <= maximum``. As a result, when ``maximum < minimum``, SchemaConflictError is
+        raised.
+
+        assert that:
+            When the schema has ``properties.minimum > properties.maximum``, ``genint(schema)`` raised
+            SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 10),
+                           (5, 10))
+        for maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schema = {
+                    "minimum": minimum,
+                    "maximum": maximum,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_min_exMax(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.exclusiveMaximum`` are specified, the result number
+        ``x`` satisfies ``minimum <= x < exclusiveMaximum``. As a result, when ``exclusiveMaximum <= minimum``,
+        SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.minimum => properties.exclusiveMaximum``, ``genint(schema)`` raised
+            SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, -10),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 0),
+                           (0, 10),
+                           (5, 10),
+                           (10, 10))
+        for exclusive_maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, exclusiveMaximum=exclusive_maximum):
+                schema = {
+                    "minimum": minimum,
+                    "exclusiveMaximum": exclusive_maximum,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_min_max_exMax_true(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMaximum`` is
+        ``True``, the result number ``x`` satisfies ``minimum <= x < maximum``. As a result, when
+        ``maximum <= minimum``, SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.minimum => properties.maximum`` and ``schema.exclusiveMaximum is True``,
+            ``genint(schema)`` raised SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, -10),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 0),
+                           (0, 10),
+                           (5, 10),
+                           (10, 10))
+        for maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schema = {
+                    "minimum": minimum,
+                    "maximum": maximum,
+                    "exclusiveMaximum": True,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_min_max_exMax_false(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMaximum`` is
+        ``False``, the result number ``x`` satisfies ``minimum <= x <= maximum``. As a result, when
+        ``maximum < minimum``, SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.minimum > properties.maximum`` and ``schema.exclusiveMaximum is False``,
+            ``genint(schema)`` raised SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 10),
+                           (5, 10))
+        for maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schema = {
+                    "minimum": minimum,
+                    "maximum": maximum,
+                    "exclusiveMaximum": False,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_exMin_max(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.exclusiveMinimum`` and ``properties.maximum`` are specified, the result number
+        ``x`` satisfies ``exclusiveMinimum < x <= maximum``. As a result, when ``maximum <= exclusiveMinimum``,
+        SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.exclusiveMinimum => properties.maximum``, ``genint(schema)`` raised
+            SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, -10),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 0),
+                           (0, 10),
+                           (5, 10),
+                           (10, 10))
+        for maximum, exclusive_minimum in thresholds_list:
+            with self.subTest(exclusive_minimum=exclusive_minimum, maximum=maximum):
+                schema = {
+                    "exclusiveMinimum": exclusive_minimum,
+                    "maximum": maximum,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_min_max_exMin_true(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMinimum`` is
+        ``True``, the result number ``x`` satisfies ``minimum < x <= maximum``. As a result, when
+        ``maximum <= minimum``, SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.minimum => properties.maximum`` and ``schema.exclusiveMinimum is True``,
+            ``genint(schema)`` raised SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, -10),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 0),
+                           (0, 10),
+                           (5, 10),
+                           (10, 10))
+        for maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schema = {
+                    "minimum": minimum,
+                    "maximum": maximum,
+                    "exclusiveMinimum": True,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_conflict_min_max_exMin_false(self):
+        """ Semi-normalized System Test
+
+        When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMinimum`` is
+        ``False``, the result number ``x`` satisfies ``minimum <= x <= maximum``. As a result, when
+        ``maximum < minimum``, SchemaConflictError is raised.
+
+        assert that:
+            When the schema has ``properties.minimum > properties.maximum`` and ``schema.exclusiveMinimum is False``,
+            ``genint(schema)`` raised SchemaConflictError.
+        """
+        thresholds_list = ((-10, -5),
+                           (-10, 0),
+                           (-10, 10),
+                           (0, 10),
+                           (5, 10))
+        for maximum, minimum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
+                schema = {
+                    "minimum": minimum,
+                    "maximum": maximum,
+                    "exclusiveMinimum": False,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genint(schema))
+
+    def test_genint_with_param_minimum_exclusiveMinimum(self):
+        """ Normalized System Test
+
+        When both ``properties.minimum`` and ``properties.exclusiveMinimum: number`` are specified, the result number
+        ``x`` satisfies ``x >= maximum`` and ``x > exclusiveMaximum``.
+
+        assert that:
+            When the schema has ``properties.minimum`` and ``properties.exclusiveMinimum`` as number, ``genint(schema)``
+            returns ``int`` value ``x`` and it satisfies ``x >= minimum`` and ``x > exclusiveMinimum``.
+        """
+        thresholds_list = ((1.23E+20, 123),
+                           (123, 1.23E+20))
+        for minimum, exclusive_minimum in thresholds_list:
+            with self.subTest(minimum=minimum, exclusive_minimum=exclusive_minimum):
+                schema = {
+                    "minimum": minimum,
+                    "exclusiveMinimum": exclusive_minimum,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, minimum)
+                self.assertGreater(generated, exclusive_minimum)
+                jsonschema.validate(generated, schema)
+
+    def test_genint_with_param_maximum_exclusiveMaximum(self):
+        """ Normalized System Test
+
+        When both ``properties.maximum`` and ``properties.exclusiveMaximum: number`` are specified, the result number
+        ``x`` satisfies ``x <= maximum`` and ``x < exclusiveMaximum``.
+
+        assert that:
+            When the schema has ``properties.maximum`` and ``properties.exclusiveMaximum`` as number, ``genint(schema)``
+            returns ``int`` value ``x`` and it satisfies ``x <= maximum`` and ``x < exclusiveMaximum``.
+        """
+        thresholds_list = ((1.23E+20, 123),
+                           (123, 1.23E+20))
+        for maximum, exclusive_maximum in thresholds_list:
+            with self.subTest(maximum=maximum, exclusive_maximum=exclusive_maximum):
+                schema = {
+                    "maximum": maximum,
+                    "exclusiveMaximum": exclusive_maximum,
+                }
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
+                self.assertLessEqual(generated, maximum)
+                self.assertLess(generated, exclusive_maximum)
+                jsonschema.validate(generated, schema)
