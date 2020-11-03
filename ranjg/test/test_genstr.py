@@ -1,4 +1,5 @@
 import unittest
+import jsonschema
 from ranjg import genstr
 
 
@@ -18,9 +19,9 @@ class TestGenstr(unittest.TestCase):
         """
         schema = {}
         generated = genstr(schema)
-        # TODO: 取得した値がスキーマに合致することを確かめる。
         self.assertIsInstance(generated, str)
         self.assertTrue(generated.isalpha())
+        jsonschema.validate(generated, schema)
 
     def test_genstr_with_maxLength_0(self):
         """ Normalized System Test
@@ -32,11 +33,32 @@ class TestGenstr(unittest.TestCase):
             When ``schema.maxLength == 0``, ``genstr(schema)`` returns the empty string.
         """
         schema = {"maxLength": 0}
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        self.assertEqual(genstr(schema), "")
+        generated = genstr(schema)
+        self.assertEqual(generated, "")
+        jsonschema.validate(generated, schema)
 
-    # TODO: schema.maxLength に正の数を指定するテスト
+    def test_genstr_with_maxLength(self):
+        """ Normalized System Test
+
+        When ``schema.maxLength`` is specified, ``genstr(schema)`` returns a string value with a length of ``maxLength``
+        or less.
+
+        assert that:
+            When ``schema.maxLength``, ``genstr(schema)`` returns a string with a length of ``maxLength`` or less.
+        """
+        threshold_list = (1, 2, 3, 1.0)
+
+        for max_length in threshold_list:
+            with self.subTest(max_length=max_length):
+                schema = {"maxLength": max_length}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertLessEqual(len(generated), max_length)
+                jsonschema.validate(generated, schema)
+
     # TODO: schema.maxLength に負の数を指定するテスト
+    # TODO: schema.maxLength に整数でない数を指定するテスト
+    # TODO: schema.maxLength に数でない値を指定するテスト
 
     def test_genstr_with_minLength(self):
         """ Normalized System Test
@@ -48,14 +70,19 @@ class TestGenstr(unittest.TestCase):
             When ``schema.minLength`` is specified, ``genstr(schema)`` returns the string value and it's length is
             greater than or equal to ``minLength``.
         """
-        # TODO: 複数の値でテストを行う。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {"minLength": 100}
-        generated = genstr(schema)
-        self.assertIsInstance(generated, str)
-        self.assertGreaterEqual(len(generated), 100)
+        threshold_list = (1, 2, 3, 1.0)
+
+        for min_length in threshold_list:
+            with self.subTest(min_length=min_length):
+                schema = {"minLength": min_length}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertGreaterEqual(len(generated), min_length)
+                jsonschema.validate(generated, schema)
 
     # TODO: schema.minLength に負の数を指定するテスト
+    # TODO: schema.minLength に整数でない数を指定するテスト
+    # TODO: schema.minLength に数でない値を指定するテスト
 
     def test_genstr_with_length(self):
         """ Normalized System Test
@@ -65,14 +92,42 @@ class TestGenstr(unittest.TestCase):
         same value, the length of the result equals them.
 
         assert that:
-            When ``schema.minLength`` equals to ``schema.maxLength``, ``genstr(schema)`` returns the string with a
-            length of them.
+            When ``schema.minLength`` and ``schema.maxLength`` is specified, ``genstr(schema)`` returns the string with
+            a length ``x`` satisfies ``minLength <= x <= maxLength``.
         """
-        # TODO: 複数の値でテストを行う。
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        schema = {"minLength": 10, "maxLength": 10}
-        generated = genstr(schema)
-        self.assertIsInstance(generated, str)
-        self.assertEqual(len(generated), 10)
+        thresholds_list = ((0, 1),
+                           (10, 10),
+                           (12, 15))
 
-    # TODO: pattern を指定するテスト
+        for min_length, max_length in thresholds_list:
+            with self.subTest(min_length=min_length, max_length=max_length):
+                schema = {"minLength": min_length, "maxLength": max_length}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertGreaterEqual(len(generated), min_length)
+                self.assertLessEqual(len(generated), max_length)
+                jsonschema.validate(generated, schema)
+
+    # TODO: 矛盾する schema.minLength, schema.maxLength を指定するテスト
+
+    def test_genstr_with_pattern(self):
+        """ Normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression.
+
+        assert that:
+            When ``schema.pattern`` is valid as regular expression, ``genstr(schema)`` returns a string satisfies this
+            regular expression.
+        """
+        pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
+                        "[a-z]+\\d\\d")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertRegex(generated, pattern)
+                jsonschema.validate(generated, schema)
+
+    # TODO: 不正な pattern を指定するテスト
