@@ -1,3 +1,4 @@
+import json
 import sys
 import os
 from os import path
@@ -6,6 +7,7 @@ import shutil
 from test.support import captured_stdout
 import unittest
 from unittest.mock import patch
+import jsonschema
 from ranjg.__main__ import main as module_main
 
 
@@ -39,21 +41,25 @@ class TestGenMain(unittest.TestCase):
         assert that:
             With only one argument ``schema_file``, module execution output a value valid schema to stdout in one line.
         """
-        schema_file = "./test-resources/schema-legal-type_str.json"
-        # TODO: 複数のスキーマで試す。
+        schema_file_list = ("./test-resources/schema-legal-type_str.json",
+                            "./test-resources/schema-legal-user_object.json",
+                            "./test-resources/schema-legal-list.json",)
 
-        test_args = ["__main__.py", schema_file]
+        for schema_file in schema_file_list:
+            with self.subTest(schema_file=schema_file):
+                with open(schema_file) as fp:
+                    schema = json.load(fp)
+                test_args = ["__main__.py", schema_file]
 
-        with captured_stdout() as stdout:
-            with patch.object(sys, 'argv', test_args):
-                module_main()
+                with captured_stdout() as stdout:
+                    with patch.object(sys, 'argv', test_args):
+                        module_main()
 
-        output = stdout.getvalue()
-        # TODO: 取得した値がスキーマに合致することを確かめる。
+                output_str = stdout.getvalue()
+                output = json.loads(output_str)
 
-        self.assertTrue(output.startswith("\""))
-        self.assertTrue(output.endswith("\""))
-        self.assertTrue("\n" not in output)
+                self.assertTrue("\n" not in output_str)
+                jsonschema.validate(output, schema)
 
     def test_gen_main_with_schema_file_and_output_file(self):
         """ Normalized System Test
@@ -65,18 +71,26 @@ class TestGenMain(unittest.TestCase):
             With only one argument ``schema_file``, module execution output a value valid schema to the ``output_file``
             in one line. Then nothing are output to stdout.
         """
-        schema_file = "./test-resources/schema-legal-type_str.json"
-        # TODO: 複数のスキーマで試す。
+        schema_file_list = ("./test-resources/schema-legal-type_str.json",
+                            "./test-resources/schema-legal-user_object.json",
+                            "./test-resources/schema-legal-list.json",)
         output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_schema_file_and_output_file_output.json")
 
-        test_args = ["__main__.py", schema_file, "-j", output_file]
+        for schema_file in schema_file_list:
+            with self.subTest(schema_file=schema_file):
+                with open(schema_file) as fp:
+                    schema = json.load(fp)
+                test_args = ["__main__.py", schema_file, "-j", output_file]
 
-        with captured_stdout() as stdout:
-            with patch.object(sys, 'argv', test_args):
-                module_main()
+                with captured_stdout() as stdout:
+                    with patch.object(sys, 'argv', test_args):
+                        module_main()
 
-        output = stdout.getvalue()
+                output = stdout.getvalue()
 
-        self.assertEqual(output, "")
-        # TODO: 取得した値がスキーマに合致することを確かめる。
-        self.assertTrue(path.exists(output_file))
+                with open(output_file) as fp:
+                    generated = json.load(fp)
+
+                self.assertEqual(output, "")
+                self.assertTrue(path.exists(output_file))
+                jsonschema.validate(generated, schema)
