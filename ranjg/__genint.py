@@ -41,7 +41,7 @@ def __normalize_schema(schema: dict) -> dict:
         inclusive_minimum = None
     elif exclusive_minimum is False:
         exclusive_minimum = None
-    minimum = 0
+    minimum = None
     if inclusive_minimum is not None and exclusive_minimum is not None:
         minimum = max(inclusive_minimum, exclusive_minimum + 1)
     elif exclusive_minimum is not None:
@@ -57,13 +57,21 @@ def __normalize_schema(schema: dict) -> dict:
         inclusive_maximum = None
     elif exclusive_maximum is False:
         exclusive_maximum = None
-    maximum = 100
+    maximum = None
     if inclusive_maximum is not None and exclusive_maximum is not None:
         maximum = min(inclusive_maximum, exclusive_maximum - 1)
     elif exclusive_maximum is not None:
         maximum = exclusive_maximum - 1
     elif inclusive_maximum is not None:
         maximum = inclusive_maximum
+
+    if minimum is None and maximum is None:
+        minimum = 0
+        maximum = 100
+    elif minimum is None:
+        minimum = maximum - 5
+    elif maximum is None:
+        maximum = minimum + 5
 
     return {
         "minimum": minimum,

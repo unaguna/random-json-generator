@@ -32,7 +32,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``minimum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
             `` x >= minimum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
         # TODO: 整数でない数を指定するテスト
 
         for threshold in threshold_list:
@@ -54,7 +54,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``maximum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
             `` x <= maximum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
         # TODO: 整数でない数を指定するテスト
 
         for threshold in threshold_list:
@@ -77,7 +77,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.exclusiveMinimum`` as number, ``genint(schema)`` returns ``int`` value
             ``x`` and it satisfies `` x > exclusiveMinimum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -99,7 +99,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.exclusiveMaximum`` as number, ``genint(schema)`` returns ``int`` value
             ``x`` and it satisfies `` x < exclusiveMaximum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -124,7 +124,7 @@ class TestGenint(unittest.TestCase):
             When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``True``, ``genint(schema)`` returns
             ``int`` value ``x`` and it satisfies `` x > minimum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -148,7 +148,7 @@ class TestGenint(unittest.TestCase):
             When ``schema.minimum`` is specified and ``schema.exclusiveMinimum`` is ``False``, ``genint(schema)``
             returns ``int`` value ``x`` and it satisfies `` x >= minimum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -172,7 +172,7 @@ class TestGenint(unittest.TestCase):
             When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``True``, ``genint(schema)`` returns
             ``int`` value ``x`` and it satisfies `` x < maximum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -196,7 +196,7 @@ class TestGenint(unittest.TestCase):
             When ``schema.maximum`` is specified and ``schema.exclusiveMaximum`` is ``False``, ``genint(schema)``
             returns ``int`` value ``x`` and it satisfies `` x <= maximum``.
         """
-        threshold_list = (-2E+100, -2, 0, 1.0, 2, 2E+100)
+        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -548,8 +548,8 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.minimum`` and ``properties.exclusiveMinimum`` as number, ``genint(schema)``
             returns ``int`` value ``x`` and it satisfies ``x >= minimum`` and ``x > exclusiveMinimum``.
         """
-        thresholds_list = ((1.23E+20, 123),
-                           (123, 1.23E+20))
+        thresholds_list = ((1.23E+10, 123),
+                           (123, 1.23E+10))
         for minimum, exclusive_minimum in thresholds_list:
             with self.subTest(minimum=minimum, exclusive_minimum=exclusive_minimum):
                 schema = {
@@ -572,8 +572,8 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.maximum`` and ``properties.exclusiveMaximum`` as number, ``genint(schema)``
             returns ``int`` value ``x`` and it satisfies ``x <= maximum`` and ``x < exclusiveMaximum``.
         """
-        thresholds_list = ((1.23E+20, 123),
-                           (123, 1.23E+20))
+        thresholds_list = ((1.23E+10, 123),
+                           (123, 1.23E+10))
         for maximum, exclusive_maximum in thresholds_list:
             with self.subTest(maximum=maximum, exclusive_maximum=exclusive_maximum):
                 schema = {
