@@ -1,4 +1,5 @@
 import unittest
+import jsonschema
 from ranjg import gendict
 
 
@@ -20,9 +21,9 @@ class TestGendict(unittest.TestCase):
         """
         schema = {}
         generated = gendict(schema)
-        # TODO: 取得した値がスキーマに合致することを確かめる。
         self.assertIsInstance(generated, dict)
         self.assertDictEqual(generated, {})
+        jsonschema.validate(generated, schema)
 
     def test_gendict_with_required(self):
         """ Normalized System Test
@@ -41,12 +42,11 @@ class TestGendict(unittest.TestCase):
             "required": ["aaa", "bbb"],
         }
         generated = gendict(schema)
-        # TODO: 取得した値がスキーマに合致することを確かめる。
         self.assertIsInstance(generated, dict)
         self.assertSetEqual(set(generated.keys()), {"aaa", "bbb"})
+        jsonschema.validate(generated, schema)
 
     def test_gendict_with_required_and_properties(self):
-        # TODO: properties 内のタイプについての試験は分解する。
         schema = {
             "required": ["aaa", "bbb", "ccc", "ddd", "eee", "xxx", "zzz"],
             "properties": {
@@ -60,7 +60,6 @@ class TestGendict(unittest.TestCase):
             },
         }
         generated = gendict(schema)
-        # TODO: 取得した値がスキーマに合致することを確かめる。
         self.assertIsInstance(generated, dict)
         self.assertSetEqual(set(generated.keys()),
                             {"aaa", "bbb", "ccc", "ddd", "eee", "xxx", "zzz"})
@@ -71,3 +70,4 @@ class TestGendict(unittest.TestCase):
         self.assertIsInstance(generated["ddd"], bool)
         self.assertIsInstance(generated["eee"], list)
         self.assertIsNone(generated["xxx"])
+        jsonschema.validate(generated, schema)
