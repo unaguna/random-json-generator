@@ -103,19 +103,27 @@ class TestGenlist(unittest.TestCase):
             When ``schema.minItems > 0`` and ``schema.items`` is dict has ``type``, then elements in the returned list
             is type of the ``type``.
         """
-        schema = {
-            "type": "array",
-            "minItems": 5,
-            "items": {
-                "type": "string",
-            }
-        }
-        # TODO: 複数のタイプを使って試験する。
-        # TODO: 生成されたリストが要素を持つことも確かめる
-        generated = genlist(schema)
-        for item in generated:
-            self.assertIsInstance(item, str)
-        jsonschema.validate(generated, schema)
+        type_list = (("string", str),
+                     ("number", float),
+                     ("integer", int),
+                     ("boolean", bool),
+                     ("array", list),
+                     ("object", dict))
+
+        for type_name, type_cls in type_list:
+            with self.subTest(type_name=type_name, type_cls=type_cls):
+                schema = {
+                    "type": "array",
+                    "minItems": 5,
+                    "items": {
+                        "type": type_name,
+                    }
+                }
+                generated = genlist(schema)
+                self.assertGreater(len(generated), 0)
+                for item in generated:
+                    self.assertIsInstance(item, type_cls)
+                jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items(self):
         """ Normalized System Test
