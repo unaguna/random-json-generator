@@ -81,15 +81,18 @@ class TestGenlist(unittest.TestCase):
             When ``schema.minItems`` equals ``schema.maxItems``, ``getlist(schema)`` returns a list of length
             ``minItems``.
         """
-        # TODO: 複数の値を使って試験する。 (0を含む)
-        schema = {
-            "type": "array",
-            "minItems": 6,
-            "maxItems": 6,
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 6)
-        jsonschema.validate(generated, schema)
+        threshold_list = (0, 1, 30, 100, 300)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "type": "array",
+                    "minItems": threshold,
+                    "maxItems": threshold,
+                }
+                generated = genlist(schema)
+                self.assertEqual(len(generated), threshold)
+                jsonschema.validate(generated, schema)
 
     def test_genlist_with_single_items(self):
         """ Normalized System Test
