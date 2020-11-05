@@ -1,7 +1,7 @@
 import unittest
 import jsonschema
 from ranjg import genlist
-from ranjg.error import SchemaConflictError
+from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 
 class TestGenlist(unittest.TestCase):
@@ -67,8 +67,33 @@ class TestGenlist(unittest.TestCase):
                 self.assertLessEqual(len(generated), max_items)
                 jsonschema.validate(generated, schema)
 
-    # TODO: 負の minItems だけ指定するテスト
-    # TODO: 負の maxItems だけ指定するテスト
+    def test_genlist_with_negative_minItems(self):
+        """ Semi-normalized System Test
+
+        ``schema.minItems`` must be non-negative. When ``schema.minItems < 0``, ``genlist(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.minItems < 0``, ``genlist(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "minItems": -1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+
+    def test_genlist_with_negative_maxItems(self):
+        """ Semi-normalized System Test
+
+        ``schema.maxItems`` must be non-negative. When ``schema.maxItems < 0``, ``genlist(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.maxItems < 0``, ``genlist(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "maxItems": -1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
 
     def test_genlist_with_tight_length(self):
         """ Normalized System Test
