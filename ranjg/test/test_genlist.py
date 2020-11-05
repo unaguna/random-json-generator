@@ -25,8 +25,48 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated, list)
         jsonschema.validate(generated, schema)
 
-    # TODO: minItems だけ指定するテスト (0を含む)
-    # TODO: maxItems だけ指定するテスト (0を含む)
+    def test_genlist_with_minItems(self):
+        """ Normalized System Test
+
+        ``genlist(schema)`` returns a list. When ``schema.minItems`` is specified, the result list has at least
+        ``minItems`` elements.
+
+        assert that:
+            When ``schema.minItems`` is specified, the result list has at least ``minItems`` elements.
+        """
+        threshold_list = (0, 1, 30, 100, 300)
+
+        for min_items in threshold_list:
+            with self.subTest(min_items=min_items):
+                schema = {
+                    "minItems": min_items
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertGreaterEqual(len(generated), min_items)
+                jsonschema.validate(generated, schema)
+
+    def test_genlist_with_maxItems(self):
+        """ Normalized System Test
+
+        ``genlist(schema)`` returns a list. When ``schema.maxItems`` is specified, the result list has at most
+        ``maxItems`` elements.
+
+        assert that:
+            When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
+        """
+        threshold_list = (0, 1, 30, 100, 300)
+
+        for max_items in threshold_list:
+            with self.subTest(max_items=max_items):
+                schema = {
+                    "maxItems": max_items
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertLessEqual(len(generated), max_items)
+                jsonschema.validate(generated, schema)
+
     # TODO: 負の minItems だけ指定するテスト
     # TODO: 負の maxItems だけ指定するテスト
 
