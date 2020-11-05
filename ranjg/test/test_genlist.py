@@ -1,4 +1,5 @@
 import unittest
+import jsonschema
 from ranjg import genlist
 from ranjg.error import SchemaConflictError
 
@@ -9,7 +10,6 @@ class TestGenlist(unittest.TestCase):
     Test ``ranjg.genlist``
     """
 
-    # TODO: 取得した値がスキーマに合致することを確かめる。
     # TODO: 仕様の再編とテスト内容の全面見直し。
 
     def test_genlist_with_empty_schema(self):
@@ -21,7 +21,9 @@ class TestGenlist(unittest.TestCase):
             When the schema is empty, ``genlist(schema)`` returns ``list`` value.
         """
         schema = {}
-        self.assertIsInstance(genlist(schema), list)
+        generated = genlist(schema)
+        self.assertIsInstance(generated, list)
+        jsonschema.validate(generated, schema)
 
     # TODO: minItems だけ指定するテスト (0を含む)
     # TODO: maxItems だけ指定するテスト (0を含む)
@@ -47,6 +49,7 @@ class TestGenlist(unittest.TestCase):
         }
         generated = genlist(schema)
         self.assertEqual(len(generated), 6)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_single_items(self):
         """ Normalized System Test
@@ -69,6 +72,7 @@ class TestGenlist(unittest.TestCase):
         generated = genlist(schema)
         for item in generated:
             self.assertIsInstance(item, str)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items(self):
         """ Normalized System Test
@@ -96,6 +100,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[0], str)
         self.assertIsNone(generated[1])
         self.assertIsInstance(generated[2], int)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_tight_length(self):
         """ Normalized System Test
@@ -125,6 +130,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[0], str)
         self.assertIsNone(generated[1])
         self.assertIsInstance(generated[2], int)
+        jsonschema.validate(generated, schema)
 
     # TODO: additionalItems を指定せず、minItems を len(items) より大きくするテスト (additionalItems が False であるときと同じ動作)
 
@@ -147,6 +153,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[2], int)
         self.assertIsInstance(generated[3], bool)
         self.assertIsInstance(generated[4], bool)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_same_size_maxItems(self):
         schema = {
@@ -163,6 +170,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[0], str)
         self.assertIsNone(generated[1])
         self.assertIsInstance(generated[2], int)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_same_size_maxItems_and_additional_schema(self):
         schema = {
@@ -180,6 +188,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[0], str)
         self.assertIsNone(generated[1])
         self.assertIsInstance(generated[2], int)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_same_size_maxItems_and_additional_true(self):
         schema = {
@@ -197,6 +206,7 @@ class TestGenlist(unittest.TestCase):
         self.assertIsInstance(generated[0], str)
         self.assertIsNone(generated[1])
         self.assertIsInstance(generated[2], int)
+        jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_too_less_maxItems(self):
         schema = {
