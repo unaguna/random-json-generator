@@ -52,7 +52,7 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     elif gen_type == "array":
         generated = genlist(schema, schema_is_validated=True)
     else:
-        raise InvalidSchemaError(f"Unsupported type: {gen_type}")
+        raise ValueError(f"Unsupported type: {gen_type}")
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:

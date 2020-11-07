@@ -7,7 +7,13 @@ __meta_schema = {
     "additionalProperties": True,
     "properties": {
         "type": {
-            "type": "string",
+            "anyOf": [
+                {"$ref": "#/definitions/type_single"},
+                {
+                    "type": "array",
+                    "items": {"$ref": "#/definitions/type_single"},
+                },
+            ],
         },
         "items": {
             "anyOf": [
@@ -29,6 +35,11 @@ __meta_schema = {
             "minimum": 0,
         },
     },
+    "definitions": {
+        "type_single": {
+            "enum": ["null", "boolean", "integer", "number", "string", "array", "object"],
+        },
+    },
 }
 
 
@@ -44,7 +55,10 @@ def validate_schema(schema: dict):
         InvalidSchemaError:
             schema が不正であるとき
     """
-    try:
-        jsonschema.validate(schema, __meta_schema)
-    except jsonschema.exceptions.ValidationError as e:
-        raise InvalidSchemaError from e
+    validate_error_list = [*jsonschema.Draft7Validator(__meta_schema).iter_errors(schema)]
+
+    # schema が不正でなければ終了
+    if len(validate_error_list) <= 0:
+        return
+
+    raise InvalidSchemaError(validate_error_list)
