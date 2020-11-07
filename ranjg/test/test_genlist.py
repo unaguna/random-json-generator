@@ -34,7 +34,7 @@ class TestGenlist(unittest.TestCase):
         assert that:
             When ``schema.minItems`` is specified, the result list has at least ``minItems`` elements.
         """
-        threshold_list = (0, 1, 30, 100, 300)
+        threshold_list = (0, 1.0, 30.0, 100, 300)
 
         for min_items in threshold_list:
             with self.subTest(min_items=min_items):
@@ -55,7 +55,7 @@ class TestGenlist(unittest.TestCase):
         assert that:
             When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
         """
-        threshold_list = (0, 1, 30, 100, 300)
+        threshold_list = (0, 1.0, 30.0, 100, 300)
 
         for max_items in threshold_list:
             with self.subTest(max_items=max_items):
@@ -95,6 +95,34 @@ class TestGenlist(unittest.TestCase):
         }
         self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
 
+    def test_genlist_with_non_integer_minItems(self):
+        """ Semi-normalized System Test
+
+        ``schema.minItems`` must be integer. More precisely, ``minItems`` must be a number value divided by 1. When
+        ``schema.minItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.minItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "minItems": 1.1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+
+    def test_genlist_with_non_integer_maxItems(self):
+        """ Semi-normalized System Test
+
+        ``schema.maxItems`` must be integer. More precisely, ``maxItems`` must be a number value divided by 1. When
+        ``schema.maxItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.maxItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "maxItems": 1.1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+
     def test_genlist_with_tight_length(self):
         """ Normalized System Test
 
@@ -106,7 +134,7 @@ class TestGenlist(unittest.TestCase):
             When ``schema.minItems`` equals ``schema.maxItems``, ``getlist(schema)`` returns a list of length
             ``minItems``.
         """
-        threshold_list = (0, 1, 30, 100, 300)
+        threshold_list = (0, 1, 30, 100.0, 300.0)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
