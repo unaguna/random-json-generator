@@ -7,11 +7,13 @@ from .__genstr import genstr
 from .__gendict import gendict
 from .__genlist import genlist
 from .__genany import genany
+from .validate.schema import validate_schema
 from .util.nonesafe import dfor
 from .error import InvalidSchemaError
 
 
-def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp=None):
+def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp=None,
+        schema_is_validated: bool = False):
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
     if output_file is not None and output_fp is not None:
@@ -25,6 +27,10 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
             loaded_schema = json.load(fp)
             loaded_schema.update(schema)
             schema = loaded_schema
+
+    # スキーマの不正判定
+    if not schema_is_validated:
+        validate_schema(schema)
 
     # TODO: Type が複数の場合の処理
     gen_type = schema.get("type")
@@ -44,7 +50,7 @@ def gen(schema: dict = None, schema_file: str = None, output_file: str = None, o
     elif gen_type == "object":
         generated = gendict(schema)
     elif gen_type == "array":
-        generated = genlist(schema)
+        generated = genlist(schema, schema_is_validated=True)
     else:
         raise InvalidSchemaError(f"Unsupported type: {gen_type}")
 

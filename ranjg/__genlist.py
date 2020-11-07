@@ -3,6 +3,7 @@ import random
 import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
+from .validate.schema import validate_schema
 from .error import SchemaConflictError
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
@@ -14,15 +15,20 @@ __default_items_schema = {
 }
 
 
-def genlist(schema: dict) -> list:
+def genlist(schema: dict, schema_is_validated: bool = False) -> list:
     """スキーマに適合するリストを生成する。
 
     Args:
         schema (dict): array 型についての JsonSchema を表現するマップ
+        schema_is_validated (bool): schema の不正判定がすでに行われているかどうか
 
     Returns:
         list: 生成されたリスト
     """
+
+    # スキーマの不正判定
+    if not schema_is_validated:
+        validate_schema(schema)
 
     # 生成するリスト
     result = []
