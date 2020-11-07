@@ -9,7 +9,6 @@ from .__genlist import genlist
 from .__genany import genany
 from .validate.schema import validate_schema
 from .util.nonesafe import dfor
-from .error import InvalidSchemaError
 
 
 def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp=None,
