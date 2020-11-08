@@ -89,22 +89,6 @@ def __get_range_of_length(schema: dict) -> [int, int]:
             raise SchemaConflictError(
                 "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to "
                 "size of \"items\".")
-        if len(items) > dfor(max_items, len(items)):
-            raise SchemaConflictError(
-                "In tuple validation, \"maxItems\" must be greater than or equal to size of \"items\".")
-
-        # タプル指定に合わせて、生成する list の大きさの最小値を設定
-        if min_items is None or min_items < len(items):
-            min_items = len(items)
-
-        # タプル指定に合わせて、生成する list の大きさの最大値を設定
-        # 追加の要素 (additionalItems) が許されないか指定がない場合は、最低限しか追加の要素を生成しない
-        if additional_items is False or additional_items is None:
-            max_items = min_items
-        # 追加の要素を作る場合で、maxItem の指定がない場合は追加の要素を最大5個とする。
-        # ただし、minItems がそれより大きい場合はそれに準ずる。
-        elif max_items is None:
-            max_items = max(min_items, len(items) + 5)
 
     if min_items is None:
         if max_items is None:
