@@ -182,35 +182,55 @@ class TestGenlist(unittest.TestCase):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas, each element in the returned list is valid by each
-        schema in list.
-        And when ``schema.additionalItems`` is not specified, the returned list is length of equal to it of ``items``
-        (no additional items are generated).
+        schema in list. However, the length of the result is not limited by ``items``. First ``len(items)`` elements of
+        the result satisfies each schema in ``items``, and others satisfies ``schema.additionalItems`` when
+        ``additionalItems`` is specified with a schema object.
 
         assert that:
             When ``schema.items`` is a list of dict has ``type``, then each elements in the returned list is type of
             each schema's ``type``.
         """
-        schema = {
-            "type": "array",
-            "items": [
+        items_list = [
+            [
                 {"type": "string"},
                 {"type": "null"},
                 {"type": "integer"},
-            ]
-        }
-        # TODO: 複数のタイプと長さを使って試験する。
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 3)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        jsonschema.validate(generated, schema)
+            ],
+            [
+                {"type": "string"},
+                {"type": "integer"},
+                {"type": "number"},
+                {"type": "integer"},
+            ],
+            [
+                {"type": "object"},
+            ],
+            [
+                {"type": "array"},
+            ],
+        ]
 
-    def test_genlist_with_tuple_items_and_tight_length(self):
+        for items in items_list:
+            with self.subTest(items=items):
+                schema = {
+                    "type": "array",
+                    "minItems": 1,
+                    "items": items,
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                for generated_item, schema_item in zip(generated, schema["items"]):
+                    if schema_item["type"] == "null":
+                        self.assertIsNone(generated_item)
+                    else:
+                        self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
+                jsonschema.validate(generated, schema)
+
+    def test_genlist_with_tuple_items_and_tight_length_and_additional_true(self):
         """ Normalized System Test
 
-        When ``schema.items`` is specified with a list of schemas and ``schema.additionalItems`` is ``True``,
-        the generated list has ``n`` items; ``n`` abide by ``schema.minItems`` and ``schema.maxItems``.
+        When ``schema.items`` is specified with a list of schemas, the generated list has ``n`` items; ``n`` abide by
+        ``schema.minItems`` and ``schema.maxItems``. When ``schema.additionalItems`` is ``True``, it is ignored.
 
         assert that:
             When ``schema.items`` is a list of dict has ``type``, then each elements in the returned list is type of
@@ -218,152 +238,161 @@ class TestGenlist(unittest.TestCase):
             When ``schema.additionalItems`` is ``True`` and ``schema.minItems == schema.maxItems``, the result list is
             length of ``minItems``.
         """
-        schema = {
-            "type": "array",
-            "additionalItems": True,
-            "minItems": 5,
-            "maxItems": 5,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 5)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        jsonschema.validate(generated, schema)
+        threshold_list = (0, 1, 5, 10.0, 20)
 
-    # TODO: additionalItems を指定せず、minItems を len(items) より大きくするテスト (additionalItems が False であるときと同じ動作)
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "type": "array",
+                    "additionalItems": True,
+                    "minItems": threshold,
+                    "maxItems": threshold,
+                    "items": [
+                        {"type": "string"},
+                        {"type": "null"},
+                        {"type": "integer"},
+                        {"type": "integer"},
+                        {"type": "number"},
+                    ]
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertEqual(len(generated), threshold)
+                for generated_item, schema_item in zip(generated, schema["items"]):
+                    if schema_item["type"] == "null":
+                        self.assertIsNone(generated_item)
+                    else:
+                        self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
+                jsonschema.validate(generated, schema)
+
+    def test_genlist_with_tuple_items_and_tight_length(self):
+        """ Normalized System Test
+
+        When ``schema.items`` is specified with a list of schemas, the generated list has ``n`` items; ``n`` abide by
+        ``schema.minItems`` and ``schema.maxItems``.
+
+        assert that:
+            When ``schema.items`` is a list of dict has ``type``, then each elements in the returned list is type of
+            each schema's ``type``.
+            When ``schema.additionalItems`` is not specified and ``schema.minItems`` is specified, the result list
+            is length of at least ``minItems``.
+        """
+        threshold_list = (0, 1, 5, 10.0, 20)
+
+        for threshold in threshold_list:
+            with self.subTest(threshold=threshold):
+                schema = {
+                    "type": "array",
+                    "minItems": threshold,
+                    "maxItems": threshold,
+                    "items": [
+                        {"type": "string"},
+                        {"type": "null"},
+                        {"type": "integer"},
+                        {"type": "integer"},
+                        {"type": "number"},
+                    ]
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertEqual(len(generated), threshold)
+                for generated_item, schema_item in zip(generated, schema["items"]):
+                    if schema_item["type"] == "null":
+                        self.assertIsNone(generated_item)
+                    else:
+                        self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
+                jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_tight_length_and_additional_schema(self):
-        schema = {
-            "type": "array",
-            "additionalItems": {"type": "boolean"},
-            "minItems": 5,
-            "maxItems": 5,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 5)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        self.assertIsInstance(generated[3], bool)
-        self.assertIsInstance(generated[4], bool)
-        jsonschema.validate(generated, schema)
+        """ Normalized System Test
 
-    def test_genlist_with_tuple_items_and_same_size_maxItems(self):
-        schema = {
-            "type": "array",
-            "maxItems": 3,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 3)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        jsonschema.validate(generated, schema)
+        When ``schema.items`` is specified with a list of schemas and ``schema.additionalItems`` is a schema object,
+        the (n+1)th or more elements of the generated list satisfy the schema ``schema.additionalItems``.
 
-    def test_genlist_with_tuple_items_and_same_size_maxItems_and_additional_schema(self):
-        schema = {
-            "type": "array",
-            "maxItems": 3,
-            "additionalItems": {"type": "boolean"},
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 3)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        jsonschema.validate(generated, schema)
+        assert that:
+            When ``schema.items`` is a list of dict has ``type``, then each elements in the returned list is type of
+            each schema's ``type``.
+            When ``schema.additionalItems`` is a schema object and ``schema.minItems`` is specified, the result list
+            is length of at least ``minItems`` and the (n+1)th or more elements of the generated list satisfy the schema
+            ``schema.additionalItems``.
+        """
+        additional_items_type_list = ("integer",
+                                      "number",
+                                      "boolean",
+                                      "string",
+                                      "array",
+                                      "object")
 
-    def test_genlist_with_tuple_items_and_same_size_maxItems_and_additional_true(self):
-        schema = {
-            "type": "array",
-            "maxItems": 3,
-            "additionalItems": True,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        generated = genlist(schema)
-        self.assertEqual(len(generated), 3)
-        self.assertIsInstance(generated[0], str)
-        self.assertIsNone(generated[1])
-        self.assertIsInstance(generated[2], int)
-        jsonschema.validate(generated, schema)
+        for additional_items_type in additional_items_type_list:
+            with self.subTest(additional_items_type=additional_items_type):
+                schema = {
+                    "type": "array",
+                    "additionalItems": {"type": additional_items_type},
+                    "minItems": 5,
+                    "items": [
+                        {"type": "string"},
+                        {"type": "null"},
+                        {"type": "integer"},
+                    ]
+                }
+                generated = genlist(schema)
+                self.assertGreaterEqual(len(generated), 5)
+                self.assertIsInstance(generated[0], str)
+                self.assertIsNone(generated[1])
+                self.assertIsInstance(generated[2], int)
+                self.assertIsInstance(generated[3], _type_to_cls(additional_items_type))
+                self.assertIsInstance(generated[4], _type_to_cls(additional_items_type))
+                jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_too_less_maxItems(self):
-        schema = {
-            "type": "array",
-            "maxItems": 2,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+    def test_genlist_with_tuple_items_and_maxItems(self):
+        """ Normalized System Test
 
-    def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_schema(self):
-        schema = {
-            "type": "array",
-            "additionalItems": {"type": "boolean"},
-            "maxItems": 2,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+        When ``schema.items`` is specified with a list of schemas and ``schema.maxItems`` is the length of ``items``,
+        the result list has at most ``maxItems`` elements even if the length of ``schema.items`` is greater than
+        ``schema.maxItems``.
 
-    def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_true(self):
-        schema = {
-            "type": "array",
-            "additionalItems": True,
-            "maxItems": 2,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+        assert that:
+            When ``schema.items`` is a list of dict has ``type``, then each elements in the returned list is type of
+            each schema's ``type``.
+            When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
+        """
+        max_items_list = (0, 1, 5, 10.0, 20)
 
-    def test_genlist_with_tuple_items_and_too_less_maxItems_and_additional_false(self):
-        schema = {
-            "type": "array",
-            "additionalItems": False,
-            "maxItems": 2,
-            "items": [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
-            ]
-        }
-        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+        for max_items in max_items_list:
+            with self.subTest(max_items=max_items):
+                schema = {
+                    "type": "array",
+                    "maxItems": max_items,
+                    "items": [
+                        {"type": "string"},
+                        {"type": "null"},
+                        {"type": "integer"},
+                        {"type": "integer"},
+                        {"type": "number"},
+                    ]
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertLessEqual(len(generated), max_items)
+                for generated_item, schema_item in zip(generated, schema["items"]):
+                    if schema_item["type"] == "null":
+                        self.assertIsNone(generated_item)
+                    else:
+                        self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
+                jsonschema.validate(generated, schema)
 
     def test_genlist_with_tuple_items_and_too_great_minItems_and_additional_false(self):
+        """ Semi-normalized System Test
+
+        When ``schema.minItems`` is specified, the result list must have at least ``minItems`` elements. On the other
+        hand, when ``schema.items`` is specified as list and ``schema.additionalItems`` is ``false``, the result list
+        must have at most the length of ``items``. As a result, when ``schema.additionalItems`` is ``false`` and
+        ``len(schema.items) < schema.minItems``, ``genlist(schema)`` raises SchemaConflictError.
+
+        assert that:
+            When ``schema.additionalItems`` is ``false`` and ``len(schema.items) < schema.minItems``,
+            ``genlist(schema)`` raises SchemaConflictError.
+        """
         schema = {
             "type": "array",
             "additionalItems": False,
@@ -375,3 +404,50 @@ class TestGenlist(unittest.TestCase):
             ]
         }
         self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+
+    def test_genlist_with_tuple_items_and_minItems_and_additional_false(self):
+        """ Normalized System Test
+
+        When ``schema.minItems`` is specified, the result list must have at least ``minItems`` elements. On the other
+        hand, when ``schema.items`` is specified as list and ``schema.additionalItems`` is ``false``, the result list
+        must have at most the length of ``items``.
+
+        assert that:
+            When ``schema.additionalItems`` is ``false`` and ``len(schema.items) >= schema.minItems``,
+            the result list has at least ``minItems`` elements.
+        """
+        min_items_list = (0, 1, 2, 3)
+        for min_items in min_items_list:
+            with self.subTest(min_items=min_items):
+                schema = {
+                    "type": "array",
+                    "additionalItems": False,
+                    "minItems": min_items,
+                    "items": [
+                        {"type": "string"},
+                        {"type": "null"},
+                        {"type": "integer"},
+                    ]
+                }
+                generated = genlist(schema)
+                self.assertIsInstance(generated, list)
+                self.assertGreaterEqual(len(generated), min_items)
+
+
+def _type_to_cls(type_str: str):
+    if type_str == "null":
+        return None
+    elif type_str == "number":
+        return float
+    elif type_str == "integer":
+        return int
+    elif type_str == "boolean":
+        return bool
+    elif type_str == "string":
+        return str
+    elif type_str == "array":
+        return list
+    elif type_str == "object":
+        return dict
+    else:
+        raise ValueError(f"Unknown type: {type_str}.")
