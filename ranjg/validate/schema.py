@@ -1,5 +1,4 @@
 import jsonschema
-from jsonschema import draft7_format_checker
 
 from ..error import InvalidSchemaError
 
@@ -58,6 +57,10 @@ __meta_schema = {
     },
 }
 
+# 使用する validator
+__SCHEMA_VALIDATOR = jsonschema.Draft7Validator(__meta_schema,
+                                                format_checker=jsonschema.draft7_format_checker)
+
 
 def validate_schema(schema: dict):
     """スキーマのバリデーション
@@ -71,8 +74,7 @@ def validate_schema(schema: dict):
         InvalidSchemaError:
             schema が不正であるとき
     """
-    validate_error_list = [*jsonschema.Draft7Validator(__meta_schema, format_checker=draft7_format_checker)
-                                        .iter_errors(schema)]
+    validate_error_list = [*__SCHEMA_VALIDATOR.iter_errors(schema)]
 
     # schema が不正でなければ終了
     if len(validate_error_list) <= 0:
