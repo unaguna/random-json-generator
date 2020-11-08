@@ -145,6 +145,8 @@ class TestGenlist(unittest.TestCase):
                 self.assertEqual(len(generated), threshold)
                 jsonschema.validate(generated, schema)
 
+    # TODO: 矛盾する minItems, maxItems を指定するテスト
+
     def test_genlist_with_single_items(self):
         """ Normalized System Test
 

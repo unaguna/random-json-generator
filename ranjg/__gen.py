@@ -62,7 +62,7 @@ def gen(schema: dict = None,
     elif gen_type == "boolean":
         generated = genbool()
     elif gen_type == "string":
-        generated = genstr(schema)
+        generated = genstr(schema, schema_is_validated=True)
     elif gen_type == "object":
         generated = gendict(schema)
     elif gen_type == "array":

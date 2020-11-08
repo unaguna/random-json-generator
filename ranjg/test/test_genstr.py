@@ -1,6 +1,7 @@
 import unittest
 import jsonschema
 from ranjg import genstr
+from ranjg.error import InvalidSchemaError, SchemaConflictError
 
 
 class TestGenstr(unittest.TestCase):
@@ -56,9 +57,47 @@ class TestGenstr(unittest.TestCase):
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
 
-    # TODO: schema.maxLength に負の数を指定するテスト
-    # TODO: schema.maxLength に整数でない数を指定するテスト
-    # TODO: schema.maxLength に数でない値を指定するテスト
+    def test_genstr_with_negative_maxLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.maxLength`` must be non-negative. When ``schema.maxLength < 0``, ``genstr(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.maxLength < 0``, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "maxLength": -1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
+
+    def test_genstr_with_non_integer_maxLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.maxLength`` must be integer. More precisely, ``maxLength`` must be a number value divided by 1. When
+        ``schema.maxLength`` cannot divided by 1, ``genstr(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.maxLength`` cannot divided by 1, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "maxLength": 1.1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
+
+    def test_genstr_with_non_number_maxLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.maxLength`` must be number. When ``schema.maxLength`` isn't number, ``genstr(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.maxLength`` isn't number, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "maxLength": "1"
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
 
     def test_genstr_with_minLength(self):
         """ Normalized System Test
@@ -80,9 +119,47 @@ class TestGenstr(unittest.TestCase):
                 self.assertGreaterEqual(len(generated), min_length)
                 jsonschema.validate(generated, schema)
 
-    # TODO: schema.minLength に負の数を指定するテスト
-    # TODO: schema.minLength に整数でない数を指定するテスト
-    # TODO: schema.minLength に数でない値を指定するテスト
+    def test_genstr_with_negative_minLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.minLength`` must be non-negative. When ``schema.minLength < 0``, ``genstr(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.minLength < 0``, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "minLength": -1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
+
+    def test_genstr_with_non_integer_minLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.minLength`` must be integer. More precisely, ``minLength`` must be a number value divided by 1. When
+        ``schema.minLength`` cannot divided by 1, ``genstr(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.minLength`` cannot divided by 1, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "minLength": 1.1
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
+
+    def test_genstr_with_non_number_minLength(self):
+        """ Semi-normalized System Test
+
+        ``schema.minLength`` must be number. When ``schema.minLength`` isn't number, ``genstr(schema)`` raises
+        InvalidSchemaError.
+
+        assert that:
+            When ``schema.minLength`` isn't number, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "minLength": "1"
+        }
+        self.assertRaises(InvalidSchemaError, lambda: genstr(schema))
 
     def test_genstr_with_length(self):
         """ Normalized System Test
@@ -108,7 +185,23 @@ class TestGenstr(unittest.TestCase):
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
 
-    # TODO: 矛盾する schema.minLength, schema.maxLength を指定するテスト
+    def test_genstr_with_conflicting_length(self):
+        """ Semi-normalized System Test
+
+        When ``schema.minLength`` and ``schema.maxLength`` is specified, ``genstr(schema)`` returns a string value with
+        a length ``x`` satisfied ``minLength <= x <= maxLength``. As a result, when ``minLength > maxLength``,
+        ``genstr(schema)`` raises SchemaConflictError.
+
+        assert that:
+            When ``schema.minLength > schema.maxLength``, ``genstr(schema)`` raises SchemaConflictError.
+        """
+        thresholds_list = ((0, 1),
+                           (12, 15))
+
+        for max_length, min_length in thresholds_list:
+            with self.subTest(min_length=min_length, max_length=max_length):
+                schema = {"minLength": min_length, "maxLength": max_length}
+                self.assertRaises(SchemaConflictError, lambda: genstr(schema))
 
     def test_genstr_with_pattern(self):
         """ Normalized System Test
@@ -130,4 +223,61 @@ class TestGenstr(unittest.TestCase):
                 self.assertRegex(generated, pattern)
                 jsonschema.validate(generated, schema)
 
-    # TODO: 不正な pattern を指定するテスト
+    def test_genstr_with_pattern_and_minLength(self):
+        """ Normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression even if it
+        contradicts ``schema.minLength``.
+
+        assert that:
+            When ``schema.pattern`` is valid as regular expression and ``schema.minLength`` contradicts ``pattern``,
+            ``genstr(schema)`` returns a string satisfies this regular expression.
+        """
+        pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
+                        "[a-z][A-Z]\\d\\d")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern, "minLength": 13}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertRegex(generated, pattern)
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+
+    def test_genstr_with_pattern_and_maxLength(self):
+        """ Normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression even if it
+        contradicts ``schema.maxLength``.
+
+        assert that:
+            When ``schema.pattern`` is valid as regular expression and ``schema.maxLength`` contradicts ``pattern``,
+            ``genstr(schema)`` returns a string satisfies this regular expression.
+        """
+        pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
+                        "[a-z][A-Z]\\d\\d")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern, "maxLength": 3}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertRegex(generated, pattern)
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+
+    def test_genstr_with_illegal_pattern(self):
+        """ Semi-normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression. As a result,
+        when ``schema.pattern`` is invalid as regular expression, ``genstr(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.pattern`` is invalid as regular expression, ``genstr(schema)`` raises InvalidSchemaError.
+        """
+        pattern_list = ("[0-1",
+                        "\\")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern}
+                self.assertRaises(InvalidSchemaError, lambda: genstr(schema))

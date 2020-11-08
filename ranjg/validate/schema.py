@@ -1,4 +1,5 @@
 import jsonschema
+
 from ..error import InvalidSchemaError
 
 # スキーマのスキーマ
@@ -34,6 +35,20 @@ __meta_schema = {
             "multipleOf": 1,
             "minimum": 0,
         },
+        "minLength": {
+            "type": "number",
+            "multipleOf": 1,
+            "minimum": 0,
+        },
+        "maxLength": {
+            "type": "number",
+            "multipleOf": 1,
+            "minimum": 0,
+        },
+        "pattern": {
+            "type": "string",
+            "format": "regex",
+        },
     },
     "definitions": {
         "type_single": {
@@ -41,6 +56,10 @@ __meta_schema = {
         },
     },
 }
+
+# 使用する validator
+__SCHEMA_VALIDATOR = jsonschema.Draft7Validator(__meta_schema,
+                                                format_checker=jsonschema.draft7_format_checker)
 
 
 def validate_schema(schema: dict):
@@ -55,7 +74,7 @@ def validate_schema(schema: dict):
         InvalidSchemaError:
             schema が不正であるとき
     """
-    validate_error_list = [*jsonschema.Draft7Validator(__meta_schema).iter_errors(schema)]
+    validate_error_list = [*__SCHEMA_VALIDATOR.iter_errors(schema)]
 
     # schema が不正でなければ終了
     if len(validate_error_list) <= 0:

@@ -1,6 +1,8 @@
 import string
 import re
 import rstr
+from .error import SchemaConflictError
+from .validate.schema import validate_schema
 
 __default_schema = {
     "pattern": None,
@@ -9,17 +11,22 @@ __default_schema = {
 }
 
 
-def genstr(schema: dict) -> str:
+def genstr(schema: dict, schema_is_validated: bool = False) -> str:
     """Generate a random string value according to the JSON schema.
 
     This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
         schema: JSON schema object.
+        schema_is_validated: Whether the schema is already validated or not.
 
     Returns:
         Generated string value.
     """
+
+    # スキーマの不正判定
+    if not schema_is_validated:
+        validate_schema(schema)
 
     schema = __normalize_schema(schema)
 
@@ -51,6 +58,8 @@ def __normalize_schema(schema: dict) -> dict:
     Returns:
         New schema based on ``schema`` and the default values.
     """
+    if schema.get("minLength", float("-inf")) > schema.get("maxLength", float("inf")):
+        raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.")
 
     n_schema = __default_schema.copy()
     n_schema.update(schema)
