@@ -1,6 +1,7 @@
 import string
 import re
 import rstr
+from .error import SchemaConflictError
 from .validate.schema import validate_schema
 
 __default_schema = {
@@ -57,6 +58,8 @@ def __normalize_schema(schema: dict) -> dict:
     Returns:
         New schema based on ``schema`` and the default values.
     """
+    if schema.get("minLength", float("-inf")) > schema.get("maxLength", float("inf")):
+        raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.")
 
     n_schema = __default_schema.copy()
     n_schema.update(schema)
