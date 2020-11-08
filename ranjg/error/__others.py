@@ -1,7 +1,3 @@
-class InvalidSchemaError(Exception):
-    pass
-
-
 class SchemaConflictError(Exception):
     pass
 
