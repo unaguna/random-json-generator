@@ -34,6 +34,16 @@ __meta_schema = {
             "multipleOf": 1,
             "minimum": 0,
         },
+        "minLength": {
+            "type": "number",
+            "multipleOf": 1,
+            "minimum": 0,
+        },
+        "maxLength": {
+            "type": "number",
+            "multipleOf": 1,
+            "minimum": 0,
+        },
     },
     "definitions": {
         "type_single": {
