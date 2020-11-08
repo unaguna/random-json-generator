@@ -2,10 +2,10 @@ import random
 
 
 def genbool() -> bool:
-    """スキーマに適合する真偽値を生成する。
+    """Generate a random boolean value according to the JSON schema.
 
     Returns:
-        bool: 生成された真偽値
+        Generated boolean value.
     """
 
     return random.random() < 0.5

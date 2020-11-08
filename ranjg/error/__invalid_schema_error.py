@@ -1,6 +1,6 @@
-"""スキーマ不正エラークラスを提供するモジュール
+"""A module that provides InvalidSchemaError
 
-スキーマ不正エラークラス ``InvalidSchemaError`` を__init__へ提供するモジュール。
+A module that provides the schema error class ``InvalidSchemaError`` to __init__.
 """
 import os
 from typing import List, Iterable, Union, Iterator
@@ -12,13 +12,13 @@ _INDENT_UNIT_LENGTH = 4
 
 
 def __path_part_to_str(path_part: Union[str, int]) -> str:
-    """JSONパスの1区画を文字列へ変換
+    """Convert one JSON path parcel to a string.
 
     Args:
-        path_part: JSONパスの1区画を表す文字列か整数値
+        path_part: A string or integer representing a JSON path compartment.
 
     Returns:
-        JSONパスを表す文字列の1区画
+        A parcel of string representing a JSON path.
     """
     return f"[{path_part}]" \
         if isinstance(path_part, int) \
@@ -26,23 +26,23 @@ def __path_part_to_str(path_part: Union[str, int]) -> str:
 
 
 def _path_to_str(path: Iterable[Union[str, int]]) -> str:
-    """JSONパスを文字列へ変換
+    """Convert a JSON path to string.
 
     Args:
-        path: JSONパスを表す Iterable
+        path: An Iterable representing a JSON path
 
     Returns:
-        JSONパスを表す文字列
+        A string representing the JSON path
     """
     return "".join(map(__path_part_to_str, path))
 
 
 class InvalidSchemaError(Exception):
-    """スキーマ不正エラークラス
+    """Schema error class
 
     Attributes:
         __cause_list (List[ValidationErrorWrapper]):
-            このエラーの原因となったバリデーションエラーのリスト
+            A list of validation errors that caused this error.
     """
 
     def __init__(self,
@@ -51,7 +51,7 @@ class InvalidSchemaError(Exception):
 
         Args:
             validation_error_list:
-                このエラーの原因となったバリデーションエラーのリスト
+                A list of validation errors that caused this error.
         """
         self.__cause_list = map(lambda e: ValidationErrorWrapper(e), validation_error_list)
 
@@ -60,27 +60,27 @@ class InvalidSchemaError(Exception):
         super().__init__(os.linesep + os.linesep.join(message_line_list))
 
     def _make_message_line_list(self) -> List[str]:
-        """エラーメッセージ作成
+        """Create an error message
 
         Returns:
-            メッセージの各行からなるリスト
+            A list consisting of lines of messages.
         """
         return sum(map(lambda c: c.make_message(), self.__cause_list), [])
 
 
 class ValidationErrorWrapper:
-    """バリデーションエラークラスのラッパー
+    """Wrapper of the ``ValidationError`` Class
     """
 
     @property
     def base_error(self) -> ValidationError:
-        """バリデーションエラー
+        """The ValidationError
         """
         return self.__base_error
 
     @property
     def context(self) -> Iterator:
-        """エラー文脈
+        """The context of error.
         """
         return map(lambda e: ValidationErrorWrapper(e), self.base_error.context)
 
@@ -88,13 +88,13 @@ class ValidationErrorWrapper:
         self.__base_error = base_error
 
     def make_message(self, indent: int = _INDENT_UNIT_LENGTH) -> List[str]:
-        """バリデーションエラーのエラーメッセージを生成する。
+        """Generates validation error messages.
 
         Args:
-            indent: 各行の先頭につけるスペースの数
+            indent: The number of spaces at the beginning of each line.
 
         Returns:
-            メッセージの各行からなるリスト
+            A list consisting of lines of messages.
         """
         path_str = _path_to_str(self.base_error.absolute_path)
         context_line_list = self._make_message_of_context(indent)
@@ -105,15 +105,15 @@ class ValidationErrorWrapper:
                ] + context_line_list
 
     def _make_message_of_context(self, indent: int):
-        """エラー文脈のエラーメッセージを作成する。
+        """Create error messages of error context.
 
-        バリデーションエラーの原因となったすべてのバリデーションエラーからメッセージを作成する。
+        Create a message from all validation errors that caused this.
 
         Args:
-            indent: 各行の先頭につけるスペースの数
+            indent: The number of spaces at the beginning of each line.
 
         Returns:
-            メッセージの各行からなるリスト
+            A list consisting of lines of messages.
         """
 
         def context_to_message_line(e: ValidationErrorWrapper):

@@ -11,8 +11,25 @@ from .validate.schema import validate_schema
 from .util.nonesafe import dfor
 
 
-def gen(schema: dict = None, schema_file: str = None, output_file: str = None, output_fp=None,
+def gen(schema: dict = None,
+        schema_file: str = None,
+        output_file: str = None,
+        output_fp=None,
         schema_is_validated: bool = False):
+    """Generate something randomly according to the JSON schema.
+
+    This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
+
+    Args:
+        schema: JSON schema object.
+        schema_file: The path to JSON schema file. This JSON schema is used instead of ``schema``.
+        output_file: The path to a file where the result will be output as JSON.
+        output_fp: The writing object of a file where the result will be output as JSON.
+        schema_is_validated: Whether the schema is already validated or not.
+
+    Returns:
+        Generated something. It is satisfies the JSON schema.
+    """
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
     if output_file is not None and output_fp is not None:

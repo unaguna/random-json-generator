@@ -1,8 +1,8 @@
 def gennone() -> None:
-    """スキーマに適合するNoneを生成する。
+    """Generate ``None``.
 
     Returns:
-        None: None
+        Generated ``None``.
     """
 
     return None
