@@ -223,6 +223,48 @@ class TestGenstr(unittest.TestCase):
                 self.assertRegex(generated, pattern)
                 jsonschema.validate(generated, schema)
 
+    def test_genstr_with_pattern_and_minLength(self):
+        """ Normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression even if it
+        contradicts ``schema.minLength``.
+
+        assert that:
+            When ``schema.pattern`` is valid as regular expression and ``schema.minLength`` contradicts ``pattern``,
+            ``genstr(schema)`` returns a string satisfies this regular expression.
+        """
+        pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
+                        "[a-z][A-Z]\\d\\d")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern, "minLength": 13}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertRegex(generated, pattern)
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+
+    def test_genstr_with_pattern_and_maxLength(self):
+        """ Normalized System Test
+
+        When ``schema.pattern`` is specified, the return value satisfies this as regular expression even if it
+        contradicts ``schema.maxLength``.
+
+        assert that:
+            When ``schema.pattern`` is valid as regular expression and ``schema.maxLength`` contradicts ``pattern``,
+            ``genstr(schema)`` returns a string satisfies this regular expression.
+        """
+        pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
+                        "[a-z][A-Z]\\d\\d")
+
+        for pattern in pattern_list:
+            with self.subTest(pattern=pattern):
+                schema = {"pattern": pattern, "maxLength": 3}
+                generated = genstr(schema)
+                self.assertIsInstance(generated, str)
+                self.assertRegex(generated, pattern)
+                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+
     def test_genstr_with_illegal_pattern(self):
         """ Semi-normalized System Test
 
