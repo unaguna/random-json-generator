@@ -10,13 +10,15 @@ __default_schema = {
 
 
 def genstr(schema: dict) -> str:
-    """スキーマに適合する文字列を生成する。
+    """Generate a random string value according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
-        schema (dict): string 型についての JsonSchema を表現するマップ
+        schema: JSON schema object.
 
     Returns:
-        str: 生成された文字列
+        Generated string value.
     """
 
     schema = __normalize_schema(schema)
@@ -39,13 +41,15 @@ def genstr(schema: dict) -> str:
 
 
 def __normalize_schema(schema: dict) -> dict:
-    """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
+    """Schema normalization.
+
+    To make it easier to use for randomly generation, set items to ``schema`` object.
 
     Args:
-        schema (dict): number 型についての JsonSchema を表現するマップ
+        schema: JSON schema for randomly generation.
 
     Returns:
-        dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
+        New schema based on ``schema`` and the default values.
     """
 
     n_schema = __default_schema.copy()

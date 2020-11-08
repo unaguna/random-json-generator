@@ -3,13 +3,15 @@ from .error import SchemaConflictError
 
 
 def genint(schema: dict) -> int:
-    """スキーマに適合する整数を生成する。
+    """Generate a random integer according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
-        schema (dict): integer 型についての JsonSchema を表現するマップ
+        schema: JSON schema object.
 
     Returns:
-        int: 生成された整数
+        Generated integer value.
     """
 
     schema = __normalize_schema(schema)
@@ -24,13 +26,15 @@ def genint(schema: dict) -> int:
 
 
 def __normalize_schema(schema: dict) -> dict:
-    """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
+    """Schema normalization.
+
+    To make it easier to use for randomly generation, set items to ``schema`` object.
 
     Args:
-        schema (dict): integer 型についての JsonSchema を表現するマップ
+        schema: JSON schema for randomly generation.
 
     Returns:
-        dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
+        New schema based on ``schema`` and the default values.
     """
 
     # 生成する数値の最小値

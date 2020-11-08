@@ -17,6 +17,17 @@ __default_options = {
 
 
 def gendict(schema: dict, options: dict = None) -> dict:
+    """Generate a random dict value according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
+
+    Args:
+        schema: JSON schema object.
+        options: Options for adjusting the generation parameters.
+
+    Returns:
+        Generated dict value.
+    """
     generated = dict()
 
     options = __normalize_options(options)
@@ -56,13 +67,15 @@ def gendict(schema: dict, options: dict = None) -> dict:
 
 
 def __normalize_options(options: dict) -> dict:
-    """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。
+    """Option normalization.
+
+    To make it easier to use for randomly generation, set items to ``options`` object.
 
     Args:
-        options (dict): 乱数生成のオプションを表現するマップ
+        options: Options for randomly generation.
 
     Returns:
-        dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
+        New options based on ``options`` and the default values.
     """
     options = dfor(options, {})
 

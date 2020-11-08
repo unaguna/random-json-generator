@@ -1,7 +1,16 @@
-from collections import Iterable
+from typing import Iterable
 
 
 def diff(base: Iterable, removed: Iterable) -> list:
+    """Subtraction of the list.
+
+    Args:
+        base: A base list.
+        removed: A list of elements to be stripped from the base.
+
+    Returns:
+        A list contains only elements in ``base`` and not in ``removed``.
+    """
     result = list(base).copy()
     for value in removed:
         try:
@@ -14,21 +23,21 @@ def diff(base: Iterable, removed: Iterable) -> list:
 
 
 def fix_length(base: list, length: int, padding_item) -> list:
-    """リストの長さを変更したものを生成して返す。
+    """Generating a list with a different length to the base list.
 
-    元の配列の長さが length と同じかそれより大きい場合、
-    先頭から length-1 番目までの要素が list と一致するリストを生成して返す。
+    If the length of ``base`` is equal to or greater than ``length``, it returns a list of ``length - 1`` elements from
+    the top of ``base``.
 
-    元の配列の長さが length より小さい場合、
-    list のコピーの末尾に padding_item を1つ以上追加して作った長さ length のリストを返す。
+    If the length of ``base`` is less than ``length``, it returns a list of size ``length`` created by adding one or
+    more ``padding_item`` to the end of the copy of ``base``.
 
     Args:
-        base (list): 元となるリスト
-        length (int): 生成するリストの長さ
-        padding_item: 要素が足りない場合に末尾に追加する要素
+        base: A base list.
+        length: The length of the list to generate.
+        padding_item: Elements to be added at the end if ``base`` has length shorter than ``length``.
 
     Returns:
-        list: base をもとにして生成される、長さ length のリスト
+        list: List of size ``length``, generated from base.
     """
 
     if len(base) >= length:

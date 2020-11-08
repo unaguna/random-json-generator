@@ -18,13 +18,16 @@ __default_options = {
 
 
 def gennum(schema: dict, options: dict = None) -> float:
-    """スキーマに適合する浮動小数点数を生成する。
+    """Generate a random number according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
-        schema (dict): number 型についての JsonSchema を表現するマップ
+        schema: JSON schema object.
+        options: Options for adjusting the generation parameters.
 
     Returns:
-        float: 生成された浮動小数点数
+        Generated number.
     """
 
     schema = __normalize_schema(schema)
@@ -60,13 +63,15 @@ def gennum(schema: dict, options: dict = None) -> float:
 
 
 def __normalize_schema(schema: dict) -> dict:
-    """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
+    """Schema normalization.
+
+    To make it easier to use for randomly generation, set items to ``schema`` object.
 
     Args:
-        schema (dict): number 型についての JsonSchema を表現するマップ
+        schema: JSON schema for randomly generation.
 
     Returns:
-        dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
+        New schema based on ``schema`` and the default values.
     """
 
     n_schema = __default_schema.copy()
@@ -76,13 +81,15 @@ def __normalize_schema(schema: dict) -> dict:
 
 
 def __normalize_options(options: dict) -> dict:
-    """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。
+    """Option normalization.
+
+    To make it easier to use for randomly generation, set items to ``options`` object.
 
     Args:
-        options (dict): 乱数生成のオプションを表現するマップ
+        options: Options for randomly generation.
 
     Returns:
-        dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
+        New options based on ``options`` and the default values.
     """
     options = dfor(options, {})
 
@@ -93,14 +100,17 @@ def __normalize_options(options: dict) -> dict:
 
 
 def __validate(value: float, schema: dict) -> bool:
-    """値がスキーマに適合するかどうかチェックする。
+    """Check if the value matches the schema.
+
+    This function is only used to filter out illegal values in the float generation process, so it doesn't check every
+    item in the schema. If you want to validate a value, it is recommended to use ``jsonschema`` module.
 
     Args:
-        value (float): チェック対象の値
-        schema (dict): 正規化済みのJsonSchema
+        value: Value to be checked.
+        schema: Normalized JsonSchema.
 
     Returns:
-        bool: スキームに適合していれば True、そうでなければ False。　
+        True if it conforms to the scheme, otherwise False.
     """
 
     if value is None:
