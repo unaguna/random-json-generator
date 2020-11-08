@@ -10,8 +10,6 @@ class TestGenlist(unittest.TestCase):
     Test ``ranjg.genlist``
     """
 
-    # TODO: 仕様の再編とテスト内容の全面見直し。
-
     def test_genlist_with_empty_schema(self):
         """ Normalized System Test
 
