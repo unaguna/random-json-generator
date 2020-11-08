@@ -32,8 +32,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``minimum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
             `` x >= minimum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
-        # TODO: 整数でない数を指定するテスト
+        threshold_list = (-2E+10, -4.5, -2, 0, 1.0, 2, 5.1, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -54,8 +53,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``maximum``, ``genint(schema)`` returns ``int`` value ``x`` and it satisfies
             `` x <= maximum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
-        # TODO: 整数でない数を指定するテスト
+        threshold_list = (-2E+10, -4.5, -2, 0, 1.0, 2, 5.1, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -77,7 +75,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.exclusiveMinimum`` as number, ``genint(schema)`` returns ``int`` value
             ``x`` and it satisfies `` x > exclusiveMinimum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        threshold_list = (-2E+10, -4.5, -2, 0, 1.0, 2, 5.1, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -99,7 +97,7 @@ class TestGenint(unittest.TestCase):
             When the schema has ``properties.exclusiveMaximum`` as number, ``genint(schema)`` returns ``int`` value
             ``x`` and it satisfies `` x < exclusiveMaximum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        threshold_list = (-2E+10, -4.5, -2, 0, 1.0, 2, 5.1, 2E+10)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -223,16 +221,24 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``schema.minimum`` equals ``schema.maximum``, ``genint(schema)`` returns ``int`` value equal to them.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10, -2E+10),
+                           (-2, -2),
+                           (0, 0),
+                           (1.0, 1.0),
+                           (2, 2),
+                           (3.5, 4.5),
+                           (2E+10, 2E+10))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for minimum, maximum in thresholds_list:
+            with self.subTest(minimum=minimum, maximum=maximum):
                 schema = {
-                    "minimum": threshold,
-                    "maximum": threshold,
+                    "minimum": minimum,
+                    "maximum": maximum,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, minimum)
+                self.assertLessEqual(generated, maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_exMax(self):
@@ -246,16 +252,24 @@ class TestGenint(unittest.TestCase):
             When ``schema.minimum`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns ``int`` value
             equal to ``minimum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10, -2E+10+1),
+                           (-2, -2+1),
+                           (0, 0+1),
+                           (1.0, 1.0+1),
+                           (2, 2+1),
+                           (3.5, 4.5),
+                           (2E+10, 2E+10+1))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for minimum, exclusive_maximum in thresholds_list:
+            with self.subTest(minimum=minimum, exclusive_maximum=exclusive_maximum):
                 schema = {
-                    "minimum": threshold,
-                    "exclusiveMaximum": threshold + 1,
+                    "minimum": minimum,
+                    "exclusiveMaximum": exclusive_maximum,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, minimum)
+                self.assertLess(generated, exclusive_maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_exMin_max(self):
@@ -269,16 +283,24 @@ class TestGenint(unittest.TestCase):
             When ``schema.maximum`` equals ``schema.exclusiveMinimum + 1``, ``genint(schema)`` returns ``int`` value
             equal to ``maximum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10-1, -2E+10),
+                           (-2-1, -2),
+                           (0-1, 0),
+                           (1.0-1, 1.0),
+                           (2-1, 2),
+                           (3.5, 4.5),
+                           (2E+10-1, 2E+10))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for exclusive_minimum, maximum in thresholds_list:
+            with self.subTest(exclusive_minimum=exclusive_minimum, maximum=maximum):
                 schema = {
-                    "exclusiveMinimum": threshold - 1,
-                    "maximum": threshold,
+                    "exclusiveMinimum": exclusive_minimum,
+                    "maximum": maximum,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreater(generated, exclusive_minimum)
+                self.assertLessEqual(generated, maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_exMin_exMax(self):
@@ -292,16 +314,24 @@ class TestGenint(unittest.TestCase):
             When ``schema.exclusiveMinimum + 1`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns
             ``int`` value equal to them.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10-1, -2E+10+1),
+                           (-2-1, -2+1),
+                           (0-1, 0+1),
+                           (1.0-1, 1.0+1),
+                           (2-1, 2+1),
+                           (3.5, 4.5),
+                           (2E+10-1, 2E+10+1))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for exclusive_minimum, exclusive_maximum in thresholds_list:
+            with self.subTest(exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum):
                 schema = {
-                    "exclusiveMinimum": threshold - 1,
-                    "exclusiveMaximum": threshold + 1,
+                    "exclusiveMinimum": exclusive_minimum,
+                    "exclusiveMaximum": exclusive_maximum,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreater(generated, exclusive_minimum)
+                self.assertLess(generated, exclusive_maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_max_exMinTrue(self):
@@ -315,18 +345,26 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMinimum`` is ``True`` and ``schema.maximum`` equals ``schema.minimum + 1``,
             ``genint(schema)`` returns ``int`` value equal to ``maximum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10-1, -2E+10),
+                           (-2-1, -2),
+                           (0-1, 0),
+                           (1.0-1, 1.0),
+                           (2-1, 2),
+                           (3.5, 4.5),
+                           (2E+10-1, 2E+10))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for exclusive_minimum, maximum in thresholds_list:
+            with self.subTest(exclusive_minimum=exclusive_minimum, maximum=maximum):
                 schema = {
                     "$schema": "http://json-schema.org/draft-04/schema",
-                    "minimum": threshold - 1,
+                    "minimum": exclusive_minimum,
                     "exclusiveMinimum": True,
-                    "maximum": threshold,
+                    "maximum": maximum,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreater(generated, exclusive_minimum)
+                self.assertLessEqual(generated, maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_tight_min_max_exMaxTrue(self):
@@ -340,18 +378,26 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMaximum`` is ``True`` and ``schema.minimum`` equals ``schema.maximum - 1``,
             ``genint(schema)`` returns ``int`` value equal to ``minimum``.
         """
-        threshold_list = (-2E+10, -2, 0, 1.0, 2, 2E+10)
+        thresholds_list = ((-2E+10, -2E+10+1),
+                           (-2, -2+1),
+                           (0, 0+1),
+                           (1.0, 1.0+1),
+                           (2, 2+1),
+                           (3.5, 4.5),
+                           (2E+10, 2E+10+1))
 
-        for threshold in threshold_list:
-            with self.subTest(threshold=threshold):
+        for minimum, exclusive_maximum in thresholds_list:
+            with self.subTest(minimum=minimum, exclusive_maximum=exclusive_maximum):
                 schema = {
                     "$schema": "http://json-schema.org/draft-04/schema",
-                    "minimum": threshold,
-                    "maximum": threshold + 1,
+                    "minimum": minimum,
+                    "maximum": exclusive_maximum,
                     "exclusiveMaximum": True,
                 }
                 generated = genint(schema)
-                self.assertEqual(generated, threshold)
+                self.assertIsInstance(generated, int)
+                self.assertGreaterEqual(generated, minimum)
+                self.assertLess(generated, exclusive_maximum)
                 jsonschema.validate(generated, schema)
 
     def test_genint_with_param_conflict_min_max(self):
@@ -369,6 +415,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 0),
                            (-10, 10),
                            (0, 10),
+                           (1.9, 1.1),
                            (5, 10))
         for maximum, minimum in thresholds_list:
             with self.subTest(minimum=minimum, maximum=maximum):
@@ -395,6 +442,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 10),
                            (0, 0),
                            (0, 10),
+                           (2.0, 1.1),
                            (5, 10),
                            (10, 10))
         for exclusive_maximum, minimum in thresholds_list:
@@ -422,6 +470,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 10),
                            (0, 0),
                            (0, 10),
+                           (2.0, 1.1),
                            (5, 10),
                            (10, 10))
         for maximum, minimum in thresholds_list:
@@ -448,6 +497,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 0),
                            (-10, 10),
                            (0, 10),
+                           (1.9, 1.1),
                            (5, 10))
         for maximum, minimum in thresholds_list:
             with self.subTest(minimum=minimum, maximum=maximum):
@@ -475,6 +525,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 10),
                            (0, 0),
                            (0, 10),
+                           (1.9, 1.0),
                            (5, 10),
                            (10, 10))
         for maximum, exclusive_minimum in thresholds_list:
@@ -502,6 +553,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 10),
                            (0, 0),
                            (0, 10),
+                           (1.9, 1.0),
                            (5, 10),
                            (10, 10))
         for maximum, minimum in thresholds_list:
@@ -528,6 +580,7 @@ class TestGenint(unittest.TestCase):
                            (-10, 0),
                            (-10, 10),
                            (0, 10),
+                           (1.9, 1.1),
                            (5, 10))
         for maximum, minimum in thresholds_list:
             with self.subTest(minimum=minimum, maximum=maximum):
