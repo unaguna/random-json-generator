@@ -44,7 +44,8 @@ def genlist(schema: dict, schema_is_validated: bool = False) -> list:
 
     # 要素を1つずつ生成
     for item_schema in item_schema_list:
-        result.append(ranjg.gen(item_schema))
+        generated_item = ranjg.gen(item_schema, schema_is_validated=True)
+        result.append(generated_item)
 
     return result
 
