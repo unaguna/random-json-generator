@@ -22,9 +22,6 @@ def genint(schema: dict) -> int:
     minimum: int = schema["minimum"]
     maximum: int = schema["maximum"]
 
-    if minimum > maximum:
-        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.")
-
     return random.randint(minimum, maximum)
 
 
@@ -79,6 +76,9 @@ def __normalize_schema(schema: dict) -> dict:
         minimum = maximum - 5
     elif maximum is None:
         maximum = minimum + 5
+
+    if minimum > maximum:
+        raise SchemaConflictError("There are no integers in the range specified by the schema.")
 
     return {
         "minimum": minimum,
