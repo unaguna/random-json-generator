@@ -1,4 +1,7 @@
+import math
 import random
+from typing import Union
+
 from .error import SchemaConflictError
 
 
@@ -47,11 +50,11 @@ def __normalize_schema(schema: dict) -> dict:
         exclusive_minimum = None
     minimum = None
     if inclusive_minimum is not None and exclusive_minimum is not None:
-        minimum = max(inclusive_minimum, exclusive_minimum + 1)
+        minimum = max(__to_int_minimum(inclusive_minimum, False), __to_int_minimum(exclusive_minimum, True))
     elif exclusive_minimum is not None:
-        minimum = exclusive_minimum + 1
+        minimum = __to_int_minimum(exclusive_minimum, True)
     elif inclusive_minimum is not None:
-        minimum = inclusive_minimum
+        minimum = __to_int_minimum(inclusive_minimum, False)
 
     # 生成する数値の最大値
     inclusive_maximum = schema.get("maximum", None)
@@ -63,11 +66,11 @@ def __normalize_schema(schema: dict) -> dict:
         exclusive_maximum = None
     maximum = None
     if inclusive_maximum is not None and exclusive_maximum is not None:
-        maximum = min(inclusive_maximum, exclusive_maximum - 1)
+        maximum = min(__to_int_maximum(inclusive_maximum, False), __to_int_maximum(exclusive_maximum, True))
     elif exclusive_maximum is not None:
-        maximum = exclusive_maximum - 1
+        maximum = __to_int_maximum(exclusive_maximum, True)
     elif inclusive_maximum is not None:
-        maximum = inclusive_maximum
+        maximum = __to_int_maximum(inclusive_maximum, False)
 
     if minimum is None and maximum is None:
         minimum = 0
@@ -81,3 +84,43 @@ def __normalize_schema(schema: dict) -> dict:
         "minimum": minimum,
         "maximum": maximum,
     }
+
+
+def __to_int_minimum(minimum: Union[float, int], exclusive: bool) -> int:
+    """Converts the minimum value by float type to int type.
+
+    As long as the return value is used as the minimum of integer value, it works the same way as if the argument is
+    used.
+
+    Args:
+        minimum: The minimum value
+        exclusive: Whether to exclude the endpoints
+
+    Returns:
+        The minimum value by integer type
+    """
+    if isinstance(minimum, int) or minimum.is_integer():
+        padding = 1 if exclusive else 0
+        return int(minimum) + padding
+    else:
+        return int(math.ceil(minimum))
+
+
+def __to_int_maximum(maximum: Union[float, int], exclusive: bool) -> int:
+    """Converts the maximum value by float type to int type.
+
+    As long as the return value is used as the maximum of integer value, it works the same way as if the argument is
+    used.
+
+    Args:
+        maximum: The maximum value
+        exclusive: Whether to exclude the endpoints
+
+    Returns:
+        The maximum value by integer type
+    """
+    if isinstance(maximum, int) or maximum.is_integer():
+        padding = 1 if exclusive else 0
+        return int(maximum) - padding
+    else:
+        return int(math.floor(maximum))
