@@ -1,7 +1,7 @@
 import unittest
 import jsonschema
 from ranjg import genint
-from ranjg.error import SchemaConflictError, InvalidSchemaError
+from ranjg.error import SchemaConflictError
 
 
 class TestGenint(unittest.TestCase):
