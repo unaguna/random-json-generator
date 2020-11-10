@@ -1,6 +1,6 @@
 import math
 import random
-from typing import Union
+from typing import Union, Tuple
 
 from .error import SchemaConflictError
 
@@ -17,15 +17,12 @@ def genint(schema: dict) -> int:
         Generated integer value.
     """
 
-    schema = __normalize_schema(schema)
-
-    minimum: int = schema["minimum"]
-    maximum: int = schema["maximum"]
+    minimum, maximum = _get_inclusive_integer_range(schema)
 
     return random.randint(minimum, maximum)
 
 
-def __normalize_schema(schema: dict) -> dict:
+def _get_inclusive_integer_range(schema: dict) -> Tuple[int, int]:
     """Schema normalization.
 
     To make it easier to use for randomly generation, set items to ``schema`` object.
@@ -34,7 +31,7 @@ def __normalize_schema(schema: dict) -> dict:
         schema: JSON schema for randomly generation.
 
     Returns:
-        New schema based on ``schema`` and the default values.
+        Inclusive minimum and maximum.
     """
 
     # 生成する数値の最小値
@@ -80,10 +77,7 @@ def __normalize_schema(schema: dict) -> dict:
     if minimum > maximum:
         raise SchemaConflictError("There are no integers in the range specified by the schema.")
 
-    return {
-        "minimum": minimum,
-        "maximum": maximum,
-    }
+    return minimum, maximum
 
 
 def __to_int_minimum(minimum: Union[float, int], exclusive: bool) -> int:
