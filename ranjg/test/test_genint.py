@@ -1,7 +1,7 @@
 import unittest
 import jsonschema
 from ranjg import genint
-from ranjg.error import SchemaConflictError
+from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 
 class TestGenint(unittest.TestCase):
@@ -109,8 +109,43 @@ class TestGenint(unittest.TestCase):
                 self.assertLess(generated, threshold)
                 jsonschema.validate(generated, schema)
 
-    # TODO: exclusiveMinimum (bool) のみを指定するテスト
-    # TODO: exclusiveMaximum (bool) のみを指定するテスト
+    def test_genint_with_param_exMin_bool(self):
+        """ Semi-normalized System Test
+
+        When ``schema.exclusiveMinimum`` is boolean value, ``schema.minimum`` is required. As a result, when
+        ``schema.exclusiveMinimum`` is boolean value and ``schema.minimum`` is not specified, genint(schema) raises
+        SchemaConflictError.
+
+        assert that:
+            When ``schema.exclusiveMinimum`` is boolean value and ``schema.minimum`` is not specified, genint(schema)
+            raises InvalidSchemaError.
+        """
+        exclusive_minimum_list = (False, True)
+        for exclusive_minimum in exclusive_minimum_list:
+            with self.subTest(exclusive_minimum=exclusive_minimum):
+                schema = {
+                    "exclusiveMinimum": exclusive_minimum,
+                }
+                self.assertRaises(InvalidSchemaError, lambda: genint(schema))
+
+    def test_genint_with_param_exMax_bool(self):
+        """ Semi-normalized System Test
+
+        When ``schema.exclusiveMaximum`` is boolean value, ``schema.maximum`` is required. As a result, when
+        ``schema.exclusiveMaximum`` is boolean value and ``schema.maximum`` is not specified, genint(schema) raises
+        SchemaConflictError.
+
+        assert that:
+            When ``schema.exclusiveMaximum`` is boolean value and ``schema.maximum`` is not specified, genint(schema)
+            raises InvalidSchemaError.
+        """
+        exclusive_maximum_list = (False, True)
+        for exclusive_maximum in exclusive_maximum_list:
+            with self.subTest(exclusive_maximum=exclusive_maximum):
+                schema = {
+                    "exclusiveMaximum": exclusive_maximum,
+                }
+                self.assertRaises(InvalidSchemaError, lambda: genint(schema))
 
     def test_genint_with_min_exMin_true(self):
         """ Normalized System Test
@@ -207,9 +242,6 @@ class TestGenint(unittest.TestCase):
                 self.assertIsInstance(generated, int)
                 self.assertLessEqual(generated, threshold)
                 jsonschema.validate(generated, schema)
-
-    # TODO: maximum, exclusiveMinimum (bool) のみを指定するテスト
-    # TODO: minimum, exclusiveMaximum (bool) のみを指定するテスト
 
     def test_genint_with_tight_min_max(self):
         """ Normalized System Test
