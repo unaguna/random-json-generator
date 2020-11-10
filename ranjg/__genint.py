@@ -1,6 +1,6 @@
 import math
 import random
-from typing import Union, Tuple
+from typing import Union, Tuple, Optional
 
 from .error import SchemaConflictError
 
@@ -17,15 +17,19 @@ def genint(schema: dict) -> int:
         Generated integer value.
     """
 
+    # Convert float or exclusive value in schema to integer inclusive value.
     minimum, maximum = _get_inclusive_integer_range(schema)
+
+    minimum, maximum = _apply_default(minimum, maximum)
 
     return random.randint(minimum, maximum)
 
 
-def _get_inclusive_integer_range(schema: dict) -> Tuple[int, int]:
-    """Schema normalization.
+def _get_inclusive_integer_range(schema: dict) -> Tuple[Optional[int], Optional[int]]:
+    """Returns minimum and maximum as integer and not exclusive.
 
-    To make it easier to use for randomly generation, set items to ``schema`` object.
+    To make it easier to use for randomly generation, convert float or exclusive value in schema to integer inclusive
+    value.
 
     Args:
         schema: JSON schema for randomly generation.
@@ -66,6 +70,22 @@ def _get_inclusive_integer_range(schema: dict) -> Tuple[int, int]:
     elif inclusive_maximum is not None:
         maximum = __to_int_maximum(inclusive_maximum, False)
 
+    if minimum is not None and maximum is not None and minimum > maximum:
+        raise SchemaConflictError("There are no integers in the range specified by the schema.")
+
+    return minimum, maximum
+
+
+def _apply_default(minimum: Optional[int], maximum: Optional[int]) -> Tuple[int, int]:
+    """Apply default minimum and maximum.
+
+    Args:
+        minimum: None or minimum value of integer to generate
+        maximum: None or maximum value of integer to generate
+
+    Returns:
+        A pair of minimum and maximum. They are not None.
+    """
     if minimum is None and maximum is None:
         minimum = 0
         maximum = 100
@@ -73,9 +93,6 @@ def _get_inclusive_integer_range(schema: dict) -> Tuple[int, int]:
         minimum = maximum - 5
     elif maximum is None:
         maximum = minimum + 5
-
-    if minimum > maximum:
-        raise SchemaConflictError("There are no integers in the range specified by the schema.")
 
     return minimum, maximum
 
