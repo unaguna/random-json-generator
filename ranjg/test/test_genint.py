@@ -112,13 +112,11 @@ class TestGenint(unittest.TestCase):
     def test_genint_with_param_exMin_bool(self):
         """ Semi-normalized System Test
 
-        When ``schema.exclusiveMinimum`` is boolean value, ``schema.minimum`` is required. As a result, when
-        ``schema.exclusiveMinimum`` is boolean value and ``schema.minimum`` is not specified, genint(schema) raises
-        SchemaConflictError.
+        When ``schema.exclusiveMinimum`` is boolean value and ``schema.minimum`` is not specified, genint(schema) ignore
+        them.
 
         assert that:
-            When ``schema.exclusiveMinimum`` is boolean value and ``schema.minimum`` is not specified, genint(schema)
-            raises InvalidSchemaError.
+            When ``schema.exclusiveMinimum`` is boolean value, genint(schema) returns integer value.
         """
         exclusive_minimum_list = (False, True)
         for exclusive_minimum in exclusive_minimum_list:
@@ -126,18 +124,17 @@ class TestGenint(unittest.TestCase):
                 schema = {
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                self.assertRaises(InvalidSchemaError, lambda: genint(schema))
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
 
     def test_genint_with_param_exMax_bool(self):
         """ Semi-normalized System Test
 
-        When ``schema.exclusiveMaximum`` is boolean value, ``schema.maximum`` is required. As a result, when
-        ``schema.exclusiveMaximum`` is boolean value and ``schema.maximum`` is not specified, genint(schema) raises
-        SchemaConflictError.
+        When ``schema.exclusiveMaximum`` is boolean value and ``schema.maximum`` is not specified, genint(schema) ignore
+        them.
 
         assert that:
-            When ``schema.exclusiveMaximum`` is boolean value and ``schema.maximum`` is not specified, genint(schema)
-            raises InvalidSchemaError.
+            When ``schema.exclusiveMaximum`` is boolean value, genint(schema) returns integer value.
         """
         exclusive_maximum_list = (False, True)
         for exclusive_maximum in exclusive_maximum_list:
@@ -145,7 +142,8 @@ class TestGenint(unittest.TestCase):
                 schema = {
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(InvalidSchemaError, lambda: genint(schema))
+                generated = genint(schema)
+                self.assertIsInstance(generated, int)
 
     def test_genint_with_min_exMin_true(self):
         """ Normalized System Test
