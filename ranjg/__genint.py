@@ -3,6 +3,7 @@ import random
 from typing import Union, Tuple, Optional
 
 from .error import SchemaConflictError
+from .jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
 
 def genint(schema: dict) -> int:
@@ -38,13 +39,7 @@ def _get_inclusive_integer_minimum(schema: dict) -> Optional[int]:
         Inclusive minimum.
     """
     # exclusiveMinimum が真理値である場合、Draft7スタイルに変更
-    inclusive_minimum = schema.get("minimum", None)
-    exclusive_minimum = schema.get("exclusiveMinimum", None)
-    if exclusive_minimum is True:
-        exclusive_minimum = inclusive_minimum
-        inclusive_minimum = None
-    elif exclusive_minimum is False:
-        exclusive_minimum = None
+    inclusive_minimum, exclusive_minimum = normalize_exclusive_minimum(schema)
 
     minimum = None
     if inclusive_minimum is not None and exclusive_minimum is not None:
@@ -70,13 +65,7 @@ def _get_inclusive_integer_maximum(schema: dict) -> Optional[int]:
         Inclusive maximum.
     """
     # exclusiveMaximum が真理値である場合、Draft7スタイルに変更
-    inclusive_maximum = schema.get("maximum", None)
-    exclusive_maximum = schema.get("exclusiveMaximum", None)
-    if exclusive_maximum is True:
-        exclusive_maximum = inclusive_maximum
-        inclusive_maximum = None
-    elif exclusive_maximum is False:
-        exclusive_maximum = None
+    inclusive_maximum, exclusive_maximum = normalize_exclusive_maximum(schema)
 
     maximum = None
     if inclusive_maximum is not None and exclusive_maximum is not None:
