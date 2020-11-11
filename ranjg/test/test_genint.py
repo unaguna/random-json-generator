@@ -1,6 +1,8 @@
+import math
 import unittest
 import jsonschema
 from ranjg import genint
+from ranjg.__genint import _get_inclusive_integer_minimum
 from ranjg.error import SchemaConflictError
 
 
@@ -282,13 +284,13 @@ class TestGenint(unittest.TestCase):
             When ``schema.minimum`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns ``int`` value
             equal to ``minimum``.
         """
-        thresholds_list = ((-2E+10, -2E+10+1),
-                           (-2, -2+1),
-                           (0, 0+1),
-                           (1.0, 1.0+1),
-                           (2, 2+1),
+        thresholds_list = ((-2E+10, -2E+10 + 1),
+                           (-2, -2 + 1),
+                           (0, 0 + 1),
+                           (1.0, 1.0 + 1),
+                           (2, 2 + 1),
                            (3.5, 4.5),
-                           (2E+10, 2E+10+1))
+                           (2E+10, 2E+10 + 1))
 
         for minimum, exclusive_maximum in thresholds_list:
             with self.subTest(minimum=minimum, exclusive_maximum=exclusive_maximum):
@@ -313,13 +315,13 @@ class TestGenint(unittest.TestCase):
             When ``schema.maximum`` equals ``schema.exclusiveMinimum + 1``, ``genint(schema)`` returns ``int`` value
             equal to ``maximum``.
         """
-        thresholds_list = ((-2E+10-1, -2E+10),
-                           (-2-1, -2),
-                           (0-1, 0),
-                           (1.0-1, 1.0),
-                           (2-1, 2),
+        thresholds_list = ((-2E+10 - 1, -2E+10),
+                           (-2 - 1, -2),
+                           (0 - 1, 0),
+                           (1.0 - 1, 1.0),
+                           (2 - 1, 2),
                            (3.5, 4.5),
-                           (2E+10-1, 2E+10))
+                           (2E+10 - 1, 2E+10))
 
         for exclusive_minimum, maximum in thresholds_list:
             with self.subTest(exclusive_minimum=exclusive_minimum, maximum=maximum):
@@ -344,13 +346,13 @@ class TestGenint(unittest.TestCase):
             When ``schema.exclusiveMinimum + 1`` equals ``schema.exclusiveMaximum - 1``, ``genint(schema)`` returns
             ``int`` value equal to them.
         """
-        thresholds_list = ((-2E+10-1, -2E+10+1),
-                           (-2-1, -2+1),
-                           (0-1, 0+1),
-                           (1.0-1, 1.0+1),
-                           (2-1, 2+1),
+        thresholds_list = ((-2E+10 - 1, -2E+10 + 1),
+                           (-2 - 1, -2 + 1),
+                           (0 - 1, 0 + 1),
+                           (1.0 - 1, 1.0 + 1),
+                           (2 - 1, 2 + 1),
                            (3.5, 4.5),
-                           (2E+10-1, 2E+10+1))
+                           (2E+10 - 1, 2E+10 + 1))
 
         for exclusive_minimum, exclusive_maximum in thresholds_list:
             with self.subTest(exclusive_minimum=exclusive_minimum, exclusive_maximum=exclusive_maximum):
@@ -375,13 +377,13 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMinimum`` is ``True`` and ``schema.maximum`` equals ``schema.minimum + 1``,
             ``genint(schema)`` returns ``int`` value equal to ``maximum``.
         """
-        thresholds_list = ((-2E+10-1, -2E+10),
-                           (-2-1, -2),
-                           (0-1, 0),
-                           (1.0-1, 1.0),
-                           (2-1, 2),
+        thresholds_list = ((-2E+10 - 1, -2E+10),
+                           (-2 - 1, -2),
+                           (0 - 1, 0),
+                           (1.0 - 1, 1.0),
+                           (2 - 1, 2),
                            (3.5, 4.5),
-                           (2E+10-1, 2E+10))
+                           (2E+10 - 1, 2E+10))
 
         for exclusive_minimum, maximum in thresholds_list:
             with self.subTest(exclusive_minimum=exclusive_minimum, maximum=maximum):
@@ -408,13 +410,13 @@ class TestGenint(unittest.TestCase):
             When``schema.exclusiveMaximum`` is ``True`` and ``schema.minimum`` equals ``schema.maximum - 1``,
             ``genint(schema)`` returns ``int`` value equal to ``minimum``.
         """
-        thresholds_list = ((-2E+10, -2E+10+1),
-                           (-2, -2+1),
-                           (0, 0+1),
-                           (1.0, 1.0+1),
-                           (2, 2+1),
+        thresholds_list = ((-2E+10, -2E+10 + 1),
+                           (-2, -2 + 1),
+                           (0, 0 + 1),
+                           (1.0, 1.0 + 1),
+                           (2, 2 + 1),
                            (3.5, 4.5),
-                           (2E+10, 2E+10+1))
+                           (2E+10, 2E+10 + 1))
 
         for minimum, exclusive_maximum in thresholds_list:
             with self.subTest(minimum=minimum, exclusive_maximum=exclusive_maximum):
@@ -668,3 +670,145 @@ class TestGenint(unittest.TestCase):
                 self.assertLessEqual(generated, maximum)
                 self.assertLess(generated, exclusive_maximum)
                 jsonschema.validate(generated, schema)
+
+
+class TestGenintMinimum(unittest.TestCase):
+    """Test class of ``__genint._get_inclusive_integer_minimum``
+
+    Test ``ranjg.__genint._get_inclusive_integer_minimum``. This function returns a minimum value of the value to
+    generate by ``genint``.
+    """
+
+    def test_int_minimum_with_empty_schema(self):
+        """ Normalized System Test
+
+        When ``schema`` is empty, the minimum are not defined. So the range has no lower bound.
+
+        assert that:
+            When ``schema`` is empty, ``_get_inclusive_integer_range(schema)`` returns ``None``.
+        """
+        schema = {}
+        minimum = _get_inclusive_integer_minimum(schema)
+        self.assertIsNone(minimum)
+
+    def test_int_minimum_with_min(self):
+        """ Normalized System Test
+
+        When ``schema`` has key ``minimum`` and has no key ``exclusiveMinimum``, the range is [minimum, X)
+        = [ceil(minimum), X).
+
+        assert that:
+            When ``schema`` has only key ``minimum``, ``_get_inclusive_integer_range(schema)`` returns
+            ``ceil(minimum)``.
+        """
+        schema_minimum_list = (-10.0, -5, -2.7, -2.3, 0, 3.1, 3.8, 5, 10.0)
+        expected_minimum_list = map(lambda x: int(math.ceil(x)), schema_minimum_list)
+
+        for schema_minimum, expected_minimum in zip(schema_minimum_list, expected_minimum_list):
+            with self.subTest(schema_minimum=schema_minimum, expected_minimum=expected_minimum):
+                schema = {
+                    "minimum": schema_minimum,
+                }
+                minimum = _get_inclusive_integer_minimum(schema)
+                self.assertEqual(minimum, expected_minimum)
+
+    def test_int_minimum_with_exMin(self):
+        """ Normalized System Test
+
+        When ``schema`` has key ``exclusiveMinimum`` and has no key ``minimum``, the range is (exclusiveMinimum, X)
+        = [floor(exclusiveMinimum)+1, X).
+
+        assert that:
+            When ``schema`` has only key ``exclusiveMinimum``, ``_get_inclusive_integer_range(schema)`` returns
+            ``floor(exclusiveMinimum)+1``.
+        """
+        schema_minimum_list = (-10.0, -5, -2.7, -2.3, 0, 3.1, 3.8, 5, 10.0)
+        expected_minimum_list = map(lambda x: int(math.floor(x) + 1), schema_minimum_list)
+
+        for schema_exclusive_minimum, expected_minimum in zip(schema_minimum_list, expected_minimum_list):
+            with self.subTest(schema_exclusive_minimum=schema_exclusive_minimum, expected_minimum=expected_minimum):
+                schema = {
+                    "exclusiveMinimum": schema_exclusive_minimum,
+                }
+                minimum = _get_inclusive_integer_minimum(schema)
+                self.assertEqual(minimum, expected_minimum)
+
+    def test_int_minimum_with_min_exMin_bool(self):
+        """ Normalized System Test
+
+        When ``schema`` has key ``minimum`` and ``schema.exclusiveMinimum == True``, the range is (minimum, X)
+        = [floor(minimum)+1, X).
+
+        When ``schema`` has key ``minimum`` and ``schema.exclusiveMinimum == False``, the range is [minimum, X)
+        = [ceil(minimum), X).
+
+        assert that:
+            When ``schema`` has key ``minimum`` and ``schema.exclusiveMinimum`` is boolean value,
+            ``_get_inclusive_integer_range(schema)`` returns ``floor(minimum)+1`` with ``schema.exclusiveMinimum=True``
+            or returns ``ceil(minimum)`` with ``schema.exclusiveMinimum=False``.
+        """
+        parameter_list = ((-10.0, True, -9),
+                          (-10.0, False, -10),
+                          (-5, True, -4),
+                          (-5, False, -5),
+                          (-2.7, True, -2),
+                          (-2.7, False, -2),
+                          (-2.3, True, -2),
+                          (-2.3, False, -2),
+                          (0, True, 1),
+                          (0, False, 0),
+                          (3.1, True, 4),
+                          (3.1, False, 4),
+                          (3.8, True, 4),
+                          (3.8, False, 4),
+                          (5, True, 6),
+                          (5, False, 5),
+                          (10.0, True, 11),
+                          (10.0, False, 10))
+
+        for schema_minimum, schema_exclusive_minimum, expected_minimum in parameter_list:
+            with self.subTest(schema_minimum=schema_minimum,
+                              exclusive=str(schema_exclusive_minimum)[0],
+                              expected_minimum=expected_minimum):
+                schema = {
+                    "minimum": schema_minimum,
+                    "exclusiveMinimum": schema_exclusive_minimum,
+                }
+                minimum = _get_inclusive_integer_minimum(schema)
+                self.assertEqual(minimum, expected_minimum)
+
+    def test_int_minimum_with_min_exMin(self):
+        """ Normalized System Test
+
+        When ``schema`` has key ``minimum`` and ``schema.exclusiveMinimum``, the range satisfies both of them.
+        In other words, if ``minimum <= exclusiveMinimum`` then the range is (exclusiveMinimum, X) , otherwise
+        the range is [minimum, X).
+
+        assert that:
+            When ``schema.minimum <= schema.exclusiveMinimum``,
+            ``_get_inclusive_integer_range(schema)`` returns ``floor(exclusiveMinimum)+1`.
+            When ``schema.minimum > schema.exclusiveMinimum``,
+            ``_get_inclusive_integer_range(schema)`` returns ``ceil(minimum)`.
+        """
+        parameter_list = ((1, 2, 3),
+                          (1, 1, 2),
+                          (2, 1, 2),
+                          (1.1, 1.2, 2),
+                          (1.1, 1.1, 2),
+                          (1.2, 1.1, 2),
+                          (-1.5, -1.0, 0),
+                          (-1.0, -1.5, -1))
+
+        for schema_minimum, schema_exclusive_minimum, expected_minimum in parameter_list:
+            with self.subTest(schema_minimum=schema_minimum,
+                              schema_exclusive_minimum=schema_exclusive_minimum,
+                              expected_minimum=expected_minimum):
+                schema = {
+                    "minimum": schema_minimum,
+                    "exclusiveMinimum": schema_exclusive_minimum,
+                }
+                minimum = _get_inclusive_integer_minimum(schema)
+                self.assertEqual(minimum, expected_minimum)
+
+# TODO: __genint._get_inclusive_integer_maximum のテスト
+# TODO: __genint._get_inclusive_integer_range のテスト
