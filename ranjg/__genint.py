@@ -25,6 +25,70 @@ def genint(schema: dict) -> int:
     return random.randint(minimum, maximum)
 
 
+def _get_inclusive_integer_minimum(schema: dict) -> Optional[int]:
+    """Returns minimum as integer and not exclusive.
+
+    To make it easier to use for randomly generation, convert float or exclusive minimum in schema to integer inclusive
+    value.
+
+    Args:
+        schema: JSON schema for randomly generation.
+
+    Returns:
+        Inclusive minimum.
+    """
+    # exclusiveMinimum が真理値である場合、Draft7スタイルに変更
+    inclusive_minimum = schema.get("minimum", None)
+    exclusive_minimum = schema.get("exclusiveMinimum", None)
+    if exclusive_minimum is True:
+        exclusive_minimum = inclusive_minimum
+        inclusive_minimum = None
+    elif exclusive_minimum is False:
+        exclusive_minimum = None
+
+    minimum = None
+    if inclusive_minimum is not None and exclusive_minimum is not None:
+        minimum = max(__to_int_minimum(inclusive_minimum, False), __to_int_minimum(exclusive_minimum, True))
+    elif exclusive_minimum is not None:
+        minimum = __to_int_minimum(exclusive_minimum, True)
+    elif inclusive_minimum is not None:
+        minimum = __to_int_minimum(inclusive_minimum, False)
+
+    return minimum
+
+
+def _get_inclusive_integer_maximum(schema: dict) -> Optional[int]:
+    """Returns maximum as integer and not exclusive.
+
+    To make it easier to use for randomly generation, convert float or exclusive maximum in schema to integer inclusive
+    value.
+
+    Args:
+        schema: JSON schema for randomly generation.
+
+    Returns:
+        Inclusive maximum.
+    """
+    # exclusiveMaximum が真理値である場合、Draft7スタイルに変更
+    inclusive_maximum = schema.get("maximum", None)
+    exclusive_maximum = schema.get("exclusiveMaximum", None)
+    if exclusive_maximum is True:
+        exclusive_maximum = inclusive_maximum
+        inclusive_maximum = None
+    elif exclusive_maximum is False:
+        exclusive_maximum = None
+
+    maximum = None
+    if inclusive_maximum is not None and exclusive_maximum is not None:
+        maximum = min(__to_int_maximum(inclusive_maximum, False), __to_int_maximum(exclusive_maximum, True))
+    elif exclusive_maximum is not None:
+        maximum = __to_int_maximum(exclusive_maximum, True)
+    elif inclusive_maximum is not None:
+        maximum = __to_int_maximum(inclusive_maximum, False)
+
+    return maximum
+
+
 def _get_inclusive_integer_range(schema: dict) -> Tuple[Optional[int], Optional[int]]:
     """Returns minimum and maximum as integer and not exclusive.
 
@@ -38,37 +102,8 @@ def _get_inclusive_integer_range(schema: dict) -> Tuple[Optional[int], Optional[
         Inclusive minimum and maximum.
     """
 
-    # 生成する数値の最小値
-    inclusive_minimum = schema.get("minimum", None)
-    exclusive_minimum = schema.get("exclusiveMinimum", None)
-    if exclusive_minimum is True:
-        exclusive_minimum = inclusive_minimum
-        inclusive_minimum = None
-    elif exclusive_minimum is False:
-        exclusive_minimum = None
-    minimum = None
-    if inclusive_minimum is not None and exclusive_minimum is not None:
-        minimum = max(__to_int_minimum(inclusive_minimum, False), __to_int_minimum(exclusive_minimum, True))
-    elif exclusive_minimum is not None:
-        minimum = __to_int_minimum(exclusive_minimum, True)
-    elif inclusive_minimum is not None:
-        minimum = __to_int_minimum(inclusive_minimum, False)
-
-    # 生成する数値の最大値
-    inclusive_maximum = schema.get("maximum", None)
-    exclusive_maximum = schema.get("exclusiveMaximum", None)
-    if exclusive_maximum is True:
-        exclusive_maximum = inclusive_maximum
-        inclusive_maximum = None
-    elif exclusive_maximum is False:
-        exclusive_maximum = None
-    maximum = None
-    if inclusive_maximum is not None and exclusive_maximum is not None:
-        maximum = min(__to_int_maximum(inclusive_maximum, False), __to_int_maximum(exclusive_maximum, True))
-    elif exclusive_maximum is not None:
-        maximum = __to_int_maximum(exclusive_maximum, True)
-    elif inclusive_maximum is not None:
-        maximum = __to_int_maximum(inclusive_maximum, False)
+    minimum = _get_inclusive_integer_minimum(schema)
+    maximum = _get_inclusive_integer_maximum(schema)
 
     if minimum is not None and maximum is not None and minimum > maximum:
         raise SchemaConflictError("There are no integers in the range specified by the schema.")
