@@ -116,11 +116,10 @@ def __to_int_minimum(minimum: Union[float, int], exclusive: bool) -> int:
     Returns:
         The minimum value by integer type
     """
-    if isinstance(minimum, int) or minimum.is_integer():
-        padding = 1 if exclusive else 0
-        return int(minimum) + padding
+    if exclusive:
+        return math.floor(minimum) + 1
     else:
-        return int(math.ceil(minimum))
+        return math.ceil(minimum)
 
 
 def __to_int_maximum(maximum: Union[float, int], exclusive: bool) -> int:
@@ -136,8 +135,7 @@ def __to_int_maximum(maximum: Union[float, int], exclusive: bool) -> int:
     Returns:
         The maximum value by integer type
     """
-    if isinstance(maximum, int) or maximum.is_integer():
-        padding = 1 if exclusive else 0
-        return int(maximum) - padding
+    if exclusive:
+        return math.ceil(maximum) - 1
     else:
-        return int(math.floor(maximum))
+        return math.floor(maximum)
