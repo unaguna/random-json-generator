@@ -1,6 +1,6 @@
 import collections
 import random
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
@@ -37,8 +37,8 @@ def genlist(schema: dict, schema_is_validated: bool = False) -> list:
     result = []
 
     # 生成する list の大きさの範囲
-    [min_items, max_items] = _get_range_of_length(schema)
-    [min_items, max_items] = _apply_default_length(min_items, max_items)
+    min_items, max_items = _get_range_of_length(schema)
+    min_items, max_items = _apply_default_length(min_items, max_items)
 
     # 生成する list の大きさ
     item_count = random.randint(min_items, max_items)
@@ -68,7 +68,7 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
     return isinstance(items, collections.abc.Sequence)
 
 
-def _get_range_of_length(schema: dict) -> [Optional[int], Optional[int]]:
+def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
     """Determine the range of the size of the list to be generated with the schema.
 
     If each of them are not specified in the schema, returns None.
@@ -96,10 +96,10 @@ def _get_range_of_length(schema: dict) -> [Optional[int], Optional[int]]:
                 "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to "
                 "size of \"items\".")
 
-    return [min_items, max_items]
+    return min_items, max_items
 
 
-def _apply_default_length(min_items: Optional[int], max_items: Optional[int]) -> [int, int]:
+def _apply_default_length(min_items: Optional[int], max_items: Optional[int]) -> Tuple[int, int]:
     """Apply default minItems and maxItems.
 
     Args:
@@ -121,7 +121,7 @@ def _apply_default_length(min_items: Optional[int], max_items: Optional[int]) ->
         else:
             max_items = max(5, min_items)
 
-    return [min_items, max_items]
+    return min_items, max_items
 
 
 def __get_items_schema_list(schema: dict, item_count: int) -> List[dict]:
