@@ -1,6 +1,6 @@
 import collections
 import random
-from typing import List
+from typing import List, Optional
 import ranjg
 from ranjg.util.listutil import fix_length
 from ranjg.util.nonesafe import dfor
@@ -37,7 +37,8 @@ def genlist(schema: dict, schema_is_validated: bool = False) -> list:
     result = []
 
     # 生成する list の大きさの範囲
-    [min_items, max_items] = __get_range_of_length(schema)
+    [min_items, max_items] = _get_range_of_length(schema)
+    [min_items, max_items] = _apply_default_length(min_items, max_items)
 
     # 生成する list の大きさ
     item_count = random.randint(min_items, max_items)
@@ -67,18 +68,16 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
     return isinstance(items, collections.abc.Sequence)
 
 
-def __get_range_of_length(schema: dict) -> [int, int]:
+def _get_range_of_length(schema: dict) -> [Optional[int], Optional[int]]:
     """Determine the range of the size of the list to be generated with the schema.
 
-    Even if they are not specified in the schema, two positive integer values are returned instead of None.
-    If only one of them is None (null), then an integer value consistent with the other is returned instead.
-    If both are None (null), the default values are returned.
+    If each of them are not specified in the schema, returns None.
 
     Args:
         schema: JSON schema object for list values.
 
     Returns:
-        The minimum and maximum size of the list to be generated.
+        The minimum and maximum size of the list to be generated. Not specified parameter will be None.
     """
 
     min_items: int = schema.get("minItems")
@@ -97,6 +96,19 @@ def __get_range_of_length(schema: dict) -> [int, int]:
                 "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to "
                 "size of \"items\".")
 
+    return [min_items, max_items]
+
+
+def _apply_default_length(min_items: Optional[int], max_items: Optional[int]) -> [int, int]:
+    """Apply default minItems and maxItems.
+
+    Args:
+        min_items: None or minimum length of the list to generate
+        max_items: None or maximum length of the list to generate
+
+    Returns:
+        The minimum and maximum size of the list to be generated.
+    """
     if min_items is None:
         if max_items is None:
             min_items = 1

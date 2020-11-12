@@ -452,7 +452,8 @@ class TestGenlist(unittest.TestCase):
                 self.assertIsInstance(generated, list)
                 self.assertGreaterEqual(len(generated), min_items)
 
-# TODO: __get_range_of_lengthのテスト
+# TODO: _get_range_of_lengthのテスト
+# TODO: _apply_default_lengthのテスト
 
 
 def _type_to_cls(type_str: str):
