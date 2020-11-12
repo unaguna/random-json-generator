@@ -145,7 +145,26 @@ class TestGenlist(unittest.TestCase):
                 self.assertEqual(len(generated), threshold)
                 jsonschema.validate(generated, schema)
 
-    # TODO: 矛盾する minItems, maxItems を指定するテスト
+    def test_genlist_with_param_conflict_min_max(self):
+        """ Semi-normalized System Test
+
+        When ``schema.minItems`` and ``schema.maxItems`` specified, ``genlist(schema)`` returns a list of length in
+        range [``schema.minItems``, ``schema.maxItems``].  As a result, when ``maximum < minimum``, SchemaConflictError
+        is raised.
+
+        assert that:
+            When the schema has ``properties.minItems > properties.maxItems``, ``genlist(schema)`` raised
+            SchemaConflictError.
+        """
+        thresholds_list = ((0, 10),
+                           (5, 10))
+        for max_items, min_items in thresholds_list:
+            with self.subTest(min_items=min_items, max_items=max_items):
+                schema = {
+                    "minItems": min_items,
+                    "maxItems": max_items,
+                }
+                self.assertRaises(SchemaConflictError, lambda: genlist(schema))
 
     def test_genlist_with_single_items(self):
         """ Normalized System Test
@@ -432,6 +451,8 @@ class TestGenlist(unittest.TestCase):
                 generated = genlist(schema)
                 self.assertIsInstance(generated, list)
                 self.assertGreaterEqual(len(generated), min_items)
+
+# TODO: __get_range_of_lengthのテスト
 
 
 def _type_to_cls(type_str: str):
