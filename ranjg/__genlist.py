@@ -84,6 +84,9 @@ def __get_range_of_length(schema: dict) -> [int, int]:
     min_items: int = schema.get("minItems")
     max_items: int = schema.get("maxItems")
 
+    if min_items is not None and max_items is not None and min_items > max_items:
+        raise SchemaConflictError("There are no integers in the range of length specified by the schema.")
+
     # schema がタプル指定である場合
     if __schema_is_tuple_validation(schema):
         items = list(schema.get("items"))
