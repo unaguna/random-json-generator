@@ -948,5 +948,3 @@ class TestGenintMaximum(unittest.TestCase):
                 }
                 maximum = _get_inclusive_integer_maximum(schema)
                 self.assertEqual(maximum, expected_maximum)
-
-# TODO: __genint._get_inclusive_integer_range のテスト

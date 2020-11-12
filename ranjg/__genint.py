@@ -19,7 +19,11 @@ def genint(schema: dict) -> int:
     """
 
     # Convert float or exclusive value in schema to integer inclusive value.
-    minimum, maximum = _get_inclusive_integer_range(schema)
+    minimum = _get_inclusive_integer_minimum(schema)
+    maximum = _get_inclusive_integer_maximum(schema)
+
+    if minimum is not None and maximum is not None and minimum > maximum:
+        raise SchemaConflictError("There are no integers in the range specified by the schema.")
 
     minimum, maximum = _apply_default(minimum, maximum)
 
@@ -76,28 +80,6 @@ def _get_inclusive_integer_maximum(schema: dict) -> Optional[int]:
         maximum = __to_int_maximum(inclusive_maximum, False)
 
     return maximum
-
-
-def _get_inclusive_integer_range(schema: dict) -> Tuple[Optional[int], Optional[int]]:
-    """Returns minimum and maximum as integer and not exclusive.
-
-    To make it easier to use for randomly generation, convert float or exclusive value in schema to integer inclusive
-    value.
-
-    Args:
-        schema: JSON schema for randomly generation.
-
-    Returns:
-        Inclusive minimum and maximum.
-    """
-
-    minimum = _get_inclusive_integer_minimum(schema)
-    maximum = _get_inclusive_integer_maximum(schema)
-
-    if minimum is not None and maximum is not None and minimum > maximum:
-        raise SchemaConflictError("There are no integers in the range specified by the schema.")
-
-    return minimum, maximum
 
 
 def _apply_default(minimum: Optional[int], maximum: Optional[int]) -> Tuple[int, int]:
