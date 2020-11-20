@@ -520,7 +520,7 @@ class TestGenlistLengthRange(unittest.TestCase):
                       {"type": "array"},
                       {"type": "object"})
         min_items_list = (0, 1, 2, 3)
-        for items, schema_min_items in zip(items_list, min_items_list):
+        for items, schema_min_items in itertools.product(items_list, min_items_list):
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items}
                 min_items, max_items = _get_range_of_length(schema)
