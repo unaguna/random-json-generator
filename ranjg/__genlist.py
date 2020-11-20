@@ -71,13 +71,17 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
 def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
     """Determine the range of the size of the list to be generated with the schema.
 
-    If each of them are not specified in the schema, returns None.
+    If each of them are not specified in the schema, returns None. This function checks for inconsistencies in the
+    schema. If it doesn't raise Error, there are no inconsistencies in the schema.
 
     Args:
         schema: JSON schema object for list values.
 
     Returns:
         The minimum and maximum size of the list to be generated. Not specified parameter will be None.
+
+    Raises:
+        SchemaConflictError: If there are inconsistencies in the schema.
     """
 
     min_items: int = schema.get("minItems")
