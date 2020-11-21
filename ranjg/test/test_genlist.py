@@ -768,11 +768,206 @@ class TestGenlistLengthRange(unittest.TestCase):
                 self.assertEqual(min_items, None)
                 self.assertEqual(max_items, min(len(items), schema_max_items))
 
-    # TODO: minItems と maxItems を指定するテストをいくつか (itemsやadditionalItems を変えながら)
+    def test_list_length_range_with_list_schema_with_min_max(self):
+        """ Normalized System Test
+
+         Even if both of ``schema.minItems`` and ``schema.maxItems`` are specified, they do not affect each other.
+
+        assert that:
+            When ``schema.items`` is dict and both of ``schema.minItems`` and ``schema.maxItems`` are specified,
+            ``_get_inclusive_integer_range(schema)`` returns ``minItems, maxItems``.
+        """
+        items_list = ({},
+                      {"type": "number"},
+                      {"type": "integer"},
+                      {"type": "string"},
+                      {"type": "null"},
+                      {"type": "boolean"},
+                      {"type": "array"},
+                      {"type": "object"})
+        threshold_list = ((0, 0),
+                          (0, 1),
+                          (1, 1),
+                          (1, 2),
+                          (1, 3))
+        for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
+                min_items, max_items = _get_range_of_length(schema)
+                self.assertEqual(min_items, schema_min_items)
+                self.assertEqual(max_items, schema_max_items)
+
+    def test_list_length_range_with_tuple_schema_with_min_max(self):
+        """ Normalized System Test
+
+         Even if both of ``schema.minItems`` and ``schema.maxItems`` are specified, they do not affect each other.
+
+        assert that:
+            When ``schema.items`` is list and both of ``schema.minItems`` and ``schema.maxItems`` are specified,
+            ``_get_inclusive_integer_range(schema)`` returns ``minItems, maxItems``.
+        """
+        items_list = ([{}],
+                      [{"type": "number"}],
+                      [{"type": "integer"}, {"type": "number"}],
+                      [{"type": "string"}, {"type": "integer"}, {"type": "number"}],
+                      [{"type": "null"}, {"type": "string"}, {"type": "integer"}, {"type": "number"}])
+        threshold_list = ((0, 0),
+                          (0, 1),
+                          (1, 1),
+                          (1, 2),
+                          (1, 3))
+        for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
+                min_items, max_items = _get_range_of_length(schema)
+                self.assertEqual(min_items, schema_min_items)
+                self.assertEqual(max_items, schema_max_items)
+
+    def test_list_length_range_with_conflict_min_max(self):
+        """ Normalized System Test
+
+         If ``schema.minItems > schema.maxItems``, not all conditions can be met and therefore raise an exception.
+
+        assert that:
+            When ``schema.items`` is specified and ``schema.minItems > schema.maxItems``,
+            ``_get_inclusive_integer_range(schema)`` raises SchemaConflictError.
+        """
+        items_list = ({},
+                      {"type": "number"},
+                      {"type": "integer"},
+                      [{"type": "string"}, {"type": "integer"}])
+        threshold_list = ((1, 0),
+                          (2, 0),
+                          (2, 1),
+                          (3, 1))
+        for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
+                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema))
+
+    def test_list_length_range_with_tuple_schema_with_min_max_additional_true(self):
+        """ Normalized System Test
+
+         If ``schema.minItems > schema.maxItems``, not all conditions can be met and therefore raise an exception.
+
+        assert that:
+            Even if ``schema.additionalItems = True``, when ``schema.items`` is list and both of ``schema.minItems`` and
+            ``schema.maxItems`` are specified, ``_get_inclusive_integer_range(schema)`` returns ``minItems, maxItems``.
+        """
+        items_list = ([{}],
+                      [{"type": "number"}],
+                      [{"type": "integer"}, {"type": "number"}],
+                      [{"type": "string"}, {"type": "integer"}, {"type": "number"}],
+                      [{"type": "null"}, {"type": "string"}, {"type": "integer"}, {"type": "number"}])
+        threshold_list = ((0, 0),
+                          (0, 1),
+                          (1, 1),
+                          (1, 2),
+                          (1, 3))
+        for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {
+                    "items": items,
+                    "minItems": schema_min_items,
+                    "maxItems": schema_max_items,
+                    "additionalItems": True,
+                }
+                min_items, max_items = _get_range_of_length(schema)
+                self.assertEqual(min_items, schema_min_items)
+                self.assertEqual(max_items, schema_max_items)
+
+    def test_list_length_range_with_tuple_schema_with_min_max_additional_dict(self):
+        """ Normalized System Test
+
+         If ``schema.minItems > schema.maxItems``, not all conditions can be met and therefore raise an exception.
+
+        assert that:
+            Even if ``schema.additionalItems`` is dict, when ``schema.items`` is list and both of ``schema.minItems``
+            and ``schema.maxItems`` are specified, ``_get_inclusive_integer_range(schema)`` returns
+            ``minItems, maxItems``.
+        """
+        items_list = ([{}],
+                      [{"type": "number"}],
+                      [{"type": "integer"}, {"type": "number"}],
+                      [{"type": "string"}, {"type": "integer"}, {"type": "number"}],
+                      [{"type": "null"}, {"type": "string"}, {"type": "integer"}, {"type": "number"}])
+        threshold_list = ((0, 0),
+                          (0, 1),
+                          (1, 1),
+                          (1, 2),
+                          (1, 3))
+        for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {
+                    "items": items,
+                    "minItems": schema_min_items,
+                    "maxItems": schema_max_items,
+                    "additionalItems": items[0],
+                }
+                min_items, max_items = _get_range_of_length(schema)
+                self.assertEqual(min_items, schema_min_items)
+                self.assertEqual(max_items, schema_max_items)
 
     def test_list_length_range_with_tuple_schema_with_min_max_additional_false(self):
-        # TODO: 正常系テスト
-        pass
+        """ Normalized System Test
+
+         If ``schema.minItems > schema.maxItems``, not all conditions can be met and therefore raise an exception.
+
+        assert that:
+            When ``schema.additionalItems = False`` and both of ``schema.minItems`` and ``schema.maxItems`` are
+            specified and ``schema.minItems <= len(schema.items), ``_get_inclusive_integer_range(schema)`` returns
+            ``minItems, min(len(items), maxItems)``.
+        """
+        parameter_list = ((0, 0, [{"type": "number"}]),
+                          (0, 1, [{"type": "number"}]),
+                          (1, 1, [{"type": "number"}]),
+                          (0, 2, [{"type": "number"}]),
+                          (1, 2, [{"type": "number"}]),
+                          (0, 1, [{"type": "integer"}, {"type": "number"}]),
+                          (1, 1, [{"type": "integer"}, {"type": "number"}]),
+                          (0, 2, [{"type": "integer"}, {"type": "number"}]),
+                          (1, 2, [{"type": "integer"}, {"type": "number"}]),
+                          (2, 2, [{"type": "integer"}, {"type": "number"}]),
+                          (0, 3, [{"type": "integer"}, {"type": "number"}]),
+                          (1, 3, [{"type": "integer"}, {"type": "number"}]),
+                          (2, 3, [{"type": "integer"}, {"type": "number"}]))
+        for schema_min_items, schema_max_items, items in parameter_list:
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {
+                    "items": items,
+                    "minItems": schema_min_items,
+                    "maxItems": schema_max_items,
+                    "additionalItems": False,
+                }
+                min_items, max_items = _get_range_of_length(schema)
+                self.assertEqual(min_items, schema_min_items)
+                self.assertEqual(max_items, min(len(items), schema_max_items))
+
+    def test_list_length_range_with_tuple_schema_with_too_large_min_max_additional_false(self):
+        """ Semi-normalized System Test
+
+         If ``schema.minItems > schema.maxItems``, not all conditions can be met and therefore raise an exception.
+
+        assert that:
+            Even if ``schema.maxItems`` is specified, when ``schema.additionalItems = False`` and
+            ``len(schema.items) < schema.minItems``, ``_get_inclusive_integer_range(schema)`` raises
+            SchemaConflictError.
+        """
+        parameter_list = ((2, 2, [{}]),
+                          (2, 3, [{"type": "number"}]),
+                          (3, 3, [{"type": "number"}]),
+                          (3, 4, [{"type": "integer"}, {"type": "number"}]),
+                          (4, 4, [{"type": "integer"}, {"type": "number"}]),
+                          (5, 10, [{"type": "integer"}, {"type": "number"}]))
+        for schema_min_items, schema_max_items, items in parameter_list:
+            with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
+                schema = {
+                    "items": items,
+                    "minItems": schema_min_items,
+                    "maxItems": schema_max_items,
+                    "additionalItems": False,
+                }
+                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema))
 
 
 def _type_to_cls(type_str: str):
