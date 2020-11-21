@@ -1,11 +1,8 @@
-def gennone(schema: dict) -> None:
-    """スキーマに適合するNoneを生成する。
-
-    Args:
-        schema (dict): null 型についての JsonSchema を表現するマップ
+def gennone() -> None:
+    """Generate ``None``.
 
     Returns:
-        None: None
+        Generated ``None``.
     """
 
     return None

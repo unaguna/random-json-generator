@@ -1,69 +1,141 @@
-import sys
+import math
 import random
+from typing import Union, Tuple, Optional
+
+from .error import SchemaConflictError
+from .jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
+
 
 def genint(schema: dict) -> int:
-    """スキーマに適合する整数を生成する。
+    """Generate a random integer according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
-        schema (dict): integer 型についての JsonSchema を表現するマップ
+        schema: JSON schema object.
 
     Returns:
-        int: 生成された整数
+        Generated integer value.
     """
 
-    schema = __normalize_schema(schema)
+    # Convert float or exclusive value in schema to integer inclusive value.
+    minimum = _get_inclusive_integer_minimum(schema)
+    maximum = _get_inclusive_integer_maximum(schema)
 
-    minimum: int = schema["minimum"]
-    maximum: int = schema["maximum"]
+    if minimum is not None and maximum is not None and minimum > maximum:
+        raise SchemaConflictError("There are no integers in the range specified by the schema.")
 
-    if(minimum > maximum):
-        raise Exception("Minimum value must be lower than or equal to the maximum value.")
+    minimum, maximum = _apply_default(minimum, maximum)
 
     return random.randint(minimum, maximum)
 
-def __normalize_schema(schema: dict) -> dict:
-    """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
+
+def _get_inclusive_integer_minimum(schema: dict) -> Optional[int]:
+    """Returns minimum as integer and not exclusive.
+
+    To make it easier to use for randomly generation, convert float or exclusive minimum in schema to integer inclusive
+    value.
 
     Args:
-        schema (dict): integer 型についての JsonSchema を表現するマップ
+        schema: JSON schema for randomly generation.
 
     Returns:
-        dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
+        Inclusive minimum.
     """
+    # exclusiveMinimum が真理値である場合、Draft7スタイルに変更
+    inclusive_minimum, exclusive_minimum = normalize_exclusive_minimum(schema)
 
-    # 生成する数値の最小値
-    inclusiveMinimum = schema.get("minimum", None)
-    exclusiveMinimum = schema.get("exclusiveMinimum", None)
-    if exclusiveMinimum == True:
-        exclusiveMinimum = inclusiveMinimum
-        inclusiveMinimum = None
-    elif exclusiveMinimum == False:
-        exclusiveMinimum = None
-    minimum = 0
-    if inclusiveMinimum is not None and exclusiveMinimum is not None:
-        minimum = max(inclusiveMinimum, exclusiveMinimum + 1)
-    elif exclusiveMinimum is not None:
-        minimum = exclusiveMinimum + 1
-    elif inclusiveMinimum is not None:
-        minimum = inclusiveMinimum
+    minimum = None
+    if inclusive_minimum is not None and exclusive_minimum is not None:
+        minimum = max(__to_int_minimum(inclusive_minimum, False), __to_int_minimum(exclusive_minimum, True))
+    elif exclusive_minimum is not None:
+        minimum = __to_int_minimum(exclusive_minimum, True)
+    elif inclusive_minimum is not None:
+        minimum = __to_int_minimum(inclusive_minimum, False)
 
-    # 生成する数値の最大値
-    inclusiveMaximum = schema.get("maximum", None)
-    exclusiveMaximum = schema.get("exclusiveMaximum", None)
-    if exclusiveMaximum == True:
-        exclusiveMaximum = inclusiveMaximum
-        inclusiveMaximum = None
-    elif exclusiveMaximum == False:
-        exclusiveMaximum = None
-    maximum = 100
-    if inclusiveMaximum is not None and exclusiveMaximum is not None:
-        maximum = min(inclusiveMaximum, exclusiveMaximum - 1)
-    elif exclusiveMaximum is not None:
-        maximum = exclusiveMaximum - 1
-    elif inclusiveMaximum is not None:
-        maximum = inclusiveMaximum
+    return minimum
 
-    return {
-        "minimum": minimum,
-        "maximum": maximum,
-    }
+
+def _get_inclusive_integer_maximum(schema: dict) -> Optional[int]:
+    """Returns maximum as integer and not exclusive.
+
+    To make it easier to use for randomly generation, convert float or exclusive maximum in schema to integer inclusive
+    value.
+
+    Args:
+        schema: JSON schema for randomly generation.
+
+    Returns:
+        Inclusive maximum.
+    """
+    # exclusiveMaximum が真理値である場合、Draft7スタイルに変更
+    inclusive_maximum, exclusive_maximum = normalize_exclusive_maximum(schema)
+
+    maximum = None
+    if inclusive_maximum is not None and exclusive_maximum is not None:
+        maximum = min(__to_int_maximum(inclusive_maximum, False), __to_int_maximum(exclusive_maximum, True))
+    elif exclusive_maximum is not None:
+        maximum = __to_int_maximum(exclusive_maximum, True)
+    elif inclusive_maximum is not None:
+        maximum = __to_int_maximum(inclusive_maximum, False)
+
+    return maximum
+
+
+def _apply_default(minimum: Optional[int], maximum: Optional[int]) -> Tuple[int, int]:
+    """Apply default minimum and maximum.
+
+    Args:
+        minimum: None or minimum value of integer to generate
+        maximum: None or maximum value of integer to generate
+
+    Returns:
+        A pair of minimum and maximum. They are not None.
+    """
+    if minimum is None and maximum is None:
+        minimum = 0
+        maximum = 100
+    elif minimum is None:
+        minimum = maximum - 5
+    elif maximum is None:
+        maximum = minimum + 5
+
+    return minimum, maximum
+
+
+def __to_int_minimum(minimum: Union[float, int], exclusive: bool) -> int:
+    """Converts the minimum value by float type to int type.
+
+    As long as the return value is used as the minimum of integer value, it works the same way as if the argument is
+    used.
+
+    Args:
+        minimum: The minimum value
+        exclusive: Whether to exclude the endpoints
+
+    Returns:
+        The minimum value by integer type
+    """
+    if exclusive:
+        return math.floor(minimum) + 1
+    else:
+        return math.ceil(minimum)
+
+
+def __to_int_maximum(maximum: Union[float, int], exclusive: bool) -> int:
+    """Converts the maximum value by float type to int type.
+
+    As long as the return value is used as the maximum of integer value, it works the same way as if the argument is
+    used.
+
+    Args:
+        maximum: The maximum value
+        exclusive: Whether to exclude the endpoints
+
+    Returns:
+        The maximum value by integer type
+    """
+    if exclusive:
+        return math.ceil(maximum) - 1
+    else:
+        return math.floor(maximum)

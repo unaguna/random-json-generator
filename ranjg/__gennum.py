@@ -1,6 +1,9 @@
 import sys
 import random
 
+from ranjg.util.nonesafe import dfor
+from .error import GenerateError, SchemaConflictError
+
 __default_schema = {
     "minimum": -sys.float_info.max / 2,
     "exclusiveMinimum": float('-inf'),
@@ -13,14 +16,18 @@ __default_options = {
     "regenerate_limit": 50,
 }
 
-def gennum(schema: dict, options: dict = {}) -> float:
-    """スキーマに適合する浮動小数点数を生成する。
+
+def gennum(schema: dict, options: dict = None) -> float:
+    """Generate a random number according to the JSON schema.
+
+    This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
 
     Args:
-        schema (dict): number 型についての JsonSchema を表現するマップ
+        schema: JSON schema object.
+        options: Options for adjusting the generation parameters.
 
     Returns:
-        float: 生成された浮動小数点数
+        Generated number.
     """
 
     schema = __normalize_schema(schema)
@@ -30,85 +37,84 @@ def gennum(schema: dict, options: dict = {}) -> float:
     minimum = max(schema["minimum"], schema["exclusiveMinimum"])
     maximum = min(schema["maximum"], schema["exclusiveMaximum"])
 
-    if(minimum > maximum):
-        raise Exception("Minimum value must be lower than or equal to the maximum value.")
+    if minimum > maximum:
+        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.")
 
-    if(maximum == schema["exclusiveMinimum"]):
-        raise Exception("ExclusiveMinimum value must be lower than the maximum value.")
+    if maximum == schema["exclusiveMinimum"]:
+        raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.")
 
-    if(minimum == schema["exclusiveMaximum"]):
-        raise Exception("ExclusiveMaximum value must be greater than the minimum value.")
+    if minimum == schema["exclusiveMaximum"]:
+        raise SchemaConflictError("ExclusiveMaximum value must be greater than the minimum value.")
 
     # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
     # Schema に合致する値を引くまで生成を繰り返す。
-    generated = None
     for i in range(options["regenerate_limit"]):
         generated = random.uniform(minimum, maximum)
 
-        if generated == float("inf") or generated == float("-inf"):
-            raise Exception("Error by too large maximum and too small minimum")
+        if generated == float("inf") or generated == float("-inf") or generated == float("NaN"):
+            raise GenerateError("Error by too large or too small maximum or minimum")
 
         if __validate(generated, schema):
             break
-
-    if not __validate(generated, schema):
-        raise Exception("No valid value generated on loop.")
+    else:
+        raise GenerateError("No valid value generated on loop.")
 
     return generated
 
+
 def __normalize_schema(schema: dict) -> dict:
-    """スキーマの正規化。乱数生成に使用しやすくするため、JsonSchema の未設定の項目を設定する。
+    """Schema normalization.
+
+    To make it easier to use for randomly generation, set items to ``schema`` object.
 
     Args:
-        schema (dict): number 型についての JsonSchema を表現するマップ
+        schema: JSON schema for randomly generation.
 
     Returns:
-        dict: schema が持つ値とデフォルト値によって新たに作られた JsonSchema。
+        New schema based on ``schema`` and the default values.
     """
 
-    nSchema = __default_schema.copy()
-    nSchema.update(schema)
+    n_schema = __default_schema.copy()
+    n_schema.update(schema)
 
-    return nSchema
+    return n_schema
+
 
 def __normalize_options(options: dict) -> dict:
-    """オプションの正規化。乱数生成に使用しやすくするため、オプションの項目を設定する。
+    """Option normalization.
+
+    To make it easier to use for randomly generation, set items to ``options`` object.
 
     Args:
-        options (dict): 乱数生成のオプションを表現するマップ
+        options: Options for randomly generation.
 
     Returns:
-        dict: options が持つ値とデフォルト値によって新たに作られた乱数生成オプション。
+        New options based on ``options`` and the default values.
     """
+    options = dfor(options, {})
 
-    nOptions = __default_options.copy()
-    nOptions.update(options)
+    n_options = __default_options.copy()
+    n_options.update(options)
 
-    return nOptions
+    return n_options
+
 
 def __validate(value: float, schema: dict) -> bool:
-    """値がスキーマに適合するかどうかチェックする。
+    """Check if the value matches the schema.
+
+    This function is only used to filter out illegal values in the float generation process, so it doesn't check every
+    item in the schema. If you want to validate a value, it is recommended to use ``jsonschema`` module.
 
     Args:
-        value (float): チェック対象の値
-        schema (dict): 正規化済みのJsonSchema
+        value: Value to be checked.
+        schema: Normalized JsonSchema.
 
     Returns:
-        bool: スキームに適合していれば True、そうでなければ False。　
+        True if it conforms to the scheme, otherwise False.
     """
 
     if value is None:
         return False
 
-    return schema["exclusiveMinimum"] < value < schema["exclusiveMaximum"] \
-        and schema["minimum"] <= value <= schema["maximum"]
-
-if __name__ == "__main__":
-    schema1 = {
-        "type": "number",
-        "minimum": 0.0,
-        "exclusiveMaximum": 1.0,
-    }
-
-    num1 = gennum(schema1)
-    print(num1)
+    return schema["exclusiveMinimum"] < value < schema["exclusiveMaximum"] and \
+           schema["minimum"] <= value <= schema["maximum"]
