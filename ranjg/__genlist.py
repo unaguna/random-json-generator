@@ -95,12 +95,22 @@ def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
         items = list(schema.get("items"))
         additional_items = schema.get("additionalItems")
 
-        if additional_items is False and len(items) < dfor(min_items, len(items)):
-            raise SchemaConflictError(
-                "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal to "
-                "size of \"items\".")
+        if additional_items is False:
+            if len(items) < dfor(min_items, len(items)):
+                raise SchemaConflictError(
+                    "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal "
+                    "to size of \"items\".")
+            elif max_items is not None:
+                return min_items, min(max_items, len(items))
+            else:
+                return min_items, len(items)
 
-    return min_items, max_items
+        else:
+            return min_items, max_items
+
+    # schema がリスト指定である場合
+    else:
+        return min_items, max_items
 
 
 def _apply_default_length(min_items: Optional[int], max_items: Optional[int]) -> Tuple[int, int]:
