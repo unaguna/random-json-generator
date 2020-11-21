@@ -8,7 +8,7 @@ def load_readme() -> str:
 
 setup(
     name='ranjg',
-    version='0.1.0.3',
+    version='0.2.0.0',
     url='https://github.com/unaguna/random-json-generator',
     author='k-izumi',
     author_email='k.izumi.ysk@gmail.com',

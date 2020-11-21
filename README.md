@@ -1,4 +1,4 @@
-**ranjg 0.1.0.x — Randomly json generator**
+**ranjg 0.2.0.x — Randomly json generator**
 
 **ranjg** is a package providing functions to generate random JSON data according to JSON-Schema-**LIKE** object. (It is similar to JSON schema, but does NOT support some keywords. Also see [here](#Supported-keywords-of-schema).)
 
