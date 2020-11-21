@@ -3,7 +3,6 @@ import random
 from typing import List, Optional, Tuple
 import ranjg
 from ranjg.util.listutil import fix_length
-from ranjg.util.nonesafe import dfor
 from .validate.schema import validate_schema
 from .error import SchemaConflictError
 
@@ -96,7 +95,7 @@ def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
         additional_items = schema.get("additionalItems")
 
         if additional_items is False:
-            if len(items) < dfor(min_items, len(items)):
+            if min_items is not None and len(items) < min_items:
                 raise SchemaConflictError(
                     "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal "
                     "to size of \"items\".")
