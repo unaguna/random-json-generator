@@ -1,8 +1,8 @@
 import sys
 import random
-from collections import namedtuple
 
 from ranjg.util.nonesafe import dfor
+from .__number_range import NumberRange
 from .error import GenerateError, SchemaConflictError
 
 __default_schema = {
@@ -94,73 +94,6 @@ def __validate(value: float, schema: dict) -> bool:
            schema["minimum"] <= value <= schema["maximum"]
 
 
-class NumberRange(namedtuple("NumberRange", "minimum maximum exclusive_minimum exclusive_maximum")):
-
-    def __contains__(self, item):
-        if item < self.minimum:
-            return False
-        elif item > self.maximum:
-            return False
-        elif self.exclusive_minimum and item <= self.minimum:
-            return False
-        elif self.exclusive_maximum and item >= self.maximum:
-            return False
-        else:
-            return True
-
-    @classmethod
-    def from_schema(cls, schema: dict = None):
-        """Initialize NumberRange
-
-        Args:
-            schema: Schema object.
-        """
-        minimum = schema.get("minimum")
-        maximum = schema.get("maximum")
-        exclusive_minimum = schema.get("exclusiveMinimum")
-        exclusive_maximum = schema.get("exclusiveMaximum")
-
-        if exclusive_minimum is None:
-            # exclusive_minimum の指定が無いなら、フラグは立たない。
-            exclusive_minimum = False
-        elif exclusive_minimum is True:
-            # exclusive_minimum が True なら、フラグが立つ。ただし minimum の指定が無い場合はフラグを立てない決まり。
-            exclusive_minimum = minimum is not None
-        elif exclusive_minimum is False:
-            # exclusive_minimum が False なら、フラグが立たない。
-            pass
-        else:
-            # exclusive_minimum が数値なら、minimum 以上なら使用される。
-            if minimum is None or minimum <= exclusive_minimum:
-                minimum = exclusive_minimum
-                exclusive_minimum = True
-            else:
-                exclusive_minimum = False
-
-        maximum = maximum
-        if exclusive_maximum is None:
-            # exclusive_maximum の指定が無いなら、フラグは立たない。
-            exclusive_maximum = False
-        elif exclusive_maximum is True:
-            # exclusive_maximum が True なら、フラグが立つ。ただし maximum の指定が無い場合はフラグを立てない決まり。
-            exclusive_maximum = maximum is not None
-        elif exclusive_maximum is False:
-            # exclusive_maximum が False なら、フラグが立たない。
-            pass
-        else:
-            # exclusive_maximum が数値なら、maximum 以下なら使用される。
-            if maximum is None or maximum >= exclusive_maximum:
-                maximum = exclusive_maximum
-                exclusive_maximum = True
-            else:
-                exclusive_maximum = False
-
-        return NumberRange(minimum=minimum,
-                           maximum=maximum,
-                           exclusive_minimum=exclusive_minimum,
-                           exclusive_maximum=exclusive_maximum)
-
-
 def _apply_default(number_range: NumberRange) -> NumberRange:
     """Apply default range.
 
@@ -177,10 +110,10 @@ def _apply_default(number_range: NumberRange) -> NumberRange:
                                exclusive_minimum=False,
                                exclusive_maximum=True)
         else:
-            return number_range._replace(minimum=_little_less(number_range.maximum), exclusive_minimum=False)
+            return number_range.replace(minimum=_little_less(number_range.maximum), exclusive_minimum=False)
     else:
         if number_range.maximum is None:
-            return number_range._replace(maximum=_little_greater(number_range.minimum), exclusive_maximum=True)
+            return number_range.replace(maximum=_little_greater(number_range.minimum), exclusive_maximum=True)
         else:
             return number_range
 
