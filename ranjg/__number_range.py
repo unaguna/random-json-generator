@@ -1,4 +1,5 @@
 from collections import namedtuple
+from typing import Union, Tuple, Optional
 
 
 class NumberRange(namedtuple("NumberRange", "minimum maximum exclusive_minimum exclusive_maximum")):
@@ -30,17 +31,21 @@ class NumberRange(namedtuple("NumberRange", "minimum maximum exclusive_minimum e
         return _from_schema(schema)
 
 
-def _from_schema(schema: dict) -> NumberRange:
-    """Initialize NumberRange
+def _normalize_minimum(minimum: Union[float, int, None],
+                       exclusive_minimum: Union[float, int, bool, None]) -> Tuple[Optional[float], bool]:
+    """Normalize minimum
+
+    Normalize minimum value of draft-4-style schema and draft-7-style schema to draft-4-style schema.
 
     Args:
-        schema: Schema object.
-    """
-    minimum = schema.get("minimum")
-    maximum = schema.get("maximum")
-    exclusive_minimum = schema.get("exclusiveMinimum")
-    exclusive_maximum = schema.get("exclusiveMaximum")
+        minimum: The lower bound.
+        exclusive_minimum:
+            The lower bound or a boolean value meaning that whether or not to include the value ``minimum`` in the
+            range.
 
+    Returns:
+        The first value is minimum. The second value is whether or not to include the value ``minimum`` in the range.
+    """
     if exclusive_minimum is None:
         # exclusive_minimum の指定が無いなら、フラグは立たない。
         exclusive_minimum = False
@@ -58,7 +63,24 @@ def _from_schema(schema: dict) -> NumberRange:
         else:
             exclusive_minimum = False
 
-    maximum = maximum
+    return minimum, exclusive_minimum
+
+
+def _normalize_maximum(maximum: Union[float, int, None],
+                       exclusive_maximum: Union[float, int, bool, None]) -> Tuple[Optional[float], bool]:
+    """Normalize minimum
+
+    Normalize minimum value of draft-4-style schema and draft-7-style schema to draft-4-style schema.
+
+    Args:
+        maximum: The upper bound.
+        exclusive_maximum:
+            The upper bound or a boolean value meaning that whether or not to include the value ``maximum`` in the
+            range.
+
+    Returns:
+        The first value is maximum. The second value is whether or not to include the value ``maximum`` in the range.
+    """
     if exclusive_maximum is None:
         # exclusive_maximum の指定が無いなら、フラグは立たない。
         exclusive_maximum = False
@@ -75,6 +97,20 @@ def _from_schema(schema: dict) -> NumberRange:
             exclusive_maximum = True
         else:
             exclusive_maximum = False
+
+    return maximum, exclusive_maximum
+
+
+def _from_schema(schema: dict) -> NumberRange:
+    """Initialize NumberRange
+
+    Args:
+        schema: Schema object.
+    """
+    minimum, exclusive_minimum = _normalize_minimum(minimum=schema.get("minimum"),
+                                                    exclusive_minimum=schema.get("exclusiveMinimum"))
+    maximum, exclusive_maximum = _normalize_maximum(maximum=schema.get("maximum"),
+                                                    exclusive_maximum=schema.get("exclusiveMaximum"))
 
     return NumberRange(minimum=minimum,
                        maximum=maximum,
