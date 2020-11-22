@@ -1,13 +1,13 @@
 import itertools
 import unittest
 
-from ..__number_range import NumberRange
+from ..__number_range import _from_schema
 
 
-class TestGennumRangeFromSchema(unittest.TestCase):
-    """Test class of ``NumberRange.from_schema``
+class TestFromSchema(unittest.TestCase):
+    """Test class of ``from_schema``
 
-    Test ``ranjg.__gennum.NumberRange.from_schema``
+    Test ``ranjg.__number_range._from_schema``
     """
 
     def test_make_range_with_empty_schema(self):
@@ -21,7 +21,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
             ``exclusive_maximum`` are False.
         """
         schema = {}
-        number_range = NumberRange.from_schema(schema)
+        number_range = _from_schema(schema)
         self.assertIsNone(number_range.minimum)
         self.assertIsNone(number_range.maximum)
         self.assertFalse(number_range.exclusive_minimum)
@@ -44,7 +44,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "minimum": minimum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertEqual(number_range.minimum, minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -67,7 +67,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -92,7 +92,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertEqual(number_range.minimum, minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertEqual(number_range.exclusive_minimum, exclusive_minimum)
@@ -115,7 +115,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertEqual(number_range.minimum, exclusive_minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertTrue(number_range.exclusive_minimum)
@@ -145,7 +145,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertEqual(number_range.minimum, expected_minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertEqual(number_range.exclusive_minimum, expected_exclusive_minimum)
@@ -168,7 +168,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "maximum": maximum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertEqual(number_range.maximum, maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -191,7 +191,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertIsNone(number_range.maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -216,7 +216,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertEqual(number_range.maximum, maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -239,7 +239,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                 schema = {
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertEqual(number_range.maximum, exclusive_maximum)
                 self.assertFalse(number_range.exclusive_minimum)
@@ -269,7 +269,7 @@ class TestGennumRangeFromSchema(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                number_range = NumberRange.from_schema(schema)
+                number_range = _from_schema(schema)
                 self.assertIsNone(number_range.minimum)
                 self.assertEqual(number_range.maximum, expected_maximum)
                 self.assertFalse(number_range.exclusive_minimum)
