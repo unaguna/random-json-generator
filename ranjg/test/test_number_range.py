@@ -27,7 +27,30 @@ class TestFromSchema(unittest.TestCase):
         self.assertFalse(number_range.exclusive_minimum)
         self.assertFalse(number_range.exclusive_maximum)
 
-    # TODO: minimum, maximum, exclusive_minimum, exclusive_maximum を変えながらテスト
+    def test_make_range_with_schema(self):
+        """ Normalized System Test
+
+        Detailed testing is done on the tests of ``_normalize_minimum`` and ``_normalize_maximum``.
+        """
+        param_list = ((5.1, None, 6.5, None, 5.1, False, 6.5, False),
+                      (5.1, True, 6.5, None, 5.1, True, 6.5, False),
+                      (5.1, None, 6.5, True, 5.1, False, 6.5, True),
+                      (5.1, 5.3, 6.5, 6.7, 5.3, True, 6.5, False))
+
+        for minimum, ex_min, maximum, ex_max, expected_min, expected_ex_min, expected_max, expected_ex_max \
+                in param_list:
+            with self.subTest(minimum=minimum, ex_min=ex_min, maximum=maximum, ex_max=ex_max):
+                schema = {
+                    "minimum": minimum,
+                    "exclusiveMinimum": ex_min,
+                    "maximum": maximum,
+                    "exclusiveMaximum": ex_max,
+                }
+            number_range = _from_schema(schema)
+            self.assertEqual(number_range.minimum, expected_min)
+            self.assertEqual(number_range.maximum, expected_max)
+            self.assertEqual(number_range.exclusive_minimum, expected_ex_min)
+            self.assertEqual(number_range.exclusive_maximum, expected_ex_max)
 
 
 class TestNormalizeMinimum(unittest.TestCase):
