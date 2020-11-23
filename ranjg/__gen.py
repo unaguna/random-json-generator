@@ -1,6 +1,6 @@
 import json
 import random
-from typing import Union, List, Optional
+from typing import Union, List, Optional, TextIO
 
 from .__gennone import gennone
 from .__genbool import genbool
@@ -17,21 +17,60 @@ from .util.nonesafe import dfor
 def gen(schema: dict = None,
         schema_file: str = None,
         output_file: str = None,
-        output_fp=None,
+        output_fp: TextIO = None,
         schema_is_validated: bool = False):
     """Generate something randomly according to the JSON schema.
 
     This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
 
+    Examples
+        The following code is most simple usage.
+
+        >>> import ranjg
+        >>> schema_dict = { 'type': 'string' }
+        >>> ranjg.gen(schema_dict)    # -> returns some string
+
+        By replacing the contents of ``schema_dict``, you can change the value to be generated.
+
+        If you want to specify a schema without a python dict but with JSON file, you can use argument ``schema_file``.
+
+        >>> import ranjg
+        >>> schema_path = './schema_file.json'
+        >>> ranjg.gen(schema_file=schema_path)  # -> returns some value
+
+        If you want to get the result as JSON file, you can use argument ``output_file`` or ``output_fp``. (Following
+        two examples will run similarly.
+
+        >>> import ranjg
+        >>> schema_dict = { 'type': 'string' }
+        >>> ranjg.gen(schema_dict, output_file='./output.json')
+        >>> # -> returns the result value and writes the result to specified file
+
+        >>> import ranjg
+        >>> schema_dict = { 'type': 'string' }
+        >>> with open('./output.json', 'w+') as out_fp:
+        >>>     ranjg.gen(schema_dict, output_fp=out_fp)
+        >>>     # -> returns the result value and writes the result to specified file
+
     Args:
-        schema: JSON schema object.
-        schema_file: The path to JSON schema file. This JSON schema is used instead of ``schema``.
-        output_file: The path to a file where the result will be output as JSON.
-        output_fp: The writing object of a file where the result will be output as JSON.
-        schema_is_validated: Whether the schema is already validated or not.
+        schema (dict, default={}): JSON schema object.
+        schema_file (str, optional):
+            The path to JSON schema file. This JSON schema is used instead of the argument ``schema``.
+        output_file (str, optional): The path to a file where the result will be output as JSON.
+        output_fp (TextIO, optional): The writing object of a file where the result will be output as JSON.
+        schema_is_validated (bool, optional):
+            Whether the schema is already validated or not.
+            (In normal usage, this argument does not specify.)
 
     Returns:
         Generated something. It is satisfies the JSON schema.
+
+    Raises:
+        InvalidSchemaError:
+            When the schema specified as arguments is invalid.
+        SchemaConflictError:
+            When the schema specified as arguments has confliction.
+            In other words, when no value can satisfy the schema.
     """
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
