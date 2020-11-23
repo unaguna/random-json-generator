@@ -237,5 +237,4 @@ class TestRaffleType(unittest.TestCase):
         assert that:
             If ``schema_type`` is empty list, ``_raffle_type(schema_type)`` returns None.
         """
-        choice = _raffle_type([])
-        self.assertIsNone(choice)
+        self.assertRaises(ValueError, lambda: _raffle_type([]))

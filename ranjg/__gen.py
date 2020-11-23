@@ -93,5 +93,7 @@ def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
     """
     if schema_type is None or type(schema_type) == str:
         return schema_type
+    elif len(schema_type) <= 0:
+        raise ValueError("type must not be an empty list.")
     else:
         return random.choice(schema_type)
