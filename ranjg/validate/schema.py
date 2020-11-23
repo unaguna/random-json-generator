@@ -13,6 +13,7 @@ __meta_schema = {
                 {
                     "type": "array",
                     "items": {"$ref": "#/definitions/type_single"},
+                    "minItems": 1,
                 },
             ],
         },
