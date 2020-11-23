@@ -71,6 +71,8 @@ def gen(schema: dict = None,
         SchemaConflictError:
             When the schema specified as arguments has confliction.
             In other words, when no value can satisfy the schema.
+        GenerateError:
+            If an unforeseen error arises.
     """
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")

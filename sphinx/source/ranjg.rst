@@ -7,6 +7,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   ranjg.error
+
 Module contents
 ---------------
 
