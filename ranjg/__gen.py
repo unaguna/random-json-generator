@@ -1,4 +1,7 @@
 import json
+import random
+from typing import Union, List, Optional
+
 from .__gennone import gennone
 from .__genbool import genbool
 from .__genint import genint
@@ -48,8 +51,7 @@ def gen(schema: dict = None,
     if not schema_is_validated:
         validate_schema(schema)
 
-    # TODO: Type が複数の場合の処理
-    gen_type = schema.get("type")
+    gen_type = _raffle_type(schema.get("type"))
 
     if gen_type is None:
         generated = genany(schema)
@@ -78,3 +80,18 @@ def gen(schema: dict = None,
         json.dump(generated, output_fp)
 
     return generated
+
+
+def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
+    """Returns a type string specified by the schema.
+
+    Args:
+        schema_type: The type(s) specified by the schema.
+
+    Returns:
+        A type string. If argument ``schema_type`` is None, it returns None.
+    """
+    if schema_type is None or type(schema_type) == str:
+        return schema_type
+    else:
+        return random.choice(schema_type)

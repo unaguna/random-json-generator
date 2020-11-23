@@ -41,6 +41,22 @@ class TestGen(unittest.TestCase):
         generated = gen(schema)
         jsonschema.validate(generated, schema)
 
+    def test_gen_with_multi_type(self):
+        """ Normalized System Test
+
+        If ``schema.type`` is a list, ``gen(schema)`` returns something.
+
+        assert that:
+            When ``schema.type`` is a list, ``gen(schema)`` returns a value type of a type in ``schema.type``.
+        """
+        for i in range(5):
+            schema = {
+                "type": ["string", "number"],
+            }
+            generated = gen(schema)
+            self.assertTrue(type(generated) == str or type(generated) == float)
+            jsonschema.validate(generated, schema)
+
     def test_gen_with_schema_file_path(self):
         """ Normalized System Test
 
