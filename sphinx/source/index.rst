@@ -11,6 +11,8 @@ Welcome to random-json-generator's documentation!
    :caption: Contents:
 
    ranjg
+   ranjg-json-schema
+
 
 
 
