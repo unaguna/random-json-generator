@@ -23,5 +23,6 @@ The following pages show keywords of ranjg-JSON-schema.
 
    ranjg-json-schema_type
    ranjg-json-schema_null
+   ranjg-json-schema_string
 
 .. _JSON schema: https://json-schema.org/
