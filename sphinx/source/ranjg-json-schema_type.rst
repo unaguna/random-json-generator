@@ -34,9 +34,10 @@ a list with the above strings   Along one of the strings in the list.
 
 :note: In the regular JSON schema, ``"type": "number"`` also allows for integer values such as ``1``, but ranjg always generates a float value.
 
+.. _multiple-type-specification:
 
-Multiple Specification
-----------------------
+Multiple Type Specification
+---------------------------
 
 ``type`` can be specified not only as a string, but also as a list of strings. In this case, one of them is adopted to generate the value. For example:
 
