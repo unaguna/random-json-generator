@@ -18,7 +18,7 @@ In the future, we will increase corresponding keywords and may even adopt our ow
 The following pages show keywords of ranjg-JSON-schema.
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: References:
 
    ranjg-json-schema_type
