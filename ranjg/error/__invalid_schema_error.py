@@ -38,11 +38,12 @@ def _path_to_str(path: Iterable[Union[str, int]]) -> str:
 
 
 class InvalidSchemaError(Exception):
-    """Schema error class
+    """Schema error class.
 
-    Attributes:
-        __cause_list (List[ValidationErrorWrapper]):
-            A list of validation errors that caused this error.
+    This error raises if the schema is invalid.
+
+    When the schema is valid but no value satisfy it (exp: ``schema.minimum > schema.maximum``), ``SchemaConflictError``
+    is raised.
     """
 
     def __init__(self,
@@ -53,6 +54,7 @@ class InvalidSchemaError(Exception):
             validation_error_list:
                 A list of validation errors that caused this error.
         """
+        # (List[ValidationErrorWrapper]) A list of validation errors that caused this error.
         self.__cause_list = map(lambda e: ValidationErrorWrapper(e), validation_error_list)
 
         message_line_list = self._make_message_line_list()
@@ -120,4 +122,3 @@ class ValidationErrorWrapper:
             return e.make_message(indent + 2 * _INDENT_UNIT_LENGTH)
 
         return sum(map(context_to_message_line, self.context), [])
-

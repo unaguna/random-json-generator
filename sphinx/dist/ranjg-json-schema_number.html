@@ -1,0 +1,291 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Number Generation &mdash; random-json-generator  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Boolean Generation" href="ranjg-json-schema_boolean.html" />
+    <link rel="prev" title="String Generation" href="ranjg-json-schema_string.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> random-json-generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick-start-code.html">Quick Start (Python Code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg.html">ranjg package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_type.html">Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_null.html">Null Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_string.html">String Generation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Number Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#range">Range</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_boolean.html">Boolean Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_array.html">Array Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_object.html">Object Generation</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">random-json-generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="ranjg-json-schema.html">ranjg-JSON-schema</a> &raquo;</li>
+        
+      <li>Number Generation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ranjg-json-schema_number.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="number-generation">
+<h1>Number Generation<a class="headerlink" href="#number-generation" title="Permalink to this headline">¶</a></h1>
+<p>When <code class="docutils literal notranslate"><span class="pre">number</span></code> or <code class="docutils literal notranslate"><span class="pre">integer</span></code> is adopted as <a class="reference internal" href="ranjg-json-schema_type.html"><span class="doc">type</span></a>, <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> returns a numerical value.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns a float number</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span>
+<span class="go">&lt;class &#39;float&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns an integer</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span>
+<span class="go">&lt;class &#39;int&#39;&gt;</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">note</dt>
+<dd class="field-odd"><p>If <code class="docutils literal notranslate"><span class="pre">type</span></code> is <code class="docutils literal notranslate"><span class="pre">'number'</span></code>, the type of the result is always <code class="docutils literal notranslate"><span class="pre">float</span></code>, but it can also be an integer, as in <code class="docutils literal notranslate"><span class="pre">1.0</span></code>.</p>
+</dd>
+<dt class="field-even">note</dt>
+<dd class="field-even"><p>If you want to randomly determine whether the type is <code class="docutils literal notranslate"><span class="pre">int</span></code> or <code class="docutils literal notranslate"><span class="pre">float</span></code>, you can use <code class="docutils literal notranslate"><span class="pre">'type':['integer','number']</span></code> to do so. (see <a class="reference internal" href="ranjg-json-schema_type.html#multiple-type-specification"><span class="std std-ref">Multiple Type Specification</span></a>)</p>
+</dd>
+</dl>
+<div class="section" id="range">
+<h2>Range<a class="headerlink" href="#range" title="Permalink to this headline">¶</a></h2>
+<p>Ranges of numbers are specified using a combination of the <code class="docutils literal notranslate"><span class="pre">minimum</span></code> and <code class="docutils literal notranslate"><span class="pre">maximum</span></code> keywords, (or <code class="docutils literal notranslate"><span class="pre">exclusiveMinimum</span></code> and <code class="docutils literal notranslate"><span class="pre">exclusiveMaximum</span></code> for expressing exclusive range).</p>
+<p>Generated value <em>x</em> satisfies the following:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>x ≧ minimum
+x ≦ maximum
+x ＞ exclusiveMinimum
+x ＜ exclusiveMaximum
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">warning</dt>
+<dd class="field-odd"><p>For now, if <code class="docutils literal notranslate"><span class="pre">exclusiveMinimum</span></code> is set to true, the number <em>x</em> generated will satisfy <em>x</em> ＜ <code class="docutils literal notranslate"><span class="pre">minimum</span></code>, but this will be deprecated in the future. Similarly for <code class="docutils literal notranslate"><span class="pre">exclusiveMaximum</span></code>.</p>
+</dd>
+</dl>
+<p>For example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;minimum&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">generated</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;integer&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;exclusiveMinimum&#39;</span><span class="p">:</span> <span class="mi">74</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;maximum&#39;</span><span class="p">:</span> <span class="mi">77</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">75</span><span class="p">,</span> <span class="mi">76</span><span class="p">,</span> <span class="mi">77</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ranjg-json-schema_boolean.html" class="btn btn-neutral float-right" title="Boolean Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ranjg-json-schema_string.html" class="btn btn-neutral float-left" title="String Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020-2021, k-izumi
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
