@@ -1,4 +1,4 @@
-**ranjg 0.2.0.x — Randomly json generator**
+**ranjg 0.3.0.x — Randomly json generator**
 
 **ranjg** is a package providing functions to generate random JSON data according to JSON-Schema-**LIKE** object. (It is similar to JSON schema, but does NOT support some keywords. Also see [here](#Supported-keywords-of-schema).)
 
@@ -126,12 +126,10 @@ The following keywords can be used in much the same way as in regular JSON schem
 
 **Supported keywords**
 
-- "type" (Allow only single type.)
-    - **Allowed**: "object", "array", "string", "number", "integer", "boolean" and "null"
-    - **NOT Allowed**: ["string", "null"] etc.
+- "type"
+    - **Allowed**: "object", "array", "string", "number", "integer", "boolean", "null" and multiple type.
 - "properties", "required"
 - "items", "minItems", "maxItems", "additionalItems"
 - "pattern", "minLength", "maxLength"
     - **Warning**: When "pattern" specified, "minLength" and "maxLength" are ignored.
 - "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"
-    - **Warning**: Boolean specification of "exclusiveMinimum" and "exclusiveMaximum" can be used ONLY with `"type": "integer"`, but CANNOT with `"type": "number"`. (To be revised.)
