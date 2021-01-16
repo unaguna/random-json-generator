@@ -2,7 +2,13 @@ Quick Start (Python Code)
 =========================
 Module ``ranjg`` can be used in python code.
 
-You can generate values according to :doc:`ranjg-json-schema` with following code.
+If you haven't installed ranjg yet, install it with the following command:
+
+.. code-block:: shell
+
+    $ pip install ranjg
+
+Then, you can generate values according to :doc:`ranjg-json-schema` with following code.
 
 >>> import ranjg
 >>> schema = {

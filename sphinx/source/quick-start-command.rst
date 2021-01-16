@@ -2,7 +2,13 @@ Quick Start (Command Line)
 ==========================
 Module ``ranjg`` can be used on command line.
 
-You can generate values according to :doc:`ranjg-json-schema` with following command.
+If you haven't installed ranjg yet, install it with the following command:
+
+.. code-block:: shell
+
+    $ pip install ranjg
+
+Then, you can generate values according to :doc:`ranjg-json-schema` with following command.
 
 .. code-block:: shell
 
