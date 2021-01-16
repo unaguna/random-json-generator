@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'random-json-generator'
-copyright = '2020, k-izumi'
+copyright = '2020-2021, k-izumi'
 author = 'k-izumi'
 
 
