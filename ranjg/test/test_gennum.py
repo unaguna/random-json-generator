@@ -1,5 +1,7 @@
 import unittest
+
 import jsonschema
+
 from ranjg import gennum
 from ranjg.error import SchemaConflictError
 

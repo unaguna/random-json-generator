@@ -2,6 +2,6 @@
 .vscode/
 __pycache__/
 
-dist/
+/dist/
 build/
 ranjg.egg-info/

@@ -6,6 +6,8 @@ import shutil
 import unittest
 import jsonschema
 from ranjg import gen
+from ..__gen import _raffle_type
+from ..error import InvalidSchemaError
 
 
 class TestGen(unittest.TestCase):
@@ -40,6 +42,35 @@ class TestGen(unittest.TestCase):
         schema = {}
         generated = gen(schema)
         jsonschema.validate(generated, schema)
+
+    def test_gen_with_multi_type(self):
+        """ Normalized System Test
+
+        If ``schema.type`` is a list, ``gen(schema)`` returns something.
+
+        assert that:
+            When ``schema.type`` is a list, ``gen(schema)`` returns a value type of a type in ``schema.type``.
+        """
+        for i in range(5):
+            schema = {
+                "type": ["string", "number"],
+            }
+            generated = gen(schema)
+            self.assertTrue(type(generated) == str or type(generated) == float)
+            jsonschema.validate(generated, schema)
+
+    def test_gen_with_empty_multi_type(self):
+        """ Semi-normalized System Test
+
+        If ``schema.type`` is an empty list, ``gen(schema)`` raises InvalidSchemaError.
+
+        assert that:
+            When ``schema.type`` is an empty list, ``gen(schema)`` raises InvalidSchemaError.
+        """
+        schema = {
+            "type": [],
+        }
+        self.assertRaises(InvalidSchemaError, lambda: gen(schema))
 
     def test_gen_with_schema_file_path(self):
         """ Normalized System Test
@@ -146,3 +177,64 @@ class TestGen(unittest.TestCase):
                               lambda: gen(schema,
                                           output_file=output_file,
                                           output_fp=fp))
+
+
+class TestRaffleType(unittest.TestCase):
+    """Test class of ``_raffle_type``
+
+    Test ``ranjg.__gen._raffle_type``
+    """
+
+    def test_raffle_type_with_none(self):
+        """ Normalized System Test
+
+        If argument ``schema_type`` is None, returns None.
+
+        assert that:
+            If ``schema_type`` is None, ``_raffle_type(schema_type)`` returns None.
+        """
+        choice = _raffle_type(None)
+        self.assertIsNone(choice)
+
+    def test_raffle_type_with_str(self):
+        """ Normalized System Test
+
+        If argument ``schema_type`` is string, returns it.
+
+        assert that:
+            If ``schema_type`` is string, ``_raffle_type(schema_type)`` returns string same to the argument.
+        """
+        schema_type_list = ("null", "boolean", "integer", "number", "string", "array", "object")
+
+        for schema_type in schema_type_list:
+            with self.subTest(type=schema_type):
+                choice = _raffle_type(schema_type)
+                self.assertEqual(choice, schema_type)
+
+    def test_raffle_type_with_list(self):
+        """ Normalized System Test
+
+        If argument ``schema_type`` is non-empty list, returns a string in the argument.
+
+        assert that:
+            If ``schema_type`` is non-empty list, ``_raffle_type(schema_type)`` returns a string of the argument.
+        """
+        schema_type_list = (["null", "boolean", "integer", "number", "string", "array", "object"],
+                            ["null", "number"],
+                            ["string", "boolean"])
+
+        for schema_type in schema_type_list:
+            with self.subTest(type=schema_type):
+                for i in range(5):
+                    choice = _raffle_type(schema_type)
+                    self.assertIn(choice, schema_type)
+
+    def test_raffle_type_with_empty_list(self):
+        """ Normalized System Test
+
+        If argument ``schema_type`` is empty list, returns None.
+
+        assert that:
+            If ``schema_type`` is empty list, ``_raffle_type(schema_type)`` returns None.
+        """
+        self.assertRaises(ValueError, lambda: _raffle_type([]))
