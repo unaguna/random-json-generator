@@ -1,0 +1,279 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Object Generation &mdash; random-json-generator  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Array Generation" href="ranjg-json-schema_array.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> random-json-generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick-start-code.html">Quick Start (Python Code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg.html">ranjg package</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_type.html">Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_null.html">Null Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_string.html">String Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_number.html">Number Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_boolean.html">Boolean Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_array.html">Array Generation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Object Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#properties">Properties</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#required-properties">Required Properties</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">random-json-generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="ranjg-json-schema.html">ranjg-JSON-schema</a> &raquo;</li>
+        
+      <li>Object Generation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ranjg-json-schema_object.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="object-generation">
+<h1>Object Generation<a class="headerlink" href="#object-generation" title="Permalink to this headline">¶</a></h1>
+<p>When <code class="docutils literal notranslate"><span class="pre">object</span></code> is adopted as <a class="reference internal" href="ranjg-json-schema_type.html"><span class="doc">type</span></a>, <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> returns a dict randomly.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns a dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span>
+<span class="go">&lt;class &#39;dict&#39;&gt;</span>
+</pre></div>
+</div>
+<div class="section" id="properties">
+<h2>Properties<a class="headerlink" href="#properties" title="Permalink to this headline">¶</a></h2>
+<p>By specifying <code class="docutils literal notranslate"><span class="pre">properties</span></code>, you can control each property of the generated dict. <code class="docutils literal notranslate"><span class="pre">properties</span></code> is a dictionary whose keys are strings and whose values are schemas. If a property name in the generated dict matches a key, the property satisfies the schema corresponding to the key.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;properties&#39;</span><span class="p">:</span> <span class="p">{</span>
+<span class="gp">... </span>        <span class="s1">&#39;pro1&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span> <span class="p">},</span>
+<span class="gp">... </span>        <span class="s1">&#39;pro2&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;number&#39;</span> <span class="p">},</span>
+<span class="gp">... </span>    <span class="p">},</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns a dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="s1">&#39;pro1&#39;</span> <span class="ow">in</span> <span class="n">generated</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generated</span><span class="p">[</span><span class="s1">&#39;pro1&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="s1">&#39;pro2&#39;</span> <span class="ow">in</span> <span class="n">generated</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generated</span><span class="p">[</span><span class="s1">&#39;pro2&#39;</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">note</dt>
+<dd class="field-odd"><p>Even if a key is specified in <code class="docutils literal notranslate"><span class="pre">properties</span></code>, it does not necessarily mean that the generated dict will contain that key. The keys that must be included in the generated dict are specified with the <code class="docutils literal notranslate"><span class="pre">required</span></code> keyword.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="required-properties">
+<h2>Required Properties<a class="headerlink" href="#required-properties" title="Permalink to this headline">¶</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">required</span></code> is a list of strings, those strings will always be included as keys in the generated dict.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;object&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="s1">&#39;required&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;pro1&#39;</span><span class="p">,</span> <span class="s1">&#39;pro2&#39;</span><span class="p">],</span>
+<span class="gp">... </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns a dict</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s1">&#39;pro1&#39;</span> <span class="ow">in</span> <span class="n">generated</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="s1">&#39;pro2&#39;</span> <span class="ow">in</span> <span class="n">generated</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">note</dt>
+<dd class="field-odd"><p>The <code class="docutils literal notranslate"><span class="pre">required</span></code> keyword specifies only the presence of a key. If you want to specify the contents of a property, use the <code class="docutils literal notranslate"><span class="pre">properties</span></code> keyword as well.</p>
+</dd>
+</dl>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="ranjg-json-schema_array.html" class="btn btn-neutral float-left" title="Array Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020-2021, k-izumi
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
