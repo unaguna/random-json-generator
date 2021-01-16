@@ -10,6 +10,8 @@ Welcome to random-json-generator's documentation!
    :maxdepth: 1
    :caption: Contents:
 
+   quick-start-code
+   quick-start-command
    ranjg
    ranjg-json-schema
 
