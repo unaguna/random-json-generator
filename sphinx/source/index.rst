@@ -3,8 +3,20 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to random-json-generator's documentation!
-=================================================
+random-json-generator
+=====================
+
+random-json-generator (ranjg) is a python package providing functions to generate random JSON data according to
+JSON-Schema-**LIKE** object. (It is similar to JSON schema, but does NOT support some keywords.
+Also see :doc:`ranjg-json-schema`.)
+
+For example:
+
+>>> import ranjg
+>>> schema = { 'type': 'string' }
+>>> ranjg.gen(schema)  # <- returns a string value
+>>> schema = { 'type': 'number', "minimum": 0 }
+>>> ranjg.gen(schema)  # <- returns a non-negative float value
 
 .. toctree::
    :maxdepth: 1
