@@ -3,7 +3,7 @@ import string
 
 import rstr
 
-from .__common import _Generator
+from .__common import Generator
 from ..error import SchemaConflictError
 from ..validate.schema import validate_schema
 
@@ -38,7 +38,7 @@ def _normalize_schema(schema: dict) -> dict:
     return n_schema
 
 
-class StrGenerator(_Generator[str]):
+class StrGenerator(Generator[str]):
 
     def gen(self,
             schema: dict,

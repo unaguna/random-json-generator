@@ -3,7 +3,7 @@ import random
 from typing import Tuple, Optional, List
 
 import ranjg
-from .__common import _Generator
+from .__common import Generator
 from ..error import SchemaConflictError
 from ..util.listutil import fix_length
 
@@ -131,7 +131,7 @@ def _get_items_schema_list(schema: dict, item_count: int) -> List[dict]:
         return item_count * [schema.get("items", __default_items_schema)]
 
 
-class ListGenerator(_Generator[list]):
+class ListGenerator(Generator[list]):
     def gen(self, schema: dict, *, schema_is_validated: bool = False) -> list:
 
         # スキーマの不正判定

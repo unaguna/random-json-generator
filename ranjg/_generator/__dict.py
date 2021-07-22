@@ -1,7 +1,7 @@
 import random
 
 import ranjg
-from .__common import _Generator
+from .__common import Generator
 from ..util.listutil import diff
 from ..util.nonesafe import dfor
 
@@ -38,7 +38,7 @@ def _normalize_options(options: dict) -> dict:
     return n_options
 
 
-class DictGenerator(_Generator[dict]):
+class DictGenerator(Generator[dict]):
     def gen(self, schema: dict, *, schema_is_validated: bool = False) -> dict:
         generated = dict()
 

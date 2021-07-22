@@ -2,12 +2,12 @@ import math
 import random
 from typing import Optional, Union, Tuple
 
-from .__common import _Generator
+from .__common import Generator
 from ..error import SchemaConflictError
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
 
-class IntGenerator(_Generator[int]):
+class IntGenerator(Generator[int]):
 
     def gen(self,
             schema: dict,

@@ -4,7 +4,7 @@ from typing import TypeVar, Generic
 _T = TypeVar('_T')
 
 
-class _Generator(abc.ABC, Generic[_T]):
+class Generator(abc.ABC, Generic[_T]):
 
     @abc.abstractmethod
     def gen(self,

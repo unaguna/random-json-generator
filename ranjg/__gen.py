@@ -1,18 +1,12 @@
-import abc
 import json
 import random
-from typing import Union, List, Optional, TextIO, TypeVar, Generic
+from typing import Union, List, Optional, TextIO
 
-from .__gennone import gennone
-from .__genbool import genbool
-from .__genint import genint
-from .__gennum import gennum
-from .__genstr import genstr
-from .__gendict import gendict
-from .__genlist import genlist
-from .__genany import genany
-from .validate.schema import validate_schema
+from ._generator import Generator, NoneGenerator, IntGenerator, BoolGenerator, StrGenerator, DictGenerator, \
+    ListGenerator
+from ._generator.__float import NumGenerator
 from .util.nonesafe import dfor
+from .validate.schema import validate_schema
 
 
 def gen(schema: dict = None,
@@ -94,25 +88,10 @@ def gen(schema: dict = None,
         validate_schema(schema)
 
     gen_type = _raffle_type(schema.get("type"))
+    generator = _get_generator(gen_type)
 
-    if gen_type is None:
-        generated = genany(schema)
-    elif gen_type == "null":
-        generated = gennone()
-    elif gen_type == "integer":
-        generated = genint(schema)
-    elif gen_type == "number":
-        generated = gennum(schema)
-    elif gen_type == "boolean":
-        generated = genbool()
-    elif gen_type == "string":
-        generated = genstr(schema, schema_is_validated=True)
-    elif gen_type == "object":
-        generated = gendict(schema)
-    elif gen_type == "array":
-        generated = genlist(schema, schema_is_validated=True)
-    else:
-        raise ValueError(f"Unsupported type: {gen_type}")
+    # ランダムに値を生成
+    generated = generator.gen(schema, schema_is_validated=True)
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
@@ -139,3 +118,34 @@ def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
         raise ValueError("type must not be an empty list.")
     else:
         return random.choice(schema_type)
+
+
+def _get_generator(gen_type: Optional[str]) -> Generator:
+    """Returns a ranjg._generator.Generator instance according to gen_type.
+
+    Args:
+        gen_type:
+            generator's type
+    Returns:
+        generator
+    """
+
+    if gen_type is None:
+        # TODO: None 固定でよいか要検討
+        return NoneGenerator()
+    elif gen_type == "null":
+        return NoneGenerator()
+    elif gen_type == "integer":
+        return IntGenerator()
+    elif gen_type == "number":
+        return NumGenerator()
+    elif gen_type == "boolean":
+        return BoolGenerator()
+    elif gen_type == "string":
+        return StrGenerator()
+    elif gen_type == "object":
+        return DictGenerator()
+    elif gen_type == "array":
+        return ListGenerator()
+    else:
+        raise ValueError(f"Unsupported type: {gen_type}")

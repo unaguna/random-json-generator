@@ -1,7 +1,7 @@
 import random
 import sys
 
-from .__common import _Generator
+from .__common import Generator
 from ..__number_range import NumberRange
 from ..error import SchemaConflictError, GenerateError
 from ..util.nonesafe import dfor
@@ -141,7 +141,7 @@ def _little_less(number: float) -> float:
         return -1.0
 
 
-class NumGenerator(_Generator[float]):
+class NumGenerator(Generator[float]):
     def gen(self, schema: dict,
             *,
             schema_is_validated: bool = False) -> float:
