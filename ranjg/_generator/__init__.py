@@ -5,3 +5,4 @@ from .__int import IntGenerator
 from .__list import ListGenerator
 from .__none import NoneGenerator
 from .__str import StrGenerator
+from .__function import get_generator

@@ -2,9 +2,7 @@ import json
 import random
 from typing import Union, List, Optional, TextIO
 
-from ._generator import Generator, NoneGenerator, IntGenerator, BoolGenerator, StrGenerator, DictGenerator, \
-    ListGenerator
-from ._generator.__float import NumGenerator
+from ._generator import get_generator
 from .util.nonesafe import dfor
 from .validate.schema import validate_schema
 
@@ -88,7 +86,7 @@ def gen(schema: dict = None,
         validate_schema(schema)
 
     gen_type = _raffle_type(schema.get("type"))
-    generator = _get_generator(gen_type)
+    generator = get_generator(gen_type)
 
     # ランダムに値を生成
     generated = generator.gen(schema, schema_is_validated=True)
@@ -118,34 +116,3 @@ def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
         raise ValueError("type must not be an empty list.")
     else:
         return random.choice(schema_type)
-
-
-def _get_generator(gen_type: Optional[str]) -> Generator:
-    """Returns a ranjg._generator.Generator instance according to gen_type.
-
-    Args:
-        gen_type:
-            generator's type
-    Returns:
-        generator
-    """
-
-    if gen_type is None:
-        # TODO: None 固定でよいか要検討
-        return NoneGenerator()
-    elif gen_type == "null":
-        return NoneGenerator()
-    elif gen_type == "integer":
-        return IntGenerator()
-    elif gen_type == "number":
-        return NumGenerator()
-    elif gen_type == "boolean":
-        return BoolGenerator()
-    elif gen_type == "string":
-        return StrGenerator()
-    elif gen_type == "object":
-        return DictGenerator()
-    elif gen_type == "array":
-        return ListGenerator()
-    else:
-        raise ValueError(f"Unsupported type: {gen_type}")
