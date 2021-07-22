@@ -1,8 +1,7 @@
 from typing import Optional
 
 from . import Generator, NoneGenerator, IntGenerator, BoolGenerator, StrGenerator, DictGenerator, \
-    ListGenerator
-from .__float import NumGenerator
+    ListGenerator, NumGenerator
 
 
 def get_generator(gen_type: Optional[str]) -> Generator:

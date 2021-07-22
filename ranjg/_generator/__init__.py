@@ -1,6 +1,7 @@
 from .__common import Generator
 from .__bool import BoolGenerator
 from .__dict import DictGenerator
+from .__float import NumGenerator
 from .__int import IntGenerator
 from .__list import ListGenerator
 from .__none import NoneGenerator

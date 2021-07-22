@@ -1,4 +1,4 @@
-from ._generator.__float import NumGenerator
+from ._generator import NumGenerator
 
 
 def gennum(schema: dict) -> float:
