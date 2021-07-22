@@ -28,7 +28,7 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
     """
 
     items = schema.get("items")
-    return isinstance(items, collections.abc.Sequence)
+    return isinstance(items, collections.Sequence)
 
 
 def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
