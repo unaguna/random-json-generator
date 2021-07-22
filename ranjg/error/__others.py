@@ -1,3 +1,6 @@
+from .._context import Context
+
+
 class SchemaConflictError(Exception):
     """Conflict errors in the schema.
 
@@ -6,7 +9,9 @@ class SchemaConflictError(Exception):
 
     When the schema is invalid (exp: ``schema.type`` is illegal string), ``InvalidSchemaError`` is raised.
     """
-    pass
+    def __init__(self, message: str, context: Context):
+        super(SchemaConflictError, self).__init__(message)
+        self.context = context
 
 
 class GenerateError(Exception):

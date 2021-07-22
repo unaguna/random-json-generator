@@ -10,3 +10,7 @@ class Context:
     def __init__(self, path: Iterable[Union[int, str]], current_schema: dict):
         self._path = tuple(path)
         self._current_schema = current_schema
+
+    @property
+    def path(self) -> Tuple[Union[int, str]]:
+        return self._path
