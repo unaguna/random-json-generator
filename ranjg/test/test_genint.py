@@ -2,7 +2,7 @@ import math
 import unittest
 import jsonschema
 from ranjg import genint
-from ranjg.__genint import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
+from ranjg._generator.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
 from ranjg.error import SchemaConflictError
 
 

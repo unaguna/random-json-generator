@@ -2,16 +2,9 @@ import json
 import random
 from typing import Union, List, Optional, TextIO
 
-from .__gennone import gennone
-from .__genbool import genbool
-from .__genint import genint
-from .__gennum import gennum
-from .__genstr import genstr
-from .__gendict import gendict
-from .__genlist import genlist
-from .__genany import genany
-from .validate.schema import validate_schema
+from ._generator import get_generator
 from .util.nonesafe import dfor
+from .validate.schema import validate_schema
 
 
 def gen(schema: dict = None,
@@ -93,25 +86,10 @@ def gen(schema: dict = None,
         validate_schema(schema)
 
     gen_type = _raffle_type(schema.get("type"))
+    generator = get_generator(gen_type)
 
-    if gen_type is None:
-        generated = genany(schema)
-    elif gen_type == "null":
-        generated = gennone()
-    elif gen_type == "integer":
-        generated = genint(schema)
-    elif gen_type == "number":
-        generated = gennum(schema)
-    elif gen_type == "boolean":
-        generated = genbool()
-    elif gen_type == "string":
-        generated = genstr(schema, schema_is_validated=True)
-    elif gen_type == "object":
-        generated = gendict(schema)
-    elif gen_type == "array":
-        generated = genlist(schema, schema_is_validated=True)
-    else:
-        raise ValueError(f"Unsupported type: {gen_type}")
+    # ランダムに値を生成
+    generated = generator.gen(schema, schema_is_validated=True)
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
