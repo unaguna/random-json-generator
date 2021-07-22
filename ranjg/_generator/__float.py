@@ -142,9 +142,7 @@ def _little_less(number: float) -> float:
 
 
 class NumGenerator(Generator[float]):
-    def gen(self, schema: dict,
-            *,
-            schema_is_validated: bool = False) -> float:
+    def gen_without_schema_check(self, schema: dict) -> float:
         options = _normalize_options({})
 
         # 生成する数値の範囲

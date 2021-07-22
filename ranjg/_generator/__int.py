@@ -9,11 +9,8 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 
 class IntGenerator(Generator[int]):
 
-    def gen(self,
-            schema: dict,
-            *,
-            schema_is_validated: bool = False) -> int:
-
+    def gen_without_schema_check(self,
+                                 schema: dict) -> int:
         # Convert float or exclusive value in schema to integer inclusive value.
         minimum = _get_inclusive_integer_minimum(schema)
         maximum = _get_inclusive_integer_maximum(schema)

@@ -4,5 +4,5 @@ from .__common import Generator
 
 
 class BoolGenerator(Generator[bool]):
-    def gen(self, schema: dict, *, schema_is_validated: bool = False) -> bool:
+    def gen_without_schema_check(self, schema: dict) -> bool:
         return random.random() < 0.5

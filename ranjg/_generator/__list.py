@@ -10,8 +10,6 @@ from ..util.listutil import fix_length
 
 # 配列の要素の値の生成に使用するスキーマのデフォルト値。
 # items に指定がない場合に使用する。
-from ..validate.schema import validate_schema
-
 __default_items_schema = {
     "type": "number",
     "minimum": 0,
@@ -132,11 +130,7 @@ def _get_items_schema_list(schema: dict, item_count: int) -> List[dict]:
 
 
 class ListGenerator(Generator[list]):
-    def gen(self, schema: dict, *, schema_is_validated: bool = False) -> list:
-
-        # スキーマの不正判定
-        if not schema_is_validated:
-            validate_schema(schema)
+    def gen_without_schema_check(self, schema: dict) -> list:
 
         # 生成するリスト
         result = []

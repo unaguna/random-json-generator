@@ -39,7 +39,7 @@ def _normalize_options(options: dict) -> dict:
 
 
 class DictGenerator(Generator[dict]):
-    def gen(self, schema: dict, *, schema_is_validated: bool = False) -> dict:
+    def gen_without_schema_check(self, schema: dict) -> dict:
         generated = dict()
 
         options = _normalize_options({})
@@ -58,7 +58,8 @@ class DictGenerator(Generator[dict]):
             if generated_keys.get(required_key) is True:
                 continue
 
-            generated[required_key] = ranjg.gen(properties.get(required_key, _default_required_schema))
+            generated[required_key] = ranjg.gen(properties.get(required_key, _default_required_schema),
+                                                schema_is_validated=True)
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
@@ -72,7 +73,7 @@ class DictGenerator(Generator[dict]):
                 generated_keys[prop_key] = False
                 continue
 
-            generated[prop_key] = ranjg.gen(properties[prop_key])
+            generated[prop_key] = ranjg.gen(properties[prop_key], schema_is_validated=True)
             generated_keys[prop_key] = True
 
         return generated

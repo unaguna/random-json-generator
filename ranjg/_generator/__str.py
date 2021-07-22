@@ -5,7 +5,6 @@ import rstr
 
 from .__common import Generator
 from ..error import SchemaConflictError
-from ..validate.schema import validate_schema
 
 __default_schema = {
     "pattern": None,
@@ -40,14 +39,8 @@ def _normalize_schema(schema: dict) -> dict:
 
 class StrGenerator(Generator[str]):
 
-    def gen(self,
-            schema: dict,
-            *,
-            schema_is_validated: bool = False) -> str:
-
-        # スキーマの不正判定
-        if not schema_is_validated:
-            validate_schema(schema)
+    def gen_without_schema_check(self,
+                                 schema: dict) -> str:
 
         schema = _normalize_schema(schema)
 
