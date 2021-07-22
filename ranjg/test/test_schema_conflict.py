@@ -66,13 +66,18 @@ class TestSchemaConflictError(unittest.TestCase):
         """ Semi-normalized System Test
         """
         schema_list = (
-            ({"type": "array", "items": [{}, {"type": "number", "minimum": 10, "maximum": 5}]}, (1,)),
-            ({"type": "array", "items": [{}, {}, {"type": "number", "minimum": 10, "maximum": 5}, {}]}, (2,)),
+            ({"type": "array",
+              "minItems": 2,
+              "items": [{}, {"type": "number", "minimum": 10, "maximum": 5}]}, (1,)),
+            ({"type": "array",
+              "minItems": 3,
+              "items": [{}, {}, {"type": "number", "minimum": 10, "maximum": 5}, {}]}, (2,)),
             ({"type": "object",
               "properties": {"conflict": {"type": "number", "minimum": 10, "maximum": 5}},
               "required": ["conflict"]}, ("conflict",)),
             ({"type": "object",
               "properties": {"list": {"type": "array",
+                                      "minItems": 3,
                                       "items": [{}, {"type": "number", "minimum": 10, "maximum": 5}, {}]}},
               "required": ["list"]}, ("list", 1)),
         )

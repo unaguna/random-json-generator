@@ -1,8 +1,10 @@
 import random
 import sys
+from typing import Optional
 
 from .__common import Generator
 from ..__number_range import NumberRange
+from .._context import Context
 from ..error import SchemaConflictError, GenerateError
 from ..util.nonesafe import dfor
 
@@ -83,7 +85,7 @@ def _apply_default(number_range: NumberRange) -> NumberRange:
             return number_range
 
 
-def _check_consistency(number_range: NumberRange):
+def _check_consistency(number_range: NumberRange, context: Context):
     """Check the instance in consistency
 
     Attributes:
@@ -99,12 +101,12 @@ def _check_consistency(number_range: NumberRange):
         return
 
     if number_range.minimum > number_range.maximum:
-        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.")
+        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.", context)
     if number_range.minimum == number_range.maximum:
         if number_range.exclusive_minimum:
-            raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.")
+            raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.", context)
         elif number_range.exclusive_maximum:
-            raise SchemaConflictError("ExclusiveMaximum value must be greater than the minimum value.")
+            raise SchemaConflictError("ExclusiveMaximum value must be greater than the minimum value.", context)
 
 
 def _little_greater(number: float) -> float:
@@ -142,12 +144,18 @@ def _little_less(number: float) -> float:
 
 
 class NumGenerator(Generator[float]):
-    def gen_without_schema_check(self, schema: dict) -> float:
+    def gen_without_schema_check(self,
+                                 schema: dict,
+                                 *,
+                                 context: Optional[Context] = None) -> float:
         options = _normalize_options({})
+
+        if context is None:
+            context = Context.root(schema)
 
         # 生成する数値の範囲
         number_range = NumberRange.from_schema(schema)
-        _check_consistency(number_range)
+        _check_consistency(number_range, context)
         number_range = _apply_default(number_range)
 
         # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、

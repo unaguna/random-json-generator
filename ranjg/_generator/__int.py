@@ -3,6 +3,7 @@ import random
 from typing import Optional, Union, Tuple
 
 from .__common import Generator
+from .._context import Context
 from ..error import SchemaConflictError
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
@@ -10,13 +11,18 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 class IntGenerator(Generator[int]):
 
     def gen_without_schema_check(self,
-                                 schema: dict) -> int:
+                                 schema: dict,
+                                 *,
+                                 context: Optional[Context] = None) -> int:
+        if context is None:
+            context = Context.root(schema)
+
         # Convert float or exclusive value in schema to integer inclusive value.
         minimum = _get_inclusive_integer_minimum(schema)
         maximum = _get_inclusive_integer_maximum(schema)
 
         if minimum is not None and maximum is not None and minimum > maximum:
-            raise SchemaConflictError("There are no integers in the range specified by the schema.")
+            raise SchemaConflictError("There are no integers in the range specified by the schema.", context)
 
         minimum, maximum = _apply_default(minimum, maximum)
 
