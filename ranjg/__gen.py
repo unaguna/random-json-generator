@@ -1,6 +1,7 @@
+import abc
 import json
 import random
-from typing import Union, List, Optional, TextIO
+from typing import Union, List, Optional, TextIO, TypeVar, Generic
 
 from .__gennone import gennone
 from .__genbool import genbool

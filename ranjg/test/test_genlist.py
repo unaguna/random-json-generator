@@ -2,7 +2,7 @@ import itertools
 import unittest
 import jsonschema
 from ranjg import genlist
-from ranjg.__genlist import _get_range_of_length
+from ranjg._generator.__list import _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 

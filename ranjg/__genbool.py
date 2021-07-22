@@ -1,11 +1,13 @@
-import random
+from ._generator import BoolGenerator
 
 
-def genbool() -> bool:
+def genbool(schema: dict = None) -> bool:
     """Generate a random boolean value according to the JSON schema.
 
     Returns:
         Generated boolean value.
     """
+    if schema is None:
+        schema = {}
 
-    return random.random() < 0.5
+    return BoolGenerator().gen(schema)
