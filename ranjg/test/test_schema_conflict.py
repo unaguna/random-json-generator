@@ -21,7 +21,7 @@ class TestSchemaConflictError(unittest.TestCase):
             with self.subTest(schema=schema):
                 with self.assertRaises(SchemaConflictError) as cm:
                     gen(schema)
-                self.assertTupleEqual(cm.exception.context.path, tuple())
+                self.assertTupleEqual(cm.exception.context.key_path, tuple())
 
     def test_conflict_root_int(self):
         """ Semi-normalized System Test
@@ -34,7 +34,7 @@ class TestSchemaConflictError(unittest.TestCase):
             with self.subTest(schema=schema):
                 with self.assertRaises(SchemaConflictError) as cm:
                     gen(schema)
-                self.assertTupleEqual(cm.exception.context.path, tuple())
+                self.assertTupleEqual(cm.exception.context.key_path, tuple())
 
     def test_conflict_root_num(self):
         """ Semi-normalized System Test
@@ -47,7 +47,7 @@ class TestSchemaConflictError(unittest.TestCase):
             with self.subTest(schema=schema):
                 with self.assertRaises(SchemaConflictError) as cm:
                     gen(schema)
-                self.assertTupleEqual(cm.exception.context.path, tuple())
+                self.assertTupleEqual(cm.exception.context.key_path, tuple())
 
     def test_conflict_root_list(self):
         """ Semi-normalized System Test
@@ -60,7 +60,7 @@ class TestSchemaConflictError(unittest.TestCase):
             with self.subTest(schema=schema):
                 with self.assertRaises(SchemaConflictError) as cm:
                     gen(schema)
-                self.assertTupleEqual(cm.exception.context.path, tuple())
+                self.assertTupleEqual(cm.exception.context.key_path, tuple())
 
     def test_conflict_context(self):
         """ Semi-normalized System Test
@@ -86,4 +86,4 @@ class TestSchemaConflictError(unittest.TestCase):
             with self.subTest(schema=schema):
                 with self.assertRaises(SchemaConflictError) as cm:
                     gen(schema)
-                self.assertTupleEqual(cm.exception.context.path, path)
+                self.assertTupleEqual(cm.exception.context.key_path, path)
