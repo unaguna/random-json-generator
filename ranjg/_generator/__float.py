@@ -164,11 +164,11 @@ class NumGenerator(Generator[float]):
             generated = random.uniform(number_range.minimum, number_range.maximum)
 
             if generated == float("inf") or generated == float("-inf") or generated == float("NaN"):
-                raise GenerateError("Error by too large or too small maximum or minimum")
+                raise GenerateError("Error by too large or too small maximum or minimum", context)
 
             if generated in number_range:
                 break
         else:
-            raise GenerateError("No valid value generated on loop.")
+            raise GenerateError("No valid value generated on loop.", context)
 
         return generated
