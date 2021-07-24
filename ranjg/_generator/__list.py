@@ -4,6 +4,7 @@ from typing import Tuple, Optional, List
 
 import ranjg
 from .__common import Generator
+from .._context import Context
 from ..error import SchemaConflictError
 from ..util.listutil import fix_length
 
@@ -31,7 +32,7 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
     return isinstance(items, collections.Sequence)
 
 
-def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
+def _get_range_of_length(schema: dict, context: Context) -> Tuple[Optional[int], Optional[int]]:
     """Determine the range of the size of the list to be generated with the schema.
 
     If each of them are not specified in the schema, returns None. This function checks for inconsistencies in the
@@ -51,7 +52,7 @@ def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
     max_items: int = schema.get("maxItems")
 
     if min_items is not None and max_items is not None and min_items > max_items:
-        raise SchemaConflictError("There are no integers in the range of length specified by the schema.")
+        raise SchemaConflictError("There are no integers in the range of length specified by the schema.", context)
 
     # schema がタプル指定である場合
     if __schema_is_tuple_validation(schema):
@@ -62,7 +63,7 @@ def _get_range_of_length(schema: dict) -> Tuple[Optional[int], Optional[int]]:
             if min_items is not None and len(items) < min_items:
                 raise SchemaConflictError(
                     "In tuple validation, when \"additionalItems\" is false, \"minItems\" must be less than or equal "
-                    "to size of \"items\".")
+                    "to size of \"items\".", context)
             elif max_items is not None:
                 return min_items, min(max_items, len(items))
             else:
@@ -130,13 +131,18 @@ def _get_items_schema_list(schema: dict, item_count: int) -> List[dict]:
 
 
 class ListGenerator(Generator[list]):
-    def gen_without_schema_check(self, schema: dict) -> list:
+    def gen_without_schema_check(self,
+                                 schema: dict,
+                                 *,
+                                 context: Optional[Context] = None) -> list:
+        if context is None:
+            context = Context.root(schema)
 
         # 生成するリスト
         result = []
 
         # 生成する list の大きさの範囲
-        min_items, max_items = _get_range_of_length(schema)
+        min_items, max_items = _get_range_of_length(schema, context)
         min_items, max_items = _apply_default_length(min_items, max_items)
 
         # 生成する list の大きさ
@@ -146,8 +152,10 @@ class ListGenerator(Generator[list]):
         item_schema_list = _get_items_schema_list(schema, item_count)
 
         # 要素を1つずつ生成
-        for item_schema in item_schema_list:
-            generated_item = ranjg.gen(item_schema, schema_is_validated=True)
+        for key, item_schema in enumerate(item_schema_list):
+            generated_item = ranjg.gen(item_schema,
+                                       schema_is_validated=True,
+                                       context=context.resolve(key, item_schema))
             result.append(generated_item)
 
         return result

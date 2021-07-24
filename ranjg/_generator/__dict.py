@@ -1,7 +1,9 @@
 import random
+from typing import Optional
 
 import ranjg
 from .__common import Generator
+from .._context import Context
 from ..util.listutil import diff
 from ..util.nonesafe import dfor
 
@@ -39,7 +41,13 @@ def _normalize_options(options: dict) -> dict:
 
 
 class DictGenerator(Generator[dict]):
-    def gen_without_schema_check(self, schema: dict) -> dict:
+    def gen_without_schema_check(self,
+                                 schema: dict,
+                                 *,
+                                 context: Optional[Context] = None) -> dict:
+        if context is None:
+            context = Context.root(schema)
+
         generated = dict()
 
         options = _normalize_options({})
@@ -58,8 +66,10 @@ class DictGenerator(Generator[dict]):
             if generated_keys.get(required_key) is True:
                 continue
 
-            generated[required_key] = ranjg.gen(properties.get(required_key, _default_required_schema),
-                                                schema_is_validated=True)
+            next_schema = properties.get(required_key, _default_required_schema)
+            generated[required_key] = ranjg.gen(next_schema,
+                                                schema_is_validated=True,
+                                                context=context.resolve(required_key, next_schema))
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
@@ -73,7 +83,10 @@ class DictGenerator(Generator[dict]):
                 generated_keys[prop_key] = False
                 continue
 
-            generated[prop_key] = ranjg.gen(properties[prop_key], schema_is_validated=True)
+            next_schema = properties[prop_key]
+            generated[prop_key] = ranjg.gen(next_schema,
+                                            schema_is_validated=True,
+                                            context=context.resolve(prop_key, next_schema))
             generated_keys[prop_key] = True
 
         return generated

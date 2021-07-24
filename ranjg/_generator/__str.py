@@ -1,9 +1,11 @@
 import re
 import string
+from typing import Optional
 
 import rstr
 
 from .__common import Generator
+from .._context import Context
 from ..error import SchemaConflictError
 
 __default_schema = {
@@ -13,7 +15,7 @@ __default_schema = {
 }
 
 
-def _normalize_schema(schema: dict) -> dict:
+def _normalize_schema(schema: dict, context: Context) -> dict:
     """Schema normalization.
 
     To make it easier to use for randomly generation, set items to ``schema`` object.
@@ -25,7 +27,7 @@ def _normalize_schema(schema: dict) -> dict:
         New schema based on ``schema`` and the default values.
     """
     if schema.get("minLength", float("-inf")) > schema.get("maxLength", float("inf")):
-        raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.")
+        raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.", context)
 
     n_schema = __default_schema.copy()
     n_schema.update(schema)
@@ -40,9 +42,13 @@ def _normalize_schema(schema: dict) -> dict:
 class StrGenerator(Generator[str]):
 
     def gen_without_schema_check(self,
-                                 schema: dict) -> str:
+                                 schema: dict,
+                                 *,
+                                 context: Optional[Context] = None) -> str:
+        if context is None:
+            context = Context.root(schema)
 
-        schema = _normalize_schema(schema)
+        schema = _normalize_schema(schema, context)
 
         pattern = re.compile(schema["pattern"]) if schema["pattern"] is not None else None
         min_length = schema["minLength"]
