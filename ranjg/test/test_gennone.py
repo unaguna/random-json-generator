@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from ranjg import gennone
+from ranjg import gennone, Options
 from .._context import Context
 from .._generator import NoneGenerator
 
@@ -21,17 +21,21 @@ class TestGennone(unittest.TestCase):
             When ``gennone`` is called, then ``NoneGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options()
         params_list = (
-            (None, None, False),
-            ({"type": "null"}, None, False),
-            ({"type": "null"}, None, True),
-            (None, _context_dummy, False),
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "null"}, None, False, None),
+            ({"type": "null"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
         )
 
-        for schema, context, is_validated in params_list:
+        for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg._generator.NoneGenerator.gen') as mock_gen:
-                gennone(schema, context=context, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
+                gennone(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
 
 
 class TestNoneGenerator(unittest.TestCase):

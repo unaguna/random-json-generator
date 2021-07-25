@@ -5,6 +5,7 @@ from typing import Optional
 from .__common import Generator
 from ..__number_range import NumberRange
 from .._context import Context
+from .._options import Options
 from ..error import SchemaConflictError, GenerateError
 from ..util.nonesafe import dfor
 
@@ -147,6 +148,7 @@ class NumGenerator(Generator[float]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,
+                                 options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> float:
         options = _normalize_options({})
 

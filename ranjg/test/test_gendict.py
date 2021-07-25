@@ -3,7 +3,7 @@ from unittest import mock
 
 import jsonschema
 
-from ranjg import gendict
+from ranjg import gendict, Options
 from .._context import Context
 from .._generator import DictGenerator
 
@@ -23,17 +23,21 @@ class TestGendict(unittest.TestCase):
             When ``gendict`` is called, then ``DictGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options()
         params_list = (
-            (None, None, False),
-            ({"type": "object"}, None, False),
-            ({"type": "object"}, None, True),
-            (None, _context_dummy, False),
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "object"}, None, False, None),
+            ({"type": "object"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
         )
 
-        for schema, context, is_validated in params_list:
+        for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg._generator.DictGenerator.gen') as mock_gen:
-                gendict(schema, context=context, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
+                gendict(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
 
 
 class TestDictGenerator(unittest.TestCase):

@@ -3,6 +3,7 @@ import random
 from typing import Union, List, Optional, TextIO
 
 from ._context import Context
+from ._options import Options
 from ._generator import get_generator
 from .util.nonesafe import dfor
 from .validate.schema import validate_schema
@@ -13,6 +14,7 @@ def gen(schema: dict = None,
         output_file: str = None,
         output_fp: TextIO = None,
         schema_is_validated: bool = False,
+        options: Optional[Options] = None,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -56,6 +58,8 @@ def gen(schema: dict = None,
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
             (In normal usage, this argument does not specify.)
+        options (Options, optional):
+            The options for generation.
         context (Context):
             The context of construction.
 
@@ -93,7 +97,7 @@ def gen(schema: dict = None,
     generator = get_generator(gen_type)
 
     # ランダムに値を生成
-    generated = generator.gen(schema, schema_is_validated=True, context=context)
+    generated = generator.gen(schema, schema_is_validated=True, options=options, context=context)
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:

@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from ranjg import genbool
+from ranjg import genbool, Options
 from .._context import Context
 from .._generator import BoolGenerator
 
@@ -21,17 +21,21 @@ class TestGenbool(unittest.TestCase):
             When ``genbool`` is called, then ``BoolGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options()
         params_list = (
-            (None, None, False),
-            ({"type": "boolean"}, None, False),
-            ({"type": "boolean"}, None, True),
-            (None, _context_dummy, False),
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "boolean"}, None, False, None),
+            ({"type": "boolean"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
         )
 
-        for schema, context, is_validated in params_list:
+        for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg._generator.BoolGenerator.gen') as mock_gen:
-                genbool(schema, context=context, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
+                genbool(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
 
 
 class TestBoolGenerator(unittest.TestCase):

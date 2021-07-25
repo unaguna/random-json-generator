@@ -7,6 +7,7 @@ import rstr
 from .__common import Generator
 from .._context import Context
 from ..error import SchemaConflictError
+from .._options import Options
 
 __default_schema = {
     "pattern": None,
@@ -44,6 +45,7 @@ class StrGenerator(Generator[str]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,
+                                 options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> str:
         if schema is None:
             schema = {}

@@ -4,7 +4,7 @@ from unittest import mock
 
 import jsonschema
 
-from ranjg import genint
+from ranjg import genint, Options
 from .._context import Context
 from .._generator import IntGenerator
 from .._generator.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
@@ -26,17 +26,21 @@ class TestGenint(unittest.TestCase):
             When ``genint`` is called, then ``IntGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options()
         params_list = (
-            (None, None, False),
-            ({"type": "integer"}, None, False),
-            ({"type": "integer"}, None, True),
-            (None, _context_dummy, False),
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "integer"}, None, False, None),
+            ({"type": "integer"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
         )
 
-        for schema, context, is_validated in params_list:
+        for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg._generator.IntGenerator.gen') as mock_gen:
-                genint(schema, context=context, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
+                genint(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
 
 
 class TestIntGenerator(unittest.TestCase):

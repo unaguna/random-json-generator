@@ -4,6 +4,7 @@ from typing import Optional
 import ranjg
 from .__common import Generator
 from .._context import Context
+from .._options import Options
 from ..util.listutil import diff
 from ..util.nonesafe import dfor
 
@@ -44,6 +45,7 @@ class DictGenerator(Generator[dict]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,
+                                 options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> dict:
         if schema is None:
             schema = None

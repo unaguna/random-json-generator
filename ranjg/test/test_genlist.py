@@ -3,7 +3,7 @@ import unittest
 from unittest import mock
 
 import jsonschema
-from ranjg import genlist
+from ranjg import genlist, Options
 from ranjg._context import Context
 from .._generator import ListGenerator
 from .._generator.__list import _get_range_of_length
@@ -25,17 +25,21 @@ class TestGenlist(unittest.TestCase):
             When ``genlist`` is called, then ``BoolGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options()
         params_list = (
-            (None, None, False),
-            ({"type": "array"}, None, False),
-            ({"type": "array"}, None, True),
-            (None, _context_dummy, False),
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "array"}, None, False, None),
+            ({"type": "array"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
         )
 
-        for schema, context, is_validated in params_list:
+        for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg._generator.ListGenerator.gen') as mock_gen:
-                genlist(schema, context=context, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
+                genlist(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
 
 
 class TestListGenerator(unittest.TestCase):
