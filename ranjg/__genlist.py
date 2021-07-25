@@ -4,7 +4,10 @@ from ._context import Context
 from ._generator import ListGenerator
 
 
-def genlist(schema: Optional[dict], schema_is_validated: bool = False, context: Optional[Context] = None) -> list:
+def genlist(schema: Optional[dict] = None,
+            *,
+            schema_is_validated: bool = False,
+            context: Optional[Context] = None) -> list:
     """Generate a random list according to the JSON schema.
 
     This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.

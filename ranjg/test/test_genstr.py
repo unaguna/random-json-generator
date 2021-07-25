@@ -25,8 +25,8 @@ class TestGenstr(unittest.TestCase):
         _context_dummy = Context.root({}).resolve('key', {})
         params_list = (
             (None, None, False),
-            ({"type": "array"}, None, False),
-            ({"type": "array"}, None, True),
+            ({"type": "string"}, None, False),
+            ({"type": "string"}, None, True),
             (None, _context_dummy, False),
         )
 

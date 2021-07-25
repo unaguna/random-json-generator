@@ -25,15 +25,16 @@ class TestGennum(unittest.TestCase):
         """
         _context_dummy = Context.root({}).resolve('key', {})
         params_list = (
-            (None, None),
-            ({"type": "boolean"}, None),
-            (None, _context_dummy),
+            (None, None, False),
+            ({"type": "number"}, None, False),
+            ({"type": "number"}, None, True),
+            (None, _context_dummy, False),
         )
 
-        for schema, context in params_list:
+        for schema, context, is_validated in params_list:
             with mock.patch('ranjg._generator.NumGenerator.gen') as mock_gen:
-                gennum(schema, context=context)
-                mock_gen.assert_called_once_with(schema, context=context)
+                gennum(schema, context=context, schema_is_validated=is_validated)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
 
 
 class TestNumGenerator(unittest.TestCase):

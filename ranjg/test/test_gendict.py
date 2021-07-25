@@ -24,15 +24,16 @@ class TestGendict(unittest.TestCase):
         """
         _context_dummy = Context.root({}).resolve('key', {})
         params_list = (
-            (None, None),
-            ({"type": "object"}, None),
-            (None, _context_dummy),
+            (None, None, False),
+            ({"type": "object"}, None, False),
+            ({"type": "object"}, None, True),
+            (None, _context_dummy, False),
         )
 
-        for schema, context in params_list:
+        for schema, context, is_validated in params_list:
             with mock.patch('ranjg._generator.DictGenerator.gen') as mock_gen:
-                gendict(schema, context=context)
-                mock_gen.assert_called_once_with(schema, context=context)
+                gendict(schema, context=context, schema_is_validated=is_validated)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
 
 
 class TestDictGenerator(unittest.TestCase):
