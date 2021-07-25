@@ -145,11 +145,13 @@ def _little_less(number: float) -> float:
 
 class NumGenerator(Generator[float]):
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> float:
         options = _normalize_options({})
 
+        if schema is None:
+            schema = {}
         if context is None:
             context = Context.root(schema)
 

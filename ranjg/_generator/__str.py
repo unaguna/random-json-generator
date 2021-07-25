@@ -42,9 +42,11 @@ def _normalize_schema(schema: dict, context: Context) -> dict:
 class StrGenerator(Generator[str]):
 
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> str:
+        if schema is None:
+            schema = {}
         if context is None:
             context = Context.root(schema)
 

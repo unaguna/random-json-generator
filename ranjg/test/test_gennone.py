@@ -22,15 +22,15 @@ class TestGennone(unittest.TestCase):
         """
         _context_dummy = Context.root({}).resolve('key', {})
         params_list = (
-            (None, {}, None, None),
-            ({"type": "null"}, {"type": "null"}, None, None),
-            (None, {}, _context_dummy, _context_dummy),
+            (None, None),
+            ({"type": "boolean"}, None),
+            (None, _context_dummy),
         )
 
-        for schema_arg, schema_used, context_arg, context_used in params_list:
+        for schema, context in params_list:
             with mock.patch('ranjg._generator.NoneGenerator.gen') as mock_gen:
-                gennone(schema_arg, context=context_arg)
-                mock_gen.assert_called_once_with(schema_used, context=context_used)
+                gennone(schema, context=context)
+                mock_gen.assert_called_once_with(schema, context=context)
 
 
 class TestNoneGenerator(unittest.TestCase):

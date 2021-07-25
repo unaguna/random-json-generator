@@ -132,9 +132,11 @@ def _get_items_schema_list(schema: dict, item_count: int) -> List[dict]:
 
 class ListGenerator(Generator[list]):
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> list:
+        if schema is None:
+            schema = {}
         if context is None:
             context = Context.root(schema)
 

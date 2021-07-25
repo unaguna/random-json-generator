@@ -24,16 +24,16 @@ class TestGenstr(unittest.TestCase):
         """
         _context_dummy = Context.root({}).resolve('key', {})
         params_list = (
-            (None, {}, None, None, False),
-            ({"type": "array"}, {"type": "array"}, None, None, False),
-            ({"type": "array"}, {"type": "array"}, None, None, True),
-            (None, {}, _context_dummy, _context_dummy, False),
+            (None, None, False),
+            ({"type": "array"}, None, False),
+            ({"type": "array"}, None, True),
+            (None, _context_dummy, False),
         )
 
-        for schema_arg, schema_used, context_arg, context_used, is_validated in params_list:
+        for schema, context, is_validated in params_list:
             with mock.patch('ranjg._generator.StrGenerator.gen') as mock_gen:
-                genstr(schema_arg, context=context_arg, schema_is_validated=is_validated)
-                mock_gen.assert_called_once_with(schema_used, context=context_used, schema_is_validated=is_validated)
+                genstr(schema, context=context, schema_is_validated=is_validated)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated)
 
 
 class TestStrGenerator(unittest.TestCase):

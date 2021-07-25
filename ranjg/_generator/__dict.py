@@ -42,9 +42,11 @@ def _normalize_options(options: dict) -> dict:
 
 class DictGenerator(Generator[dict]):
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> dict:
+        if schema is None:
+            schema = None
         if context is None:
             context = Context.root(schema)
 

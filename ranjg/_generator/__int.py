@@ -11,9 +11,11 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 class IntGenerator(Generator[int]):
 
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> int:
+        if schema is None:
+            schema = {}
         if context is None:
             context = Context.root(schema)
 

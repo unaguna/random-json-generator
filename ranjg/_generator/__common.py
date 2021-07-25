@@ -10,7 +10,7 @@ _T = TypeVar('_T')
 class Generator(abc.ABC, Generic[_T]):
 
     def gen(self,
-            schema: dict,
+            schema: Optional[dict],
             *,
             context: Optional[Context] = None,
             schema_is_validated: bool = False) -> _T:
@@ -22,7 +22,7 @@ class Generator(abc.ABC, Generic[_T]):
 
     @abc.abstractmethod
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> _T:
         pass

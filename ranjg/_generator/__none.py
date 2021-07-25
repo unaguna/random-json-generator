@@ -6,7 +6,7 @@ from .._context import Context
 
 class NoneGenerator(Generator[None]):
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
                                  context: Optional[Context] = None) -> None:
         return None
