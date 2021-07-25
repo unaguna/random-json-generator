@@ -109,3 +109,50 @@ class TestDictGenerator(unittest.TestCase):
         self.assertIsInstance(generated["eee"], list)
         self.assertIsNone(generated["xxx"])
         jsonschema.validate(generated, schema)
+
+    def test_gen_with_option_default_prob_of_optional_properties(self):
+        """ Normalized System Test
+
+        ``DictGenerator#gen(schema)`` uses a option ``default_prob_of_optional_properties`` (float, 0.0 <= x <= 1.0).
+
+        If ``default_prob_of_optional_properties`` x is specified, every optional property in the schema is contained
+        in the result dict with a x probability independently.
+
+        assert that:
+            When ``default_prob_of_optional_properties`` is 1.0 (or 0.0), optional properties are surely in the result
+            (or not).
+        """
+        options_0 = Options(default_prob_of_optional_properties=0.0)
+        options_1 = Options(default_prob_of_optional_properties=1.0)
+        schema = {'type': 'object',
+                  'properties': {
+                      'p1': {'type': 'integer'},
+                      'p2': {'type': 'boolean'},
+                      'p3': {'type': 'string'},
+                      'p4': {'type': 'number'},
+                  },
+                  'required': ['p1']}
+
+        # x = 0.0
+        # Since this is a test of probabilistic events, it should be performed multiple times.
+        for _ in range(10):
+            generated = DictGenerator().gen(schema, options=options_0)
+
+            # contains the required property
+            assert 'p1' in generated
+            # not contains the optional property
+            assert 'p2' not in generated
+            assert 'p3' not in generated
+            assert 'p4' not in generated
+
+        # x = 1.0
+        # Since this is a test of probabilistic events, it should be performed multiple times.
+        for _ in range(10):
+            generated = DictGenerator().gen(schema, options=options_1)
+
+            # contains the required property
+            assert 'p1' in generated
+            # contains the optional property
+            assert 'p2' in generated
+            assert 'p3' in generated
+            assert 'p4' in generated
