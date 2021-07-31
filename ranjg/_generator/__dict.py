@@ -6,7 +6,6 @@ from .__common import Generator
 from .._context import Context
 from .._options import Options
 from ..util.listutil import diff
-from ..util.nonesafe import dfor
 
 
 # required 項目の値の生成に使用するスキーマのデフォルト値。
@@ -17,29 +16,6 @@ _default_required_schema = {
     "maximum": 0,
 }
 
-__default_options = {
-    "prob_not_required_properties": 0.5,
-}
-
-
-def _normalize_options(options: dict) -> dict:
-    """Option normalization.
-
-    To make it easier to use for randomly generation, set items to ``options`` object.
-
-    Args:
-        options: Options for randomly generation.
-
-    Returns:
-        New options based on ``options`` and the default values.
-    """
-    options = dfor(options, {})
-
-    n_options = __default_options.copy()
-    n_options.update(options)
-
-    return n_options
-
 
 class DictGenerator(Generator[dict]):
     def gen_without_schema_check(self,
@@ -49,12 +25,12 @@ class DictGenerator(Generator[dict]):
                                  context: Optional[Context] = None) -> dict:
         if schema is None:
             schema = None
+        if options is None:
+            options = Options()
         if context is None:
             context = Context.root(schema)
 
         generated = dict()
-
-        options = _normalize_options({})
 
         # すでに生成or棄却が済んだキー
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
@@ -83,7 +59,7 @@ class DictGenerator(Generator[dict]):
                 continue
 
             # 一定確率 (options に指定) で生成しない。
-            if random.random() >= options["prob_not_required_properties"]:
+            if random.random() >= options.default_prob_of_optional_properties:
                 generated_keys[prop_key] = False
                 continue
 
