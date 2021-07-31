@@ -8,6 +8,9 @@ class Options(NamedTuple):
     # If it is too small, there is a high probability that the generation will fail and raise an GenerateError.
     regeneration_attempt_limit: int = 50
 
+    # In bool generation, returns True with probability x, False with probability 1-x.
+    default_prob_of_true_given_bool: Union[int, float] = 0.5
+
     # In dict generation, every optional property in the schema is contained in the result dict with a x probability
     # independently
     default_prob_of_optional_properties: Union[int, float] = 0.5
