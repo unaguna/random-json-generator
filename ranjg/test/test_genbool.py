@@ -53,3 +53,32 @@ class TestBoolGenerator(unittest.TestCase):
             ``BoolGenerator#gen()`` returns boolean value.
         """
         self.assertIsInstance(BoolGenerator().gen({}), bool)
+
+    def test_gen_with_option_default_prob_of_true_given_bool(self):
+        """ Normalized System Test
+
+        ``BoolGenerator#gen(schema)`` uses a option ``default_prob_of_true_given_bool`` (float, 0.0 <= x <= 1.0).
+
+        If ``default_prob_of_true_given_bool`` x is specified, returns True with probability x, False with probability
+        1-x.
+
+        assert that:
+            When ``default_prob_of_true_given_bool`` is 1.0 (or 0.0), returns True (False).
+        """
+        options_0 = Options(default_prob_of_true_given_bool=0.0)
+        options_1 = Options(default_prob_of_true_given_bool=1.0)
+        schema = {'type': 'boolean'}
+
+        # x = 0.0
+        # Since this is a test of probabilistic events, it should be performed multiple times.
+        for _ in range(10):
+            generated = BoolGenerator().gen(schema, options=options_0)
+
+            assert generated is False
+
+        # x = 1.0
+        # Since this is a test of probabilistic events, it should be performed multiple times.
+        for _ in range(10):
+            generated = BoolGenerator().gen(schema, options=options_1)
+
+            assert generated is True
