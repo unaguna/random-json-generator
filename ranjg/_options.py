@@ -1,4 +1,4 @@
-from typing import NamedTuple, Union, Optional
+from typing import NamedTuple, Union
 
 
 class Options(NamedTuple):
