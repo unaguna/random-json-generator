@@ -26,7 +26,7 @@ class DictGenerator(Generator[dict]):
         if schema is None:
             schema = None
         if options is None:
-            options = Options()
+            options = Options.default()
         if context is None:
             context = Context.root(schema)
 

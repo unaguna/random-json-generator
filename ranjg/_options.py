@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import NamedTuple, Union
 
 
@@ -14,3 +15,12 @@ class Options(NamedTuple):
     # In dict generation, every optional property in the schema is contained in the result dict with a x probability
     # independently
     default_prob_of_optional_properties: Union[int, float] = 0.5
+
+    @classmethod
+    @lru_cache(maxsize=1)
+    def default(cls):
+        """Default options
+
+        It is used when an user don't specify options.
+        """
+        return Options()

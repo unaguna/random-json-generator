@@ -13,6 +13,6 @@ class BoolGenerator(Generator[bool]):
                                  options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> bool:
         if options is None:
-            options = Options()
+            options = Options.default()
 
         return random.random() < options.default_prob_of_true_given_bool

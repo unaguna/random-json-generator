@@ -25,7 +25,7 @@ class TestGenlist(unittest.TestCase):
             When ``genlist`` is called, then ``BoolGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
-        _options_dummy = Options()
+        _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
             (None, None, False, _options_dummy),

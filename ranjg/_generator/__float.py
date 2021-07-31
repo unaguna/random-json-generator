@@ -128,7 +128,7 @@ class NumGenerator(Generator[float]):
         if schema is None:
             schema = {}
         if options is None:
-            options = Options()
+            options = Options.default()
         if context is None:
             context = Context.root(schema)
 

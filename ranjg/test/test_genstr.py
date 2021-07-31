@@ -23,7 +23,7 @@ class TestGenstr(unittest.TestCase):
             When ``genstr`` is called, then ``StrGenerator#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
-        _options_dummy = Options()
+        _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
             (None, None, False, _options_dummy),
