@@ -9,11 +9,8 @@ from .._context import Context
 from ..error import SchemaConflictError
 from .._options import Options
 
-__default_schema = {
-    "pattern": None,
-    "minLength": 1,
-    "maxLength": 100,
-}
+__default_min_length = 1
+__default_length_range = 99
 
 
 def _normalize_schema(schema: dict, context: Context) -> dict:
@@ -30,12 +27,15 @@ def _normalize_schema(schema: dict, context: Context) -> dict:
     if schema.get("minLength", float("-inf")) > schema.get("maxLength", float("inf")):
         raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.", context)
 
-    n_schema = __default_schema.copy()
-    n_schema.update(schema)
+    n_schema = schema.copy()
+    n_schema.setdefault("pattern", None)
 
     # maxLength = 0 の場合、minLength は無視する。
-    if n_schema["maxLength"] <= 0:
-        n_schema["minLength"] = None
+    if "maxLength" in n_schema and n_schema["maxLength"] <= 0:
+        n_schema["minLength"] = n_schema["maxLength"]
+
+    n_schema.setdefault("minLength", __default_min_length)
+    n_schema.setdefault("maxLength", n_schema["minLength"] + __default_length_range)
 
     return n_schema
 
