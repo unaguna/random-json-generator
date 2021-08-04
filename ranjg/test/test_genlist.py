@@ -1,5 +1,6 @@
 import itertools
 import unittest
+from typing import Sequence
 from unittest import mock
 
 import jsonschema
@@ -489,6 +490,45 @@ class TestListGenerator(unittest.TestCase):
                 generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertGreaterEqual(len(generated), min_items)
+
+    def test_gen_with_no_items_and_options_default_schema_of_items(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_items`` is specified, this schema is used to generate elements for which no
+        schema is specified.
+
+        assert that:
+            When ``schema.items`` is not specified, elements in generated list is satisfy a schema
+            ``options.default_schema_of_items``.
+        """
+        schema = {"type": "array", "minItems": 5, "maxItems": 5}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertListEqual(generated, [-100]*5)
+
+        schema = {"type": "array", "minItems": 6, "maxItems": 6}
+        default_schema = {"type": "string"}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertIsInstance(generated, Sequence)
+        self.assertEqual(len(generated), 6)
+        for element in generated:
+            self.assertIsInstance(element, str)
+
+    def test_gen_with_tuple_items_and_options_default_schema_of_items(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_items`` is specified, this schema is used to generate elements for which no
+        schema is specified.
+
+        assert that:
+            When ``schema.items`` is tuple items and ``schema.minItems`` is greater than ``len(schema.items)``,
+            element(s) without corresponding schema in ``schema.items`` is satisfy a schema
+            ``options.default_schema_of_items``.
+        """
+        schema = {"type": "array", "minItems": 5, "maxItems": 5, "items": [{"type": "null"}, {"type": "null"}]}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertListEqual(generated, [None, None, -100, -100, -100])
 
 
 class TestGenlistLengthRange(unittest.TestCase):

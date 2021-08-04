@@ -16,6 +16,10 @@ class Options(NamedTuple):
     # independently
     default_prob_of_optional_properties: Union[int, float] = 0.5
 
+    # In list generation, it is used to generate elements for which no schema is specified.
+    # For example, when `item` is specified as tuple format, and minLength is greater than its length.
+    default_schema_of_items: dict = {"type": "null"}
+
     @classmethod
     @lru_cache(maxsize=1)
     def default(cls):
