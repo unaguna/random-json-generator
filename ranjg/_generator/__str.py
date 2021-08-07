@@ -9,11 +9,8 @@ from .._context import Context
 from ..error import SchemaConflictError
 from .._options import Options
 
-__default_min_length = 1
-__default_length_range = 99
 
-
-def _normalize_schema(schema: dict, context: Context) -> dict:
+def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
     """Schema normalization.
 
     To make it easier to use for randomly generation, set items to ``schema`` object.
@@ -30,12 +27,18 @@ def _normalize_schema(schema: dict, context: Context) -> dict:
     n_schema = schema.copy()
     n_schema.setdefault("pattern", None)
 
-    # maxLength = 0 の場合、minLength は無視する。
-    if "maxLength" in n_schema and n_schema["maxLength"] <= 0:
-        n_schema["minLength"] = n_schema["maxLength"]
-
-    n_schema.setdefault("minLength", __default_min_length)
-    n_schema.setdefault("maxLength", n_schema["minLength"] + __default_length_range)
+    # minLength と maxLength がともに指定されていない場合、デフォルト設定を使う
+    if "minLength" not in n_schema and "maxLength" not in n_schema:
+        n_schema["minLength"] = options.default_min_length_of_string
+        n_schema["maxLength"] = options.default_max_length_of_string
+    # minLength が設定されていて maxLength が指定されていない場合
+    elif "maxLength" not in n_schema:
+        length_range = max(0, options.default_length_range_of_genstr)
+        n_schema["maxLength"] = n_schema["minLength"] + length_range
+    # maxLength が設定されていて minLength が指定されていない場合
+    elif "minLength" not in n_schema:
+        length_range = max(0, options.default_length_range_of_genstr)
+        n_schema["minLength"] = max(0, n_schema["maxLength"] - length_range)
 
     return n_schema
 
@@ -49,10 +52,12 @@ class StrGenerator(Generator[str]):
                                  context: Optional[Context] = None) -> str:
         if schema is None:
             schema = {}
+        if options is None:
+            options = Options.default()
         if context is None:
             context = Context.root(schema)
 
-        schema = _normalize_schema(schema, context)
+        schema = _normalize_schema(schema, options, context)
 
         pattern = re.compile(schema["pattern"]) if schema["pattern"] is not None else None
         min_length = schema["minLength"]
