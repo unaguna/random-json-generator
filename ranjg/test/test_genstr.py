@@ -321,3 +321,136 @@ class TestStrGenerator(unittest.TestCase):
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern}
                 self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+
+
+class TestOptionDefaultLength(unittest.TestCase):
+
+    def test_default_length_with_schema_min_max(self):
+        """ Normalized System Test
+
+        When ``schema.minLength`` and ``schema.maxLength`` are specified, ``options.default_min_length_of_string``,
+        ``options.default_max_length_of_string`` and ``options.default_length_range_of_genstr`` are ignored.
+
+        assert that:
+            Generated string is satisfies ``schema.minLength`` and ``schema.maxLength`` even if
+            ``options.default_min_length_of_string``, ``options.default_max_length_of_string`` and
+            ``options.default_length_range_of_genstr`` are specified.
+        """
+        options_list = (Options(),
+                        Options(default_min_length_of_string=10),
+                        Options(default_max_length_of_string=100),
+                        Options(default_min_length_of_string=10, default_max_length_of_string=100),
+                        Options(default_length_range_of_genstr=100),
+                        Options(default_min_length_of_string=10, default_length_range_of_genstr=100),
+                        Options(default_max_length_of_string=100, default_length_range_of_genstr=100),
+                        Options(default_min_length_of_string=10, default_max_length_of_string=100,
+                                default_length_range_of_genstr=100),)
+
+        str_length = 20
+        schema = {"type": "string", "minLength": str_length, "maxLength": str_length}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(str_length, len(generated))
+
+    def test_default_length_with_schema_min_without_schema_max(self):
+        """ Normalized System Test
+
+        When ``schema.minLength`` is specified and ``schema.maxLength`` is not, the maximum length is defined as
+        ``schema.minLength`` + ``options.default_length_range_of_genstr``.
+        ``options.default_min_length_of_string`` and ``options.default_max_length_of_string`` are ignored.
+
+        assert that:
+            Generated string has length between ``schema.minLength`` and ``schema.minLength`` +
+            ``options.default_length_range_of_genstr``.
+        """
+        options_list = (Options(default_length_range_of_genstr=0),
+                        Options(default_min_length_of_string=10, default_length_range_of_genstr=0),
+                        Options(default_max_length_of_string=100, default_length_range_of_genstr=0),
+                        Options(default_min_length_of_string=10, default_max_length_of_string=100,
+                                default_length_range_of_genstr=0),)
+
+        min_length = 20
+        schema = {"type": "string", "minLength": min_length}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(min_length, len(generated))
+
+    def test_default_length_with_schema_max_without_schema_min(self):
+        """ Normalized System Test
+
+        When ``schema.maxLength`` is specified and ``schema.minLength`` is not, the minimum length is defined as
+        ``schema.maxLength`` - ``options.default_length_range_of_genstr``.
+        ``options.default_min_length_of_string`` and ``options.default_max_length_of_string`` are ignored.
+
+        assert that:
+            Generated string has length between ``schema.maxLength`` - ``options.default_length_range_of_genstr`` and
+            ``schema.maxLength``.
+        """
+        options_list = (Options(default_length_range_of_genstr=0),
+                        Options(default_min_length_of_string=10, default_length_range_of_genstr=0),
+                        Options(default_max_length_of_string=100, default_length_range_of_genstr=0),
+                        Options(default_min_length_of_string=10, default_max_length_of_string=100,
+                                default_length_range_of_genstr=0),)
+
+        max_length = 20
+        schema = {"type": "string", "maxLength": max_length}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(max_length, len(generated))
+
+    def test_default_length_without_schema_min_max(self):
+        """ Normalized System Test
+
+        When ``schema.minLength`` and ``schema.maxLength`` are not specified, ``options.default_min_length_of_string``
+        and ``options.default_max_length_of_string`` are used instead.
+        ``options.default_length_range_of_genstr`` is ignored.
+
+        assert that:
+            Generated string is satisfies ``options.default_min_length_of_string`` and
+            `options.default_max_length_of_string`` if ``schema.minLength`` and ``schema.maxLength`` are not specified.
+        """
+        str_length = 10
+        options_list = (Options(default_min_length_of_string=str_length, default_max_length_of_string=str_length),
+                        Options(default_min_length_of_string=str_length, default_max_length_of_string=str_length,
+                                default_length_range_of_genstr=100),)
+
+        schema = {"type": "string"}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(str_length, len(generated))
+
+    def test_negative_default_length_range(self):
+        """ Semi-normalized System Test
+
+        When ``options.default_length_range_of_genstr`` is negative, it is corrected to 0.
+
+        assert that:
+            Generated string has length of ``schema.minLength`` if ``schema.maxLength`` is not specified and
+            ``options.default_length_range_of_genstr`` is negative.
+            Generated string has length of ``schema.maxLength`` if ``schema.minLength`` is not specified and
+            ``options.default_length_range_of_genstr`` is negative.
+        """
+        options_list = (Options(default_length_range_of_genstr=-1),
+                        Options(default_min_length_of_string=10, default_length_range_of_genstr=-2),
+                        Options(default_max_length_of_string=100, default_length_range_of_genstr=-3),
+                        Options(default_min_length_of_string=10, default_max_length_of_string=100,
+                                default_length_range_of_genstr=-4),)
+
+        str_length = 20
+        schema = {"type": "string", "minLength": str_length}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(str_length, len(generated))
+
+        schema = {"type": "string", "maxLength": str_length}
+
+        for options in options_list:
+            generated = StrGenerator().gen(schema, options=options)
+            self.assertEqual(str_length, len(generated))
+
+    # TODO: default_min_length_of_string > default_max_length_of_string である場合の仕様を決定して試験を作る

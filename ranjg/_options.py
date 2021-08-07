@@ -12,6 +12,16 @@ class Options(NamedTuple):
     # In bool generation, returns True with probability x, False with probability 1-x.
     default_prob_of_true_given_bool: Union[int, float] = 0.5
 
+    # In string generation, it is used as the difference between minLength and maxLength, if necessary.
+    # If only one of minLength and maxLength is specified, it is used to determine the other.
+    default_length_range_of_genstr: int = 0
+
+    # In string generation, it is used as the value of minLength when both minLength and maxLength are not specified.
+    default_min_length_of_string: int = 1
+
+    # In string generation, it is used as the value of maxLength when both minLength and maxLength are not specified.
+    default_max_length_of_string: int = 10
+
     # In dict generation, every optional property in the schema is contained in the result dict with a x probability
     # independently
     default_prob_of_optional_properties: Union[int, float] = 0.5
