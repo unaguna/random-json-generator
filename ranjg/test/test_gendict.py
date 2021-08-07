@@ -156,3 +156,18 @@ class TestDictGenerator(unittest.TestCase):
             assert 'p2' in generated
             assert 'p3' in generated
             assert 'p4' in generated
+
+    def test_default_schema_of_properties(self):
+        """ Normalized System Test
+
+        When a property in ``schema.required`` but its schema is not in ``schema.properties``, this property satisfies
+        ``options.default_schema_of_properties``.
+
+        assert that:
+            When a property is in ``schema.required`` but its schema is not in ``schema.properties``,
+            the property of the generated dict is satisfied ``options.default_schema_of_properties``.
+        """
+        schema = {"type": "object", "required": ["p1"]}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        generated = DictGenerator().gen(schema, options=Options(default_schema_of_properties=default_schema))
+        self.assertDictEqual(generated, {"p1": -100})
