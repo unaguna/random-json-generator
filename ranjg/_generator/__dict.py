@@ -8,15 +8,6 @@ from .._options import Options
 from ..util.listutil import diff
 
 
-# required 項目の値の生成に使用するスキーマのデフォルト値。
-# properties に当該キーの指定がない場合に使用する。
-_default_required_schema = {
-    "type": "number",
-    "minimum": 0,
-    "maximum": 0,
-}
-
-
 class DictGenerator(Generator[dict]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
@@ -46,7 +37,7 @@ class DictGenerator(Generator[dict]):
             if generated_keys.get(required_key) is True:
                 continue
 
-            next_schema = properties.get(required_key, _default_required_schema)
+            next_schema = properties.get(required_key, options.default_schema_of_properties)
             generated[required_key] = ranjg.gen(next_schema,
                                                 schema_is_validated=True,
                                                 context=context.resolve(required_key, next_schema))

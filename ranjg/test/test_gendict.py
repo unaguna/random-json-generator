@@ -166,8 +166,12 @@ class TestDictGenerator(unittest.TestCase):
         assert that:
             When a property is in ``schema.required`` but its schema is not in ``schema.properties``,
             the property of the generated dict is satisfied ``options.default_schema_of_properties``.
+
+            Make sure it don't accidentally use ``options.default_schema_of_items``.
         """
         schema = {"type": "object", "required": ["p1"]}
+        dummy_schema = {"type": "string", "pattern": "dummy"}
         default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
-        generated = DictGenerator().gen(schema, options=Options(default_schema_of_properties=default_schema))
+        generated = DictGenerator().gen(schema, options=Options(default_schema_of_properties=default_schema,
+                                                                default_schema_of_items=dummy_schema))
         self.assertDictEqual(generated, {"p1": -100})
