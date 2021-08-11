@@ -30,6 +30,10 @@ class Options(NamedTuple):
     # For example, a property is required but its schema is not specified.
     default_schema_of_properties: dict = {"type": "null"}
 
+    # In dict generation, when a property whose name matches each key is generated, the corresponding value is used as
+    # the schema.
+    priority_schema_of_properties: dict = {}
+
     # In list generation, it is used to generate elements for which no schema is specified.
     # For example, when `item` is specified as tuple format, and minLength is greater than its length.
     default_schema_of_items: dict = {"type": "null"}

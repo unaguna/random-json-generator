@@ -8,6 +8,14 @@ from .._options import Options
 from ..util.listutil import diff
 
 
+def _schema_of(key: str,
+               *,
+               properties: dict,
+               priority_properties: dict,
+               default_schema: dict) -> dict:
+    pass
+
+
 class DictGenerator(Generator[dict]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
