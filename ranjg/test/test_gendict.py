@@ -229,6 +229,42 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertTrue(key not in generated)
 
+    def test_priority_schema_of_properties_with_not_required_key_2(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object", "required": ["p2"], "properties": {key: {"type": "boolean"}}},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema},
+                          # required でない場合も priority_schema_of_properties が使用されることを確かめるため
+                          default_prob_of_true_given_bool=1.0)
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertEqual(generated, {key: -100})
+
+    def test_priority_schema_of_properties_with_not_required_key_3(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object"}, {"type": "object", "required": ["p2"]},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema},
+                          # schema に登場しないプロパティは priority_schema_of_properties に指定があっても生成されないことを確かめるため
+                          default_prob_of_true_given_bool=1.0)
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertTrue(key not in generated)
+
     def test_schema_of_uses_default(self):
         """ Normalized System Test
 
