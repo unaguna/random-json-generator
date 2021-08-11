@@ -13,7 +13,12 @@ def _schema_of(key: str,
                properties: dict,
                priority_properties: dict,
                default_schema: dict) -> dict:
-    pass
+    if key in priority_properties:
+        return priority_properties[key]
+    elif key in properties:
+        return properties[key]
+    else:
+        return default_schema
 
 
 class DictGenerator(Generator[dict]):
@@ -45,7 +50,10 @@ class DictGenerator(Generator[dict]):
             if generated_keys.get(required_key) is True:
                 continue
 
-            next_schema = properties.get(required_key, options.default_schema_of_properties)
+            next_schema = _schema_of(required_key,
+                                     properties=properties,
+                                     priority_properties=options.priority_schema_of_properties,
+                                     default_schema=options.default_schema_of_properties)
             generated[required_key] = ranjg.gen(next_schema,
                                                 schema_is_validated=True,
                                                 context=context.resolve(required_key, next_schema))
@@ -62,7 +70,10 @@ class DictGenerator(Generator[dict]):
                 generated_keys[prop_key] = False
                 continue
 
-            next_schema = properties[prop_key]
+            next_schema = _schema_of(prop_key,
+                                     properties=properties,
+                                     priority_properties=options.priority_schema_of_properties,
+                                     default_schema=options.default_schema_of_properties)
             generated[prop_key] = ranjg.gen(next_schema,
                                             schema_is_validated=True,
                                             context=context.resolve(prop_key, next_schema))
