@@ -223,7 +223,7 @@ class TestDictGenerator(unittest.TestCase):
         priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
         options = Options(priority_schema_of_properties={key: priority_schema},
                           # required でない要素が required であるかのように処理されていないことを確かめるため
-                          default_prob_of_true_given_bool=0.0)
+                          default_prob_of_optional_properties=0.0)
 
         for schema in schema_list:
             generated = DictGenerator().gen(schema, options=options)
@@ -241,11 +241,11 @@ class TestDictGenerator(unittest.TestCase):
         priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
         options = Options(priority_schema_of_properties={key: priority_schema},
                           # required でない場合も priority_schema_of_properties が使用されることを確かめるため
-                          default_prob_of_true_given_bool=1.0)
+                          default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
             generated = DictGenerator().gen(schema, options=options)
-            self.assertEqual(generated, {key: -100})
+            self.assertEqual(generated[key], -100)
 
     def test_priority_schema_of_properties_with_not_required_key_3(self):
         """ Normalized System Test
@@ -259,7 +259,7 @@ class TestDictGenerator(unittest.TestCase):
         priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
         options = Options(priority_schema_of_properties={key: priority_schema},
                           # schema に登場しないプロパティは priority_schema_of_properties に指定があっても生成されないことを確かめるため
-                          default_prob_of_true_given_bool=1.0)
+                          default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
             generated = DictGenerator().gen(schema, options=options)
