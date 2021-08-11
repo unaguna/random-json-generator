@@ -56,6 +56,7 @@ class DictGenerator(Generator[dict]):
                                      default_schema=options.default_schema_of_properties)
             generated[required_key] = ranjg.gen(next_schema,
                                                 schema_is_validated=True,
+                                                options=options,
                                                 context=context.resolve(required_key, next_schema))
             generated_keys[required_key] = True
 
@@ -76,6 +77,7 @@ class DictGenerator(Generator[dict]):
                                      default_schema=options.default_schema_of_properties)
             generated[prop_key] = ranjg.gen(next_schema,
                                             schema_is_validated=True,
+                                            options=options,
                                             context=context.resolve(prop_key, next_schema))
             generated_keys[prop_key] = True
 
