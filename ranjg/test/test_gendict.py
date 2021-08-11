@@ -194,7 +194,7 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertEqual(generated, {key: -100})
 
-            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
             generated = DictGenerator().gen(schema_nest, options=options)
             self.assertEqual(generated["parent"], {key: -100})
 
@@ -214,7 +214,7 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertIsInstance(generated[key], bool)
 
-            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
             generated = DictGenerator().gen(schema_nest, options=options)
             self.assertIsInstance(generated["parent"][key], bool)
 
@@ -237,7 +237,7 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertTrue(key not in generated)
 
-            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
             generated = DictGenerator().gen(schema_nest, options=options)
             self.assertTrue(key not in generated["parent"])
 
@@ -259,7 +259,7 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertEqual(generated[key], -100)
 
-            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
             generated = DictGenerator().gen(schema_nest, options=options)
             self.assertEqual(generated["parent"][key], -100)
 
@@ -281,7 +281,7 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertTrue(key not in generated)
 
-            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
             generated = DictGenerator().gen(schema_nest, options=options)
             self.assertTrue(key not in generated["parent"])
 
