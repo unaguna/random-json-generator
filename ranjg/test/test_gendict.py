@@ -194,6 +194,10 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertEqual(generated, {key: -100})
 
+            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertEqual(generated["parent"], {key: -100})
+
     def test_priority_schema_of_properties_with_not_prior(self):
         """ Normalized System Test
 
@@ -209,6 +213,10 @@ class TestDictGenerator(unittest.TestCase):
         for schema in schema_list:
             generated = DictGenerator().gen(schema, options=options)
             self.assertIsInstance(generated[key], bool)
+
+            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertIsInstance(generated["parent"][key], bool)
 
     def test_priority_schema_of_properties_with_not_required_key(self):
         """ Normalized System Test
@@ -229,6 +237,10 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertTrue(key not in generated)
 
+            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertTrue(key not in generated["parent"])
+
     def test_priority_schema_of_properties_with_not_required_key_2(self):
         """ Normalized System Test
 
@@ -247,6 +259,10 @@ class TestDictGenerator(unittest.TestCase):
             generated = DictGenerator().gen(schema, options=options)
             self.assertEqual(generated[key], -100)
 
+            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertEqual(generated["parent"][key], -100)
+
     def test_priority_schema_of_properties_with_not_required_key_3(self):
         """ Normalized System Test
 
@@ -264,6 +280,10 @@ class TestDictGenerator(unittest.TestCase):
         for schema in schema_list:
             generated = DictGenerator().gen(schema, options=options)
             self.assertTrue(key not in generated)
+
+            schema_nest = {"type": "object", "required": "parent", "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertTrue(key not in generated["parent"])
 
     def test_schema_of_uses_default(self):
         """ Normalized System Test
