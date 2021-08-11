@@ -6,3 +6,4 @@ from .__gennum import gennum
 from .__genstr import genstr
 from .__gendict import gendict
 from .__genlist import genlist
+from ._options import Options

@@ -1,10 +1,15 @@
 from typing import Optional
 
 from ._context import Context
+from ._options import Options
 from ._generator import StrGenerator
 
 
-def genstr(schema: dict, schema_is_validated: bool = False, context: Optional[Context] = None) -> str:
+def genstr(schema: Optional[dict] = None,
+           *,
+           schema_is_validated: bool = False,
+           options: Optional[Options] = None,
+           context: Optional[Context] = None) -> str:
     """Generate a random string value according to the JSON schema.
 
     This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.
@@ -12,9 +17,10 @@ def genstr(schema: dict, schema_is_validated: bool = False, context: Optional[Co
     Args:
         schema: JSON schema object.
         schema_is_validated: Whether the schema is already validated or not.
+        options: Options for generation.
         context: The context of construction.
 
     Returns:
         Generated string value.
     """
-    return StrGenerator().gen(schema, schema_is_validated=schema_is_validated, context=context)
+    return StrGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

@@ -5,8 +5,8 @@ from typing import Optional
 from .__common import Generator
 from ..__number_range import NumberRange
 from .._context import Context
+from .._options import Options
 from ..error import SchemaConflictError, GenerateError
-from ..util.nonesafe import dfor
 
 __default_schema = {
     "minimum": -sys.float_info.max / 2,
@@ -14,30 +14,6 @@ __default_schema = {
     "maximum": sys.float_info.max / 2,
     "exclusiveMaximum": float('inf'),
 }
-
-__default_options = {
-    # 生成のやり直し回数の上限値
-    "regenerate_limit": 50,
-}
-
-
-def _normalize_options(options: dict) -> dict:
-    """Option normalization.
-
-    To make it easier to use for randomly generation, set items to ``options`` object.
-
-    Args:
-        options: Options for randomly generation.
-
-    Returns:
-        New options based on ``options`` and the default values.
-    """
-    options = dfor(options, {})
-
-    n_options = __default_options.copy()
-    n_options.update(options)
-
-    return n_options
 
 
 def __validate(value: float, schema: dict) -> bool:
@@ -145,11 +121,14 @@ def _little_less(number: float) -> float:
 
 class NumGenerator(Generator[float]):
     def gen_without_schema_check(self,
-                                 schema: dict,
+                                 schema: Optional[dict],
                                  *,
+                                 options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> float:
-        options = _normalize_options({})
-
+        if schema is None:
+            schema = {}
+        if options is None:
+            options = Options.default()
         if context is None:
             context = Context.root(schema)
 
@@ -160,7 +139,7 @@ class NumGenerator(Generator[float]):
 
         # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
         # Schema に合致する値を引くまで生成を繰り返す。
-        for i in range(options["regenerate_limit"]):
+        for i in range(options.regeneration_attempt_limit):
             generated = random.uniform(number_range.minimum, number_range.maximum)
 
             if generated == float("inf") or generated == float("-inf") or generated == float("NaN"):
