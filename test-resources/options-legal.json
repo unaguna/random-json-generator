@@ -1,0 +1,11 @@
+{
+  "regeneration_attempt_limit": 100,
+  "default_prob_of_true_given_bool": 0.2,
+  "default_length_range_of_genstr": 2,
+  "default_min_length_of_string": 10,
+  "default_max_length_of_string": 20,
+  "default_prob_of_optional_properties": 0.3,
+  "default_schema_of_properties": {"type": "string", "pattern": "1"},
+  "priority_schema_of_properties": {"p1": {"type": "string", "pattern": "2"}},
+  "default_schema_of_items": {"type": "string", "pattern": "3"}
+}

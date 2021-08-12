@@ -5,7 +5,7 @@ from typing import Optional, Union, Tuple
 from .__common import Generator
 from .._context import Context
 from ..error import SchemaConflictError
-from .._options import Options
+from ..options import Options
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
 

@@ -1,7 +1,7 @@
 import abc
 from typing import TypeVar, Generic, Optional
 
-from .._options import Options
+from ..options import Options
 from .._context import Context
 from ..validate.schema import validate_schema
 

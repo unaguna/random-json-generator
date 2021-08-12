@@ -2,7 +2,7 @@ from typing import Optional
 
 from .__common import Generator
 from .._context import Context
-from .._options import Options
+from ..options import Options
 
 
 class NoneGenerator(Generator[None]):

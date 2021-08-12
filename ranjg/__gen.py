@@ -3,7 +3,8 @@ import random
 from typing import Union, List, Optional, TextIO
 
 from ._context import Context
-from ._options import Options
+from .options import Options
+from .options import load as load_options
 from ._generator import get_generator
 from .util.nonesafe import dfor
 from .validate.schema import validate_schema
@@ -15,6 +16,7 @@ def gen(schema: dict = None,
         output_fp: TextIO = None,
         schema_is_validated: bool = False,
         options: Optional[Options] = None,
+        options_file: str = None,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -60,6 +62,8 @@ def gen(schema: dict = None,
             (In normal usage, this argument does not specify.)
         options (Options, optional):
             The options for generation.
+        options_file (str, optional):
+            The path to options file. This is parsed as JSON to an Options instance.
         context (Context):
             The context of construction.
 
@@ -79,6 +83,8 @@ def gen(schema: dict = None,
         raise ValueError("schema or schema_file must be specified.")
     if output_file is not None and output_fp is not None:
         raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
+    if options is not None and options_file is not None:
+        raise ValueError("Only one of options and options_file can be set. (You don't have to set either one.)")
 
     schema = dfor(schema, {})
 
@@ -92,6 +98,10 @@ def gen(schema: dict = None,
     # スキーマの不正判定
     if not schema_is_validated:
         validate_schema(schema)
+
+    # オプションファイルを読み込み
+    if options_file is not None:
+        options = load_options(options_file)
 
     gen_type = _raffle_type(schema.get("type"))
     generator = get_generator(gen_type)
