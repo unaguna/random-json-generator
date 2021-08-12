@@ -153,6 +153,7 @@ class ListGenerator(Generator[list]):
         for key, item_schema in enumerate(item_schema_list):
             generated_item = ranjg.gen(item_schema,
                                        schema_is_validated=True,
+                                       options=options,
                                        context=context.resolve(key, item_schema))
             result.append(generated_item)
 

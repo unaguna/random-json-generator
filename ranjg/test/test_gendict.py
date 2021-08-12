@@ -6,6 +6,7 @@ import jsonschema
 from ranjg import gendict, Options
 from .._context import Context
 from .._generator import DictGenerator
+from .._generator.__dict import _schema_of
 
 
 class TestGendict(unittest.TestCase):
@@ -175,3 +176,170 @@ class TestDictGenerator(unittest.TestCase):
         generated = DictGenerator().gen(schema, options=Options(default_schema_of_properties=default_schema,
                                                                 default_schema_of_items=dummy_schema))
         self.assertDictEqual(generated, {"p1": -100})
+
+    def test_priority_schema_of_properties_with_prior(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object", "required": [key]},
+                       {"type": "object", "required": [key], "properties": {key: {"type": "boolean"}}},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema})
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertEqual(generated, {key: -100})
+
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertEqual(generated["parent"], {key: -100})
+
+    def test_priority_schema_of_properties_with_not_prior(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object", "required": [key], "properties": {key: {"type": "boolean"}}},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={"px": priority_schema})
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertIsInstance(generated[key], bool)
+
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertIsInstance(generated["parent"][key], bool)
+
+    def test_priority_schema_of_properties_with_not_required_key(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object", "required": ["p2"]},
+                       {"type": "object", "required": ["p2"], "properties": {key: {"type": "boolean"}}},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema},
+                          # required でない要素が required であるかのように処理されていないことを確かめるため
+                          default_prob_of_optional_properties=0.0)
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertTrue(key not in generated)
+
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertTrue(key not in generated["parent"])
+
+    def test_priority_schema_of_properties_with_not_required_key_2(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object", "required": ["p2"], "properties": {key: {"type": "boolean"}}},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema},
+                          # required でない場合も priority_schema_of_properties が使用されることを確かめるため
+                          default_prob_of_optional_properties=1.0)
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertEqual(generated[key], -100)
+
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertEqual(generated["parent"][key], -100)
+
+    def test_priority_schema_of_properties_with_not_required_key_3(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` contains a key, corresponding property in generated dict (include
+        nested dicts) satisfies a schema ``options.priority_schema_of_properties[key]`` and not necessarily satisfies
+        ``schema.properties[key]``.
+        """
+        key = "p1"
+        schema_list = ({"type": "object"}, {"type": "object", "required": ["p2"]},)
+        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        options = Options(priority_schema_of_properties={key: priority_schema},
+                          # schema に登場しないプロパティは priority_schema_of_properties に指定があっても生成されないことを確かめるため
+                          default_prob_of_optional_properties=1.0)
+
+        for schema in schema_list:
+            generated = DictGenerator().gen(schema, options=options)
+            self.assertTrue(key not in generated)
+
+            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+            generated = DictGenerator().gen(schema_nest, options=options)
+            self.assertTrue(key not in generated["parent"])
+
+    def test_schema_of_uses_default(self):
+        """ Normalized System Test
+
+        ``_schema_of`` returns the default schema when ``key`` is not contained in neither ``properties`` or
+        ``priority_properties``.
+
+        assert that:
+            When both of a property and a priority_property don't contain ``key``, ``_schema_of`` returns default.
+        """
+        properties = {"p1": {"type": "boolean"}}
+        priority_properties = {"p2": {"type": "boolean"}}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+
+        schema = _schema_of("px", properties=properties, priority_properties=priority_properties,
+                            default_schema=default_schema)
+
+        self.assertDictEqual(schema, default_schema)
+
+    def test_schema_of_uses_properties(self):
+        """ Normalized System Test
+
+        ``_schema_of`` returns the schema in ``properties`` when ``key`` is contained in ``properties`` and not in
+        ``priority_properties``.
+
+        assert that:
+            When a property contains ``key`` and a priority_property doesn't contain ``key``, ``_schema_of`` returns
+            ``property[key]``.
+        """
+        key = "p1"
+        properties = {key: {"type": "string"}}
+        priority_properties = {"p2": {"type": "boolean"}}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+
+        schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
+                            default_schema=default_schema)
+
+        self.assertDictEqual(schema, properties[key])
+
+    def test_schema_of_uses_priority_property(self):
+        """ Normalized System Test
+
+        ``_schema_of`` returns the schema in ``priority_property`` when ``key`` is contained in ``priority_property``.
+        In this case, ``properties`` is ignored.
+
+        assert that:
+            When a priority_property contains ``key``, ``_schema_of`` returns ``priority_property[key]``.
+        """
+        key = "p2"
+        properties_list = ({"p1": {"type": "boolean"}},
+                           {"p1": {"type": "boolean"}, key: {"type": "boolean"}})
+        priority_properties = {key: {"type": "number"}}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+
+        for properties in properties_list:
+            schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
+                                default_schema=default_schema)
+
+            self.assertDictEqual(schema, priority_properties[key])
