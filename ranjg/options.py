@@ -46,3 +46,7 @@ class Options(NamedTuple):
         It is used when an user don't specify options.
         """
         return Options()
+
+
+def load(filepath: str) -> Options:
+    pass
