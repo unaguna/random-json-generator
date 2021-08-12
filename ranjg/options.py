@@ -1,3 +1,4 @@
+import json
 from functools import lru_cache
 from typing import NamedTuple, Union
 
@@ -48,5 +49,20 @@ class Options(NamedTuple):
         return Options()
 
 
+def __object_hook_on_load(d: dict) -> Union[Options, dict]:
+    # Options を json.load メソッドでロードする際の object_hook として使用する
+
+    # object_hook はルートオブジェクト以外にも使用されるため、たとえば d が
+    # default_schema_of_properties に対応する dict である場合もある。
+    # そのため、Options にできない場合はルートオブジェクトではないと判断して d をそのまま返す。
+    try:
+        return Options(**d)
+    except TypeError:
+        return d
+
+
 def load(filepath: str) -> Options:
-    pass
+    with open(filepath, mode='r') as f:
+        options = json.load(f, object_hook=__object_hook_on_load)
+
+    return options
