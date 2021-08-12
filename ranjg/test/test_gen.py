@@ -5,6 +5,7 @@ import random
 import shutil
 import unittest
 import jsonschema
+import ranjg.options
 from ranjg import gen
 from ..__gen import _raffle_type
 from ..error import InvalidSchemaError
@@ -180,18 +181,18 @@ class TestGen(unittest.TestCase):
 
     def test_gen_with_options_file(self):
         options_file = "./test-resources/options-legal.json"
-        schema = {"type": "object", "required": ["p1"]}
+        schema = {"type": "object", "required": ["p2"]}
 
         generated = gen(schema, options_file=options_file)
 
-        self.assertEqual(generated["p1"], '1')
+        self.assertEqual(generated["p2"], '1')
 
     def test_gen_with_options_and_options_file(self):
         options_file = "./test-resources/options-legal.json"
         schema = {"type": "object", "required": ["p1"]}
 
         with self.assertRaises(ValueError, msg='options and options_file'):
-            gen(schema, options_file=options_file)
+            gen(schema, options=ranjg.options.Options(), options_file=options_file)
 
 
 class TestRaffleType(unittest.TestCase):
