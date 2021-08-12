@@ -178,6 +178,21 @@ class TestGen(unittest.TestCase):
                                           output_file=output_file,
                                           output_fp=fp))
 
+    def test_gen_with_options_file(self):
+        options_file = "./test-resources/options-legal.json"
+        schema = {"type": "object", "required": ["p1"]}
+
+        generated = gen(schema, options_file=options_file)
+
+        self.assertEqual(generated["p1"], '1')
+
+    def test_gen_with_options_and_options_file(self):
+        options_file = "./test-resources/options-legal.json"
+        schema = {"type": "object", "required": ["p1"]}
+
+        with self.assertRaises(ValueError, msg='options and options_file'):
+            gen(schema, options_file=options_file)
+
 
 class TestRaffleType(unittest.TestCase):
     """Test class of ``_raffle_type``

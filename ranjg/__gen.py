@@ -15,6 +15,7 @@ def gen(schema: dict = None,
         output_fp: TextIO = None,
         schema_is_validated: bool = False,
         options: Optional[Options] = None,
+        options_file: str = None,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -60,6 +61,8 @@ def gen(schema: dict = None,
             (In normal usage, this argument does not specify.)
         options (Options, optional):
             The options for generation.
+        options_file (str, optional):
+            The path to options file. This is parsed as JSON to an Options instance.
         context (Context):
             The context of construction.
 
