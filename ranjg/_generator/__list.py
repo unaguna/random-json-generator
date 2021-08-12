@@ -6,7 +6,7 @@ import ranjg
 from .__common import Generator
 from .._context import Context
 from ..error import SchemaConflictError
-from .._options import Options
+from ..options import Options
 from ..util.listutil import fix_length
 
 

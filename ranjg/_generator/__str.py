@@ -7,7 +7,7 @@ import rstr
 from .__common import Generator
 from .._context import Context
 from ..error import SchemaConflictError
-from .._options import Options
+from ..options import Options
 
 
 def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:

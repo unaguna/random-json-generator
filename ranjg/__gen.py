@@ -3,7 +3,7 @@ import random
 from typing import Union, List, Optional, TextIO
 
 from ._context import Context
-from ._options import Options
+from .options import Options
 from ._generator import get_generator
 from .util.nonesafe import dfor
 from .validate.schema import validate_schema

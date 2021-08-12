@@ -5,7 +5,7 @@ from typing import Optional
 from .__common import Generator
 from ..__number_range import NumberRange
 from .._context import Context
-from .._options import Options
+from ..options import Options
 from ..error import SchemaConflictError, GenerateError
 
 __default_schema = {
