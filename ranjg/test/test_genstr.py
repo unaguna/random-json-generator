@@ -478,8 +478,7 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         When ``options.default_min_length_of_string`` is negative, it is corrected to 0.
         """
-        options_list = (Options(default_min_length_of_string=-2, default_length_range_of_genstr=0),
-                        Options(default_min_length_of_string=-3, default_max_length_of_string=0),
+        options_list = (Options(default_min_length_of_string=-3, default_max_length_of_string=0),
                         Options(default_min_length_of_string=-4, default_max_length_of_string=0,
                                 default_length_range_of_genstr=0),)
 

@@ -29,7 +29,7 @@ def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
 
     # minLength と maxLength がともに指定されていない場合、デフォルト設定を使う
     if "minLength" not in n_schema and "maxLength" not in n_schema:
-        n_schema["minLength"] = options.default_min_length_of_string
+        n_schema["minLength"] = max(0, options.default_min_length_of_string)
         n_schema["maxLength"] = options.default_max_length_of_string
     # minLength が設定されていて maxLength が指定されていない場合
     elif "maxLength" not in n_schema:
