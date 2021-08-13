@@ -2,7 +2,7 @@ import json
 
 import jsonschema
 
-from .error import InvalidSchemaError
+from .error import InvalidSchemaError, SchemaFileIOError
 
 # スキーマのスキーマ
 __meta_schema = {
@@ -87,7 +87,10 @@ def validate(schema: dict):
 
 
 def load(filepath: str) -> dict:
-    with open(filepath) as fp:
-        loaded_schema = json.load(fp)
+    try:
+        with open(filepath) as fp:
+            loaded_schema = json.load(fp)
+    except json.decoder.JSONDecodeError as e:
+        raise SchemaFileIOError(f'This file cannot be parsed as schema: {filepath}') from e
 
     return loaded_schema
