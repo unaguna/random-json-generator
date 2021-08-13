@@ -66,16 +66,13 @@ __SCHEMA_VALIDATOR = jsonschema.Draft7Validator(__meta_schema,
 
 
 def validate(schema: dict):
-    """スキーマのバリデーション
+    """validate schema
 
-    スキーマに不正がないかどうかを判定する。
+    It determines if the schema is free of irregularities.
 
-    Args:
-        schema:
-            判定するスキーマ
     Raises:
         InvalidSchemaError:
-            schema が不正であるとき
+            When the schema is invalid
     """
     validate_error_list = [*__SCHEMA_VALIDATOR.iter_errors(schema)]
 
@@ -87,6 +84,12 @@ def validate(schema: dict):
 
 
 def load(filepath: str) -> dict:
+    """load a schema file
+
+    Raises:
+        SchemaFileIOError:
+            When loading file is failed
+    """
     try:
         with open(filepath) as fp:
             loaded_schema = json.load(fp)
