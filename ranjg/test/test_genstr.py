@@ -453,4 +453,38 @@ class TestOptionDefaultLength(unittest.TestCase):
             generated = StrGenerator().gen(schema, options=options)
             self.assertEqual(str_length, len(generated))
 
-    # TODO: default_min_length_of_string > default_max_length_of_string である場合の仕様を決定して試験を作る
+    def test_reversed_default_length(self):
+        """ Semi-normalized System Test
+
+        When ``options.default_min_length_of_string`` is greater than ``options.default_max_length_of_string`` and
+        they are used, SchemaConflictError is raised.
+        """
+        options_list = (Options(default_min_length_of_string=10, default_max_length_of_string=9),
+                        Options(default_min_length_of_string=11, default_max_length_of_string=10,
+                                default_length_range_of_genstr=-4),
+                        Options(default_min_length_of_string=-1, default_max_length_of_string=-2),
+                        # 負の default_min_length_of_string は 0 として扱われるので、以下の例もmin>maxとして処理する。
+                        Options(default_min_length_of_string=-2, default_max_length_of_string=-1),)
+
+        schema = {"type": "string"}
+
+        for options in options_list:
+            with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
+                with self.assertRaises(SchemaConflictError):
+                    StrGenerator().gen(schema, options=options)
+
+    def test_negative_default_min_length(self):
+        """ Semi-normalized System Test
+
+        When ``options.default_min_length_of_string`` is negative, it is corrected to 0.
+        """
+        options_list = (Options(default_min_length_of_string=-3, default_max_length_of_string=0),
+                        Options(default_min_length_of_string=-4, default_max_length_of_string=0,
+                                default_length_range_of_genstr=0),)
+
+        schema = {"type": "string"}
+
+        for options in options_list:
+            with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
+                generated = StrGenerator().gen(schema, options=options)
+                self.assertEqual(0, len(generated))
