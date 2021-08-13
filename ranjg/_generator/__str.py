@@ -31,6 +31,10 @@ def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
     if "minLength" not in n_schema and "maxLength" not in n_schema:
         n_schema["minLength"] = max(0, options.default_min_length_of_string)
         n_schema["maxLength"] = options.default_max_length_of_string
+
+        if n_schema["minLength"] > n_schema["maxLength"]:
+            raise SchemaConflictError("\"options.default_min_length_of_string\" must be lower than or equal to the "
+                                      "\"options.default_max_length_of_string\" value.", context)
     # minLength が設定されていて maxLength が指定されていない場合
     elif "maxLength" not in n_schema:
         length_range = max(0, options.default_length_range_of_genstr)
