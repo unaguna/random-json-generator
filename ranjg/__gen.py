@@ -72,6 +72,10 @@ def gen(schema: dict = None,
         Generated something. It is satisfies the JSON schema.
 
     Raises:
+        SchemaFileIOError:
+            When loading schema_file is failed
+        OptionsFileIOError:
+            When loading options_file is failed
         InvalidSchemaError:
             When the schema specified as arguments is invalid.
         SchemaConflictError:
