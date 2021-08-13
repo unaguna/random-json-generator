@@ -1,6 +1,6 @@
 import jsonschema
 
-from ..error import InvalidSchemaError
+from .error import InvalidSchemaError
 
 # スキーマのスキーマ
 __meta_schema = {

@@ -7,7 +7,7 @@ from .options import Options
 from .options import load as load_options
 from ._generator import get_generator
 from .util.nonesafe import dfor
-from .validate.schema import validate_schema
+from .schema import validate_schema
 
 
 def gen(schema: dict = None,
