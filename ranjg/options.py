@@ -64,10 +64,13 @@ def __object_hook_on_load(d: dict) -> Union[Options, dict]:
 
 
 def load(filepath: str) -> Options:
-    with open(filepath, mode='r') as f:
-        # object_hook により、json.load の戻り値は Options にパース可能なら Options に、
-        # そうでないなら dict になる。
-        options: Union[Options, dict] = json.load(f, object_hook=__object_hook_on_load)
+    try:
+        with open(filepath, mode='r') as f:
+            # object_hook により、json.load の戻り値は Options にパース可能なら Options に、
+            # そうでないなら dict になる。
+            options: Union[Options, dict] = json.load(f, object_hook=__object_hook_on_load)
+    except json.decoder.JSONDecodeError as e:
+        raise InvalidOptionsError(f'This file cannot be parsed as options: {filepath}') from e
 
     if isinstance(options, Options):
         return options
