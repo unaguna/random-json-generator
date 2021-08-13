@@ -3,7 +3,7 @@ from typing import TypeVar, Generic, Optional
 
 from ..options import Options
 from .._context import Context
-from ..schema import validate_schema
+from ..schema import validate as validate_schema
 
 _T = TypeVar('_T')
 

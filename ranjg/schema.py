@@ -63,7 +63,7 @@ __SCHEMA_VALIDATOR = jsonschema.Draft7Validator(__meta_schema,
                                                 format_checker=jsonschema.draft7_format_checker)
 
 
-def validate_schema(schema: dict):
+def validate(schema: dict):
     """スキーマのバリデーション
 
     スキーマに不正がないかどうかを判定する。
