@@ -7,6 +7,7 @@ from .options import Options
 from .options import load as load_options
 from ._generator import get_generator
 from .util.nonesafe import dfor
+from .schema import load as load_schema
 from .schema import validate as validate_schema
 
 
@@ -90,10 +91,9 @@ def gen(schema: dict = None,
 
     # スキーマファイルを読み込み
     if schema_file is not None:
-        with open(schema_file) as fp:
-            loaded_schema = json.load(fp)
-            loaded_schema.update(schema)
-            schema = loaded_schema
+        loaded_schema = load_schema(schema_file)
+        loaded_schema.update(schema)
+        schema = loaded_schema
 
     # スキーマの不正判定
     if not schema_is_validated:

@@ -1,3 +1,5 @@
+import json
+
 import jsonschema
 
 from .error import InvalidSchemaError
@@ -82,3 +84,10 @@ def validate(schema: dict):
         return
 
     raise InvalidSchemaError(validate_error_list)
+
+
+def load(filepath: str) -> dict:
+    with open(filepath) as fp:
+        loaded_schema = json.load(fp)
+
+    return loaded_schema
