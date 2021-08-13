@@ -1,6 +1,7 @@
 import unittest
 
 import ranjg
+from ranjg.error import InvalidOptionsError
 
 
 class TestOptions(unittest.TestCase):
@@ -32,4 +33,9 @@ class TestOptions(unittest.TestCase):
         with self.assertRaises(FileNotFoundError):
             ranjg.options.load(options_file)
 
-    # TODO: Options として正しくない json ファイルを読み込んだ時の動作を定義して試験を作る
+    def test_load_invalid_as_options(self):
+        options_file = "./test-resources/options-illegal.json"
+
+        with self.assertRaises(InvalidOptionsError):
+            ranjg.options.load(options_file)
+
