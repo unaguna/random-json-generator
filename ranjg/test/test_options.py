@@ -34,8 +34,14 @@ class TestOptions(unittest.TestCase):
             ranjg.options.load(options_file)
 
     def test_load_invalid_as_options(self):
+        options_file = "./test-resources/options-illegal-param.json"
+
+        with self.assertRaises(InvalidOptionsError, msg=options_file):
+            ranjg.options.load(options_file)
+
+    def test_load_invalid_as_json(self):
         options_file = "./test-resources/options-illegal.json"
 
-        with self.assertRaises(InvalidOptionsError):
+        with self.assertRaises(InvalidOptionsError, msg=options_file):
             ranjg.options.load(options_file)
 

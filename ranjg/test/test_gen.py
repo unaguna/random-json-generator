@@ -148,6 +148,8 @@ class TestGen(unittest.TestCase):
 
     # TODO: schema と schema_file をともに指定する場合のテスト
 
+    # TODO: schema_file が JSON として解釈できない場合の挙動を定義して試験を作成する。
+
     def test_gen_without_schema(self):
         """ Semi-normalized System Test
 
