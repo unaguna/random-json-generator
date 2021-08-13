@@ -153,7 +153,7 @@ class TestGen(unittest.TestCase):
         schema = {"type": "string"}
         schema_file = "./test-resources/schema-legal-type_str.json"
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ValueError, msg='schema and schema_file'):
             gen(schema, schema_file=schema_file)
 
     def test_gen_with_illegal_schema_file_path(self):

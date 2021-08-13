@@ -86,6 +86,8 @@ def gen(schema: dict = None,
     """
     if schema is None and schema_file is None:
         raise ValueError("schema or schema_file must be specified.")
+    if schema is not None and schema_file is not None:
+        raise ValueError("Only one of schema and schema_file can be set.")
     if output_file is not None and output_fp is not None:
         raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
     if options is not None and options_file is not None:
