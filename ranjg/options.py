@@ -64,6 +64,12 @@ def __object_hook_on_load(d: dict) -> Union[Options, dict]:
 
 
 def load(filepath: str) -> Options:
+    """load an option file
+
+    Raises:
+        OptionsFileIOError:
+            When loading file is failed
+    """
     try:
         with open(filepath, mode='r') as f:
             # object_hook により、json.load の戻り値は Options にパース可能なら Options に、
