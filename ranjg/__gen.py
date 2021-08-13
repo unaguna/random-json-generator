@@ -6,7 +6,6 @@ from ._context import Context
 from .options import Options
 from .options import load as load_options
 from ._generator import get_generator
-from .util.nonesafe import dfor
 from .schema import load as load_schema
 from .schema import validate as validate_schema
 
@@ -93,13 +92,9 @@ def gen(schema: dict = None,
     if options is not None and options_file is not None:
         raise ValueError("Only one of options and options_file can be set. (You don't have to set either one.)")
 
-    schema = dfor(schema, {})
-
     # スキーマファイルを読み込み
     if schema_file is not None:
-        loaded_schema = load_schema(schema_file)
-        loaded_schema.update(schema)
-        schema = loaded_schema
+        schema = load_schema(schema_file)
 
     # スキーマの不正判定
     if not schema_is_validated:
