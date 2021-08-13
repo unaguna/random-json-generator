@@ -2,6 +2,8 @@ import json
 from functools import lru_cache
 from typing import NamedTuple, Union
 
+from .error import InvalidOptionsError
+
 
 class Options(NamedTuple):
 
@@ -63,6 +65,11 @@ def __object_hook_on_load(d: dict) -> Union[Options, dict]:
 
 def load(filepath: str) -> Options:
     with open(filepath, mode='r') as f:
-        options = json.load(f, object_hook=__object_hook_on_load)
+        # object_hook により、json.load の戻り値は Options にパース可能なら Options に、
+        # そうでないなら dict になる。
+        options: Union[Options, dict] = json.load(f, object_hook=__object_hook_on_load)
 
-    return options
+    if isinstance(options, Options):
+        return options
+    else:
+        raise InvalidOptionsError(f'This file cannot be parsed as options: {filepath}')
