@@ -9,6 +9,7 @@ import ranjg.options
 from ranjg import gen
 from ..__gen import _raffle_type
 from ..error import InvalidSchemaError
+from ..error.__schema_file_io_error import SchemaFileIOError
 
 
 class TestGen(unittest.TestCase):
@@ -148,7 +149,13 @@ class TestGen(unittest.TestCase):
 
     # TODO: schema と schema_file をともに指定する場合のテスト
 
-    # TODO: schema_file が JSON として解釈できない場合の挙動を定義して試験を作成する。
+    def test_gen_with_illegal_schema_file_path(self):
+        """ Semi-normalized System Test
+        """
+        schema_file = "./test-resources/json-illegal.json"
+
+        with self.assertRaises(SchemaFileIOError):
+            gen(schema_file=schema_file)
 
     def test_gen_without_schema(self):
         """ Semi-normalized System Test
