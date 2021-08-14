@@ -36,5 +36,6 @@ The following pages show keywords of Options.
    :caption: References:
 
    ranjg-options_string
+   ranjg-options_boolean
 
 .. _JSON schema: https://json-schema.org/
