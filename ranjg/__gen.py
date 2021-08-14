@@ -62,13 +62,14 @@ def gen(schema: dict = None,
         output_fp (TextIO, optional): The writing object of a file where the result will be output as JSON.
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
-            (In normal usage, this argument does not specify.)
+            (In normal usage, this argument is not specified.)
         options (Options, optional):
             The options for generation.
         options_file (str, optional):
             The path to options file. This is parsed as JSON to an Options instance.
         context (Context):
             The context of construction.
+            (In normal usage, this argument is not specified. This argument is for using this function recursively.)
 
     Returns:
         Generated something. It is satisfies the JSON schema.
