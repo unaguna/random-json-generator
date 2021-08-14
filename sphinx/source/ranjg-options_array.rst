@@ -8,6 +8,7 @@ If items' schema is not specified in the schema, ``options.default_schema_of_ite
 For example:
 
 >>> import ranjg
+>>> from ranjg.options import Options
 >>> schema = {
 >>>     'type': 'array',
 >>>     # length of result array is at least 3
@@ -24,6 +25,7 @@ For example:
 >>> assert generated[2] == 10  # the integer between 10 and 10
 
 >>> import ranjg
+>>> from ranjg.options import Options
 >>> schema = {
 >>>     'type': 'array',
 >>>     # length of result array is at least 1

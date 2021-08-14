@@ -9,6 +9,7 @@ the other is determined so that ``schema.maxLength`` - ``schema.minLength`` is e
 ``options.default_length_range_of_genstr``.
 
 >>> import ranjg
+>>> from ranjg.options import Options
 >>> schema = {
 >>>     'type': 'string',
 >>>     'minLength': 8
@@ -18,6 +19,7 @@ the other is determined so that ``schema.maxLength`` - ``schema.minLength`` is e
 >>> assert len(generated) in (8, 9)
 
 >>> import ranjg
+>>> from ranjg.options import Options
 >>> schema = {
 >>>     'type': 'string',
 >>>     'maxLength': 8
@@ -44,6 +46,7 @@ If **neither** ``schema.minLength`` nor ``schema.maxLength`` is specified,
 they are determined with ``options.default_min_length_of_string`` and ``options.default_max_length_of_string``.
 
 >>> import ranjg
+>>> from ranjg.options import Options
 >>> schema = { 'type': 'string' }
 >>> options = Options(default_min_length_of_string=1, default_max_length_of_string=3)
 >>> generated = ranjg.gen(schema, options=options)  # -> returns a string of 1 to 3 characters
