@@ -29,6 +29,10 @@ If you want a string of a certain length, specify the same value for ``minLength
 
 :warning: ``minLength`` cannot be a negative number as well as ``maxLength``.
 
+:note:
+    If ``minLength`` or ``maxLength`` is not specified, it will be completed by options.
+    See also :doc:`ranjg-options_string`.
+
 
 Regular Expression
 ------------------

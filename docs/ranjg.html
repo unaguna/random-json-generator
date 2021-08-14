@@ -89,12 +89,14 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ranjg package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ranjg.error.html">ranjg.error package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ranjg.options.html">ranjg.options package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-ranjg">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
 </ul>
 
             
@@ -166,10 +168,8 @@
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="ranjg.error.html">ranjg.error package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="ranjg.error.html#module-ranjg.error">Module contents</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg.error.html">ranjg.error package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg.options.html">ranjg.options package</a></li>
 </ul>
 </div>
 </div>
@@ -177,9 +177,10 @@
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ranjg" title="Permalink to this headline">¶</a></h2>
 <dl class="py function">
 <dt id="ranjg.gen">
-<code class="sig-prename descclassname">ranjg.</code><code class="sig-name descname">gen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">schema</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">schema_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_fp</span><span class="p">:</span> <span class="n">TextIO</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">schema_is_validated</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">ranjg.</code><code class="sig-name descname">gen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">schema</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">schema_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">output_fp</span><span class="p">:</span> <span class="n">TextIO</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options">ranjg.options.Options</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options_file</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">schema_is_validated</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>ranjg._context.Context<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate something randomly according to the JSON schema.</p>
-<p>This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.</p>
+<p>This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
+See also <a class="reference internal" href="ranjg-json-schema.html"><span class="doc">ranjg-JSON-schema</span></a> to explore the supported parameters.</p>
 <dl>
 <dt>Examples</dt><dd><p>The following code is most simple usage.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
@@ -214,12 +215,17 @@ two examples will run similarly.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>schema</strong> (<em>dict</em><em>, </em><em>default={}</em>) – JSON schema object.</p></li>
+<li><p><strong>schema</strong> (<em>dict</em><em>, </em><em>optional</em>) – JSON schema object. See also <a class="reference internal" href="ranjg-json-schema.html"><span class="doc">ranjg-JSON-schema</span></a>.
+Only one of this argument or <code class="docutils literal notranslate"><span class="pre">schema_file</span></code> needs to be specified.</p></li>
 <li><p><strong>schema_file</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to JSON schema file. This JSON schema is used instead of the argument <code class="docutils literal notranslate"><span class="pre">schema</span></code>.</p></li>
 <li><p><strong>output_file</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to a file where the result will be output as JSON.</p></li>
 <li><p><strong>output_fp</strong> (<em>TextIO</em><em>, </em><em>optional</em>) – The writing object of a file where the result will be output as JSON.</p></li>
+<li><p><strong>options</strong> (<a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options"><em>Options</em></a><em>, </em><em>optional</em>) – The options for generation.</p></li>
+<li><p><strong>options_file</strong> (<em>str</em><em>, </em><em>optional</em>) – The path to options file. This is parsed as JSON to an Options instance.</p></li>
 <li><p><strong>schema_is_validated</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the schema is already validated or not.
-(In normal usage, this argument does not specify.)</p></li>
+(In normal usage, this argument is not specified.)</p></li>
+<li><p><strong>context</strong> (<em>Context</em>) – The context of construction.
+(In normal usage, this argument is not specified. This argument is for using this function recursively.)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -227,6 +233,8 @@ two examples will run similarly.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="ranjg.error.html#ranjg.error.SchemaFileIOError" title="ranjg.error.SchemaFileIOError"><strong>SchemaFileIOError</strong></a> – When loading schema_file is failed</p></li>
+<li><p><a class="reference internal" href="ranjg.error.html#ranjg.error.OptionsFileIOError" title="ranjg.error.OptionsFileIOError"><strong>OptionsFileIOError</strong></a> – When loading options_file is failed</p></li>
 <li><p><a class="reference internal" href="ranjg.error.html#ranjg.error.InvalidSchemaError" title="ranjg.error.InvalidSchemaError"><strong>InvalidSchemaError</strong></a> – When the schema specified as arguments is invalid.</p></li>
 <li><p><a class="reference internal" href="ranjg.error.html#ranjg.error.SchemaConflictError" title="ranjg.error.SchemaConflictError"><strong>SchemaConflictError</strong></a> – When the schema specified as arguments has confliction.
     In other words, when no value can satisfy the schema.</p></li>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Boolean Generation &mdash; random-json-generator  documentation</title>
+  <title>Options for Boolean Generation &mdash; random-json-generator  documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Array Generation" href="ranjg-json-schema_array.html" />
-    <link rel="prev" title="Number Generation" href="ranjg-json-schema_number.html" /> 
+    <link rel="next" title="Options for Array Generation" href="ranjg-options_array.html" />
+    <link rel="prev" title="Options for String Generation" href="ranjg-options_string.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -87,17 +87,18 @@
 <li class="toctree-l1"><a class="reference internal" href="quick-start-code.html">Quick Start (Python Code)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ranjg.html">ranjg package</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_type.html">Type</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_null.html">Null Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_string.html">String Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_number.html">Number Generation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Boolean Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_array.html">Array Generation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_object.html">Object Generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ranjg-options.html">Options</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ranjg-options_string.html">Options for String Generation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Options for Boolean Generation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#probability">Probability</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-options_array.html">Options for Array Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-options_object.html">Options for Object Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-options.html#options-file">Options file</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -144,15 +145,15 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-          <li><a href="ranjg-json-schema.html">ranjg-JSON-schema</a> &raquo;</li>
+          <li><a href="ranjg-options.html">Options</a> &raquo;</li>
         
-      <li>Boolean Generation</li>
+      <li>Options for Boolean Generation</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/ranjg-json-schema_boolean.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/ranjg-options_boolean.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -165,21 +166,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="boolean-generation">
-<h1>Boolean Generation<a class="headerlink" href="#boolean-generation" title="Permalink to this headline">¶</a></h1>
-<p>When <code class="docutils literal notranslate"><span class="pre">boolean</span></code> is adopted as <a class="reference internal" href="ranjg-json-schema_type.html"><span class="doc">type</span></a>, <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> returns <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> randomly. Then the other keywords are ignored.</p>
+  <div class="section" id="options-for-boolean-generation">
+<h1>Options for Boolean Generation<a class="headerlink" href="#options-for-boolean-generation" title="Permalink to this headline">¶</a></h1>
+<p>When generating a boolean value, some options will be used.</p>
+<div class="section" id="probability">
+<h2>Probability<a class="headerlink" href="#probability" title="Permalink to this headline">¶</a></h2>
+<p>If <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> generates a boolean value, it returns True with probability <code class="docutils literal notranslate"><span class="pre">options.default_prob_of_true_given_bool</span></code>
+and False with probability 1-<code class="docutils literal notranslate"><span class="pre">default_prob_of_true_given_bool</span></code>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;boolean&#39;</span> <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns True or False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span>
-<span class="go">&lt;class &#39;bool&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ranjg.options</span> <span class="kn">import</span> <span class="n">Options</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;boolean&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">options</span> <span class="o">=</span> <span class="n">Options</span><span class="p">(</span><span class="n">default_prob_of_true_given_bool</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>  <span class="c1"># 1.0 = 100%</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>  <span class="c1"># -&gt; returns True with probability 100%</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">generated</span> <span class="ow">is</span> <span class="kc">True</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">note</dt>
-<dd class="field-odd"><p>It returns True with a probability of <code class="docutils literal notranslate"><span class="pre">options.default_prob_of_true_given_bool</span></code> and False with the remaining probability. See also <a class="reference internal" href="ranjg-options_boolean.html"><span class="doc">Options for Boolean Generation</span></a>.</p>
+<dd class="field-odd"><p>The default value of <code class="docutils literal notranslate"><span class="pre">default_prob_of_true_given_bool</span></code> is 0.5.</p>
 </dd>
 </dl>
+</div>
 </div>
 
 
@@ -190,10 +197,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="ranjg-json-schema_array.html" class="btn btn-neutral float-right" title="Array Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ranjg-options_array.html" class="btn btn-neutral float-right" title="Options for Array Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="ranjg-json-schema_number.html" class="btn btn-neutral float-left" title="Number Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="ranjg-options_string.html" class="btn btn-neutral float-left" title="Options for String Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

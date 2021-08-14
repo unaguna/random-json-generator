@@ -98,6 +98,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#items">Items</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#to-all-elements">To All Elements</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#to-each-element">To Each Element</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#not-specified">Not Specified</a></li>
 </ul>
 </li>
 </ul>
@@ -105,6 +106,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_object.html">Object Generation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
 </ul>
 
             
@@ -296,6 +298,16 @@ The length of the generated list can be specified with the keywords <code class=
 <span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">schema</span><span class="p">[</span><span class="s1">&#39;items&#39;</span><span class="p">])</span>
 </pre></div>
 </div>
+<dl class="field-list simple">
+<dt class="field-odd">note</dt>
+<dd class="field-odd"><p>If <code class="docutils literal notranslate"><span class="pre">additionalItems</span></code> is True or not specified, <code class="docutils literal notranslate"><span class="pre">options.default_schema_of_items</span></code> is used to generate elements whose
+schema is not specified in <code class="docutils literal notranslate"><span class="pre">items</span></code>. See also <a class="reference internal" href="ranjg-options_array.html"><span class="doc">Options for Array Generation</span></a>.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="not-specified">
+<h3>Not Specified<a class="headerlink" href="#not-specified" title="Permalink to this headline">¶</a></h3>
+<p>If <code class="docutils literal notranslate"><span class="pre">items</span></code> is not specified, <code class="docutils literal notranslate"><span class="pre">options.default_schema_of_items</span></code> is used instead. See also <a class="reference internal" href="ranjg-options_array.html"><span class="doc">Options for Array Generation</span></a>.</p>
 </div>
 </div>
 </div>

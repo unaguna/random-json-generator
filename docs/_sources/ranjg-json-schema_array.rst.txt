@@ -123,3 +123,12 @@ If you don't want to allow additional elements that are not specified in ``items
 >>> assert len(generated) <= len(schema['items'])
 
 
+:note:
+    If ``additionalItems`` is True or not specified, ``options.default_schema_of_items`` is used to generate elements whose
+    schema is not specified in ``items``. See also :doc:`ranjg-options_array`.
+
+
+Not Specified
+^^^^^^^^^^^^^
+If ``items`` is not specified, ``options.default_schema_of_items`` is used instead. See also :doc:`ranjg-options_array`.
+

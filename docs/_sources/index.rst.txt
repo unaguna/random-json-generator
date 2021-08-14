@@ -26,6 +26,7 @@ For example:
    quick-start-command
    ranjg
    ranjg-json-schema
+   ranjg-options
 
 
 
