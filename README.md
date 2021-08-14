@@ -1,4 +1,4 @@
-**ranjg 0.3.0.x — Randomly json generator**
+**ranjg 0.4.0.x — Randomly json generator**
 
 **ranjg** is a package providing functions to generate random JSON data according to JSON-Schema-**LIKE** object. (It is similar to JSON schema, but does NOT support some keywords. Also see [here](#Supported-keywords-of-schema).)
 
@@ -96,12 +96,13 @@ Document (command line usage)
 -----------------------------
 You can execute ranjg with below command:
 ```sh
-python -m ranjg <schema_file_path> [-j <json_output_path>]
+python -m ranjg <schema_file_path> [-j <json_output_path>] [--options <options_file>]
 ```
 This command generates a JSON string. Each argument has the following meaning:
 
 - `<schema_file_path>`: A file path of the JSON-schema-like file. Generated JSON string will be according to this schema. ([What's "JSON-schema-*like*"?](#Supported-keywords-of-schema))
 - `-j <json_output_path>` (optional): When it's specified, a generated JSON string will be written to the specified file. When it's not specified, a generated JSON string will be written to stdout.
+- `--options <options_file>` (optional): It can be specified to use Options. See also [Options](https://unaguna.github.io/random-json-generator/ranjg-options.html).
 
 Document (python code usage)
 ----------------------------
@@ -110,13 +111,17 @@ Usually, the following function is used:
 def gen(schema: dict = None,
         schema_file: str = None,
         output_file: str = None,
-        output_fp = None) -> str
+        output_fp = None,
+        options: Options = None,
+        options_file: str = None) -> str
 ```
 This function returns a generated JSON string.
 
 Either `schema` or `schema_file` must be specified (generated JSON string is according to them). `schema` is a JSON-schema-like dict and `schema_file` is the path to a JSON-schema-like file. ([What's "JSON-schema-*like*"?](#Supported-keywords-of-schema))
 
 When `output_file` is specified, the generated JSON string will be written to the file of the specified path. When `output_fp` is specified with a file object opened in write mode, the result will be written to the specified file. You cannot specify `output_file` and `output_fp` in the same function call.
+
+`options` or `options_file` can be specified to use Options. See also [Options](https://unaguna.github.io/random-json-generator/ranjg-options.html).
 
 Supported keywords of schema
 ------------------
@@ -133,3 +138,9 @@ The following keywords can be used in much the same way as in regular JSON schem
 - "pattern", "minLength", "maxLength"
     - **Warning**: When "pattern" specified, "minLength" and "maxLength" are ignored.
 - "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"
+
+Options
+-------
+Options allow you to specify generation rules that are not specified in the schema.
+
+See also [Options](https://unaguna.github.io/random-json-generator/ranjg-options.html).
