@@ -21,6 +21,7 @@ def gen(schema: dict = None,
     """Generate something randomly according to the JSON schema.
 
     This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
+    See also :doc:`ranjg-json-schema` to explore the supported parameters.
 
     Examples
         The following code is most simple usage.
@@ -52,7 +53,9 @@ def gen(schema: dict = None,
         >>>     # -> returns the result value and writes the result to specified file
 
     Args:
-        schema (dict, default={}): JSON schema object.
+        schema (dict, optional):
+            JSON schema object. See also :doc:`ranjg-json-schema`.
+            Only one of this argument or ``schema_file`` needs to be specified.
         schema_file (str, optional):
             The path to JSON schema file. This JSON schema is used instead of the argument ``schema``.
         output_file (str, optional): The path to a file where the result will be output as JSON.

@@ -7,6 +7,10 @@ from .error import OptionsFileIOError
 
 class Options(NamedTuple):
     """Options of ``ranjg.gen``.
+
+    See Also:
+        :doc:`ranjg-options`:
+            To know what options are used in each generation.
     """
 
     #: The maximum number of generation when multiple attempts are required to obtain a result that satisfies the
