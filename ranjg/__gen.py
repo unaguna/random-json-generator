@@ -11,12 +11,13 @@ from .schema import validate as validate_schema
 
 
 def gen(schema: dict = None,
+        *,
         schema_file: str = None,
         output_file: str = None,
         output_fp: TextIO = None,
-        schema_is_validated: bool = False,
         options: Optional[Options] = None,
         options_file: str = None,
+        schema_is_validated: bool = False,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -60,13 +61,13 @@ def gen(schema: dict = None,
             The path to JSON schema file. This JSON schema is used instead of the argument ``schema``.
         output_file (str, optional): The path to a file where the result will be output as JSON.
         output_fp (TextIO, optional): The writing object of a file where the result will be output as JSON.
-        schema_is_validated (bool, optional):
-            Whether the schema is already validated or not.
-            (In normal usage, this argument is not specified.)
         options (Options, optional):
             The options for generation.
         options_file (str, optional):
             The path to options file. This is parsed as JSON to an Options instance.
+        schema_is_validated (bool, optional):
+            Whether the schema is already validated or not.
+            (In normal usage, this argument is not specified.)
         context (Context):
             The context of construction.
             (In normal usage, this argument is not specified. This argument is for using this function recursively.)
