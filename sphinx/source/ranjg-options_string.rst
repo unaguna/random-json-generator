@@ -14,7 +14,7 @@ the other is determined so that ``schema.maxLength`` - ``schema.minLength`` is e
 >>>     'minLength': 8
 >>> }
 >>> options = Options(default_length_range_of_genstr=1)
->>> generated = ranjg.gen(schema)  # -> returns a string of 8 to 8+1 characters
+>>> generated = ranjg.gen(schema, options=options)  # -> returns a string of 8 to 8+1 characters
 >>> assert len(generated) in (8, 9)
 
 >>> import ranjg
@@ -23,7 +23,7 @@ the other is determined so that ``schema.maxLength`` - ``schema.minLength`` is e
 >>>     'maxLength': 8
 >>> }
 >>> options = Options(default_length_range_of_genstr=1)
->>> generated = ranjg.gen(schema)  # -> returns a string of 8-1 to 8 characters
+>>> generated = ranjg.gen(schema, options=options)  # -> returns a string of 8-1 to 8 characters
 >>> assert len(generated) in (7, 8)
 
 
@@ -46,7 +46,7 @@ they are determined with ``options.default_min_length_of_string`` and ``options.
 >>> import ranjg
 >>> schema = { 'type': 'string' }
 >>> options = Options(default_min_length_of_string=1, default_max_length_of_string=3)
->>> generated = ranjg.gen(schema)  # -> returns a string of 1 to 3 characters
+>>> generated = ranjg.gen(schema, options=options)  # -> returns a string of 1 to 3 characters
 >>> assert len(generated) in (1, 2, 3)
 
 :warning:
