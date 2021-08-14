@@ -11,16 +11,18 @@ from .schema import validate as validate_schema
 
 
 def gen(schema: dict = None,
+        *,
         schema_file: str = None,
         output_file: str = None,
         output_fp: TextIO = None,
-        schema_is_validated: bool = False,
         options: Optional[Options] = None,
         options_file: str = None,
+        schema_is_validated: bool = False,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
     This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
+    See also :doc:`ranjg-json-schema` to explore the supported parameters.
 
     Examples
         The following code is most simple usage.
@@ -52,20 +54,23 @@ def gen(schema: dict = None,
         >>>     # -> returns the result value and writes the result to specified file
 
     Args:
-        schema (dict, default={}): JSON schema object.
+        schema (dict, optional):
+            JSON schema object. See also :doc:`ranjg-json-schema`.
+            Only one of this argument or ``schema_file`` needs to be specified.
         schema_file (str, optional):
             The path to JSON schema file. This JSON schema is used instead of the argument ``schema``.
         output_file (str, optional): The path to a file where the result will be output as JSON.
         output_fp (TextIO, optional): The writing object of a file where the result will be output as JSON.
-        schema_is_validated (bool, optional):
-            Whether the schema is already validated or not.
-            (In normal usage, this argument does not specify.)
         options (Options, optional):
             The options for generation.
         options_file (str, optional):
             The path to options file. This is parsed as JSON to an Options instance.
+        schema_is_validated (bool, optional):
+            Whether the schema is already validated or not.
+            (In normal usage, this argument is not specified.)
         context (Context):
             The context of construction.
+            (In normal usage, this argument is not specified. This argument is for using this function recursively.)
 
     Returns:
         Generated something. It is satisfies the JSON schema.

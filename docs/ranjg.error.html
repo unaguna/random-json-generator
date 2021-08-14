@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="ranjg-JSON-schema" href="ranjg-json-schema.html" />
+    <link rel="next" title="ranjg.options package" href="ranjg.options.html" />
     <link rel="prev" title="ranjg package" href="ranjg.html" /> 
 </head>
 
@@ -92,12 +92,14 @@
 <li class="toctree-l4"><a class="reference internal" href="#module-ranjg.error">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="ranjg.options.html">ranjg.options package</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg.html#module-ranjg">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
 </ul>
 
             
@@ -172,7 +174,7 @@
 <p>This package provides errors raised in ranjg modules.</p>
 <dl class="py exception">
 <dt id="ranjg.error.GenerateError">
-<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">GenerateError</code><a class="headerlink" href="#ranjg.error.GenerateError" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">GenerateError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n">ranjg._context.Context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.error.GenerateError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Errors during randomly generation.</p>
 </dd></dl>
@@ -188,13 +190,29 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py exception">
-<dt id="ranjg.error.SchemaConflictError">
-<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">SchemaConflictError</code><a class="headerlink" href="#ranjg.error.SchemaConflictError" title="Permalink to this definition">¶</a></dt>
+<dt id="ranjg.error.OptionsFileIOError">
+<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">OptionsFileIOError</code><a class="headerlink" href="#ranjg.error.OptionsFileIOError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Options file error class.</p>
+<p>This error raises if loading options file is failed.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="ranjg.error.SchemaConflictError">
+<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">SchemaConflictError</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">message</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">context</span><span class="p">:</span> <span class="n">ranjg._context.Context</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.error.SchemaConflictError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ranjg.error.__generate_error.GenerateError</span></code></p>
 <p>Conflict errors in the schema.</p>
 <p>This error raises if the schema has conflict.
 In other words, when no value satisfy the schema, this error is raised.</p>
 <p>When the schema is invalid (exp: <code class="docutils literal notranslate"><span class="pre">schema.type</span></code> is illegal string), <code class="docutils literal notranslate"><span class="pre">InvalidSchemaError</span></code> is raised.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt id="ranjg.error.SchemaFileIOError">
+<em class="property">exception </em><code class="sig-prename descclassname">ranjg.error.</code><code class="sig-name descname">SchemaFileIOError</code><a class="headerlink" href="#ranjg.error.SchemaFileIOError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Schema file error class.</p>
+<p>This error raises if loading schema file is failed.</p>
 </dd></dl>
 
 </div>
@@ -208,7 +226,7 @@ In other words, when no value satisfy the schema, this error is raised.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="ranjg-json-schema.html" class="btn btn-neutral float-right" title="ranjg-JSON-schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ranjg.options.html" class="btn btn-neutral float-right" title="ranjg.options package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ranjg.html" class="btn btn-neutral float-left" title="ranjg package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
