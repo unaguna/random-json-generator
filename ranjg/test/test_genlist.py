@@ -1,8 +1,13 @@
 import itertools
 import unittest
+from typing import Sequence
+from unittest import mock
+
 import jsonschema
-from ranjg import genlist
-from ranjg.__genlist import _get_range_of_length
+from ranjg import genlist, Options
+from ranjg._context import Context
+from .._generator import ListGenerator
+from .._generator.__list import _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 
@@ -12,24 +17,56 @@ class TestGenlist(unittest.TestCase):
     Test ``ranjg.genlist``
     """
 
-    def test_genlist_with_empty_schema(self):
+    def test_genlist(self):
         """ Normalized System Test
 
-        ``genlist(schema)`` returns a list even if ``schema`` is empty.
+        ``genlist()`` is wrapper of ``BoolGenerator#gen()``.
 
         assert that:
-            When the schema is empty, ``genlist(schema)`` returns ``list`` value.
+            When ``genlist`` is called, then ``BoolGenerator#gen()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "array"}, None, False, None),
+            ({"type": "array"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with mock.patch('ranjg._generator.ListGenerator.gen') as mock_gen:
+                genlist(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
+                                                 options=options)
+
+
+class TestListGenerator(unittest.TestCase):
+    """Test class of ``ListGenerator``
+
+    Test ``ListGenerator``
+    """
+
+    def test_gen_with_empty_schema(self):
+        """ Normalized System Test
+
+        ``ListGenerator().gen(schema)`` returns a list even if ``schema`` is empty.
+
+        assert that:
+            When the schema is empty, ``ListGenerator().gen(schema)`` returns ``list`` value.
         """
         schema = {}
-        generated = genlist(schema)
+        generated = ListGenerator().gen(schema)
         self.assertIsInstance(generated, list)
         jsonschema.validate(generated, schema)
 
-    def test_genlist_with_minItems(self):
+    def test_gen_with_minItems(self):
         """ Normalized System Test
 
-        ``genlist(schema)`` returns a list. When ``schema.minItems`` is specified, the result list has at least
-        ``minItems`` elements.
+        ``ListGenerator().gen(schema)`` returns a list. When ``schema.minItems`` is specified, the result list has at
+        least ``minItems`` elements.
 
         assert that:
             When ``schema.minItems`` is specified, the result list has at least ``minItems`` elements.
@@ -41,16 +78,16 @@ class TestGenlist(unittest.TestCase):
                 schema = {
                     "minItems": min_items
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertGreaterEqual(len(generated), min_items)
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_maxItems(self):
+    def test_gen_with_maxItems(self):
         """ Normalized System Test
 
-        ``genlist(schema)`` returns a list. When ``schema.maxItems`` is specified, the result list has at most
-        ``maxItems`` elements.
+        ``ListGenerator().gen(schema)`` returns a list. When ``schema.maxItems`` is specified, the result list has at
+        most ``maxItems`` elements.
 
         assert that:
             When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
@@ -62,73 +99,73 @@ class TestGenlist(unittest.TestCase):
                 schema = {
                     "maxItems": max_items
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertLessEqual(len(generated), max_items)
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_negative_minItems(self):
+    def test_gen_with_negative_minItems(self):
         """ Semi-normalized System Test
 
-        ``schema.minItems`` must be non-negative. When ``schema.minItems < 0``, ``genlist(schema)`` raises
+        ``schema.minItems`` must be non-negative. When ``schema.minItems < 0``, ``ListGenerator().gen(schema)`` raises
         InvalidSchemaError.
 
         assert that:
-            When ``schema.minItems < 0``, ``genlist(schema)`` raises InvalidSchemaError.
+            When ``schema.minItems < 0``, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
         """
         schema = {
             "minItems": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+        self.assertRaises(InvalidSchemaError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_negative_maxItems(self):
+    def test_gen_with_negative_maxItems(self):
         """ Semi-normalized System Test
 
-        ``schema.maxItems`` must be non-negative. When ``schema.maxItems < 0``, ``genlist(schema)`` raises
+        ``schema.maxItems`` must be non-negative. When ``schema.maxItems < 0``, ``ListGenerator().gen(schema)`` raises
         InvalidSchemaError.
 
         assert that:
-            When ``schema.maxItems < 0``, ``genlist(schema)`` raises InvalidSchemaError.
+            When ``schema.maxItems < 0``, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
         """
         schema = {
             "maxItems": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+        self.assertRaises(InvalidSchemaError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_non_integer_minItems(self):
+    def test_gen_with_non_integer_minItems(self):
         """ Semi-normalized System Test
 
         ``schema.minItems`` must be integer. More precisely, ``minItems`` must be a number value divided by 1. When
-        ``schema.minItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+        ``schema.minItems`` cannot divided by 1, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
 
         assert that:
-            When ``schema.minItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+            When ``schema.minItems`` cannot divided by 1, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
         """
         schema = {
             "minItems": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+        self.assertRaises(InvalidSchemaError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_non_integer_maxItems(self):
+    def test_gen_with_non_integer_maxItems(self):
         """ Semi-normalized System Test
 
         ``schema.maxItems`` must be integer. More precisely, ``maxItems`` must be a number value divided by 1. When
-        ``schema.maxItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+        ``schema.maxItems`` cannot divided by 1, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
 
         assert that:
-            When ``schema.maxItems`` cannot divided by 1, ``genlist(schema)`` raises InvalidSchemaError.
+            When ``schema.maxItems`` cannot divided by 1, ``ListGenerator().gen(schema)`` raises InvalidSchemaError.
         """
         schema = {
             "maxItems": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: genlist(schema))
+        self.assertRaises(InvalidSchemaError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_tight_length(self):
+    def test_gen_with_tight_length(self):
         """ Normalized System Test
 
-        When ``schema.minItems`` and ``schema.maxItems`` specified, ``genlist(schema)`` returns a list of length in
-        range [``schema.minItems``, ``schema.maxItems``]. So when ``minItems`` value equals ``maxItems`` value, the
-        length of returned list equals them.
+        When ``schema.minItems`` and ``schema.maxItems`` specified, ``ListGenerator().gen(schema)`` returns a list of
+        length in range [``schema.minItems``, ``schema.maxItems``]. So when ``minItems`` value equals ``maxItems``
+        value, the length of returned list equals them.
 
         assert that:
             When ``schema.minItems`` equals ``schema.maxItems``, ``getlist(schema)`` returns a list of length
@@ -143,19 +180,19 @@ class TestGenlist(unittest.TestCase):
                     "minItems": threshold,
                     "maxItems": threshold,
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertEqual(len(generated), threshold)
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_param_conflict_min_max(self):
+    def test_gen_with_param_conflict_min_max(self):
         """ Semi-normalized System Test
 
-        When ``schema.minItems`` and ``schema.maxItems`` specified, ``genlist(schema)`` returns a list of length in
-        range [``schema.minItems``, ``schema.maxItems``].  As a result, when ``maximum < minimum``, SchemaConflictError
-        is raised.
+        When ``schema.minItems`` and ``schema.maxItems`` specified, ``ListGenerator().gen(schema)`` returns a list of
+        length in range [``schema.minItems``, ``schema.maxItems``].  As a result, when ``maximum < minimum``,
+        SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.minItems > properties.maxItems``, ``genlist(schema)`` raised
+            When the schema has ``properties.minItems > properties.maxItems``, ``ListGenerator().gen(schema)`` raised
             SchemaConflictError.
         """
         thresholds_list = ((0, 10),
@@ -166,9 +203,9 @@ class TestGenlist(unittest.TestCase):
                     "minItems": min_items,
                     "maxItems": max_items,
                 }
-                self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+                self.assertRaises(SchemaConflictError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_single_items(self):
+    def test_gen_with_single_items(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with dict, elements in the returned list are valid by the dict as schema.
@@ -193,13 +230,13 @@ class TestGenlist(unittest.TestCase):
                         "type": type_name,
                     }
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertGreater(len(generated), 0)
                 for item in generated:
                     self.assertIsInstance(item, type_cls)
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items(self):
+    def test_gen_with_tuple_items(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas, each element in the returned list is valid by each
@@ -238,7 +275,7 @@ class TestGenlist(unittest.TestCase):
                     "minItems": 1,
                     "items": items,
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 for generated_item, schema_item in zip(generated, schema["items"]):
                     if schema_item["type"] == "null":
@@ -247,7 +284,7 @@ class TestGenlist(unittest.TestCase):
                         self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_tight_length_and_additional_true(self):
+    def test_gen_with_tuple_items_and_tight_length_and_additional_true(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas, the generated list has ``n`` items; ``n`` abide by
@@ -276,7 +313,7 @@ class TestGenlist(unittest.TestCase):
                         {"type": "number"},
                     ]
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertEqual(len(generated), threshold)
                 for generated_item, schema_item in zip(generated, schema["items"]):
@@ -286,7 +323,7 @@ class TestGenlist(unittest.TestCase):
                         self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_tight_length(self):
+    def test_gen_with_tuple_items_and_tight_length(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas, the generated list has ``n`` items; ``n`` abide by
@@ -314,7 +351,7 @@ class TestGenlist(unittest.TestCase):
                         {"type": "number"},
                     ]
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertEqual(len(generated), threshold)
                 for generated_item, schema_item in zip(generated, schema["items"]):
@@ -324,7 +361,7 @@ class TestGenlist(unittest.TestCase):
                         self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_tight_length_and_additional_schema(self):
+    def test_gen_with_tuple_items_and_tight_length_and_additional_schema(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas and ``schema.additionalItems`` is a schema object,
@@ -356,7 +393,7 @@ class TestGenlist(unittest.TestCase):
                         {"type": "integer"},
                     ]
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertGreaterEqual(len(generated), 5)
                 self.assertIsInstance(generated[0], str)
                 self.assertIsNone(generated[1])
@@ -365,7 +402,7 @@ class TestGenlist(unittest.TestCase):
                 self.assertIsInstance(generated[4], _type_to_cls(additional_items_type))
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_maxItems(self):
+    def test_gen_with_tuple_items_and_maxItems(self):
         """ Normalized System Test
 
         When ``schema.items`` is specified with a list of schemas and ``schema.maxItems`` is the length of ``items``,
@@ -392,7 +429,7 @@ class TestGenlist(unittest.TestCase):
                         {"type": "number"},
                     ]
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertLessEqual(len(generated), max_items)
                 for generated_item, schema_item in zip(generated, schema["items"]):
@@ -402,17 +439,17 @@ class TestGenlist(unittest.TestCase):
                         self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
                 jsonschema.validate(generated, schema)
 
-    def test_genlist_with_tuple_items_and_too_great_minItems_and_additional_false(self):
+    def test_gen_with_tuple_items_and_too_great_minItems_and_additional_false(self):
         """ Semi-normalized System Test
 
         When ``schema.minItems`` is specified, the result list must have at least ``minItems`` elements. On the other
         hand, when ``schema.items`` is specified as list and ``schema.additionalItems`` is ``false``, the result list
         must have at most the length of ``items``. As a result, when ``schema.additionalItems`` is ``false`` and
-        ``len(schema.items) < schema.minItems``, ``genlist(schema)`` raises SchemaConflictError.
+        ``len(schema.items) < schema.minItems``, ``ListGenerator().gen(schema)`` raises SchemaConflictError.
 
         assert that:
             When ``schema.additionalItems`` is ``false`` and ``len(schema.items) < schema.minItems``,
-            ``genlist(schema)`` raises SchemaConflictError.
+            ``ListGenerator().gen(schema)`` raises SchemaConflictError.
         """
         schema = {
             "type": "array",
@@ -424,9 +461,9 @@ class TestGenlist(unittest.TestCase):
                 {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConflictError, lambda: genlist(schema))
+        self.assertRaises(SchemaConflictError, lambda: ListGenerator().gen(schema))
 
-    def test_genlist_with_tuple_items_and_minItems_and_additional_false(self):
+    def test_gen_with_tuple_items_and_minItems_and_additional_false(self):
         """ Normalized System Test
 
         When ``schema.minItems`` is specified, the result list must have at least ``minItems`` elements. On the other
@@ -450,9 +487,48 @@ class TestGenlist(unittest.TestCase):
                         {"type": "integer"},
                     ]
                 }
-                generated = genlist(schema)
+                generated = ListGenerator().gen(schema)
                 self.assertIsInstance(generated, list)
                 self.assertGreaterEqual(len(generated), min_items)
+
+    def test_gen_with_no_items_and_options_default_schema_of_items(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_items`` is specified, this schema is used to generate elements for which no
+        schema is specified.
+
+        assert that:
+            When ``schema.items`` is not specified, elements in generated list is satisfy a schema
+            ``options.default_schema_of_items``.
+        """
+        schema = {"type": "array", "minItems": 5, "maxItems": 5}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertListEqual(generated, [-100]*5)
+
+        schema = {"type": "array", "minItems": 6, "maxItems": 6}
+        default_schema = {"type": "string"}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertIsInstance(generated, Sequence)
+        self.assertEqual(len(generated), 6)
+        for element in generated:
+            self.assertIsInstance(element, str)
+
+    def test_gen_with_tuple_items_and_options_default_schema_of_items(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_items`` is specified, this schema is used to generate elements for which no
+        schema is specified.
+
+        assert that:
+            When ``schema.items`` is tuple items and ``schema.minItems`` is greater than ``len(schema.items)``,
+            element(s) without corresponding schema in ``schema.items`` is satisfy a schema
+            ``options.default_schema_of_items``.
+        """
+        schema = {"type": "array", "minItems": 5, "maxItems": 5, "items": [{"type": "null"}, {"type": "null"}]}
+        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        generated = ListGenerator().gen(schema, options=Options(default_schema_of_items=default_schema))
+        self.assertListEqual(generated, [None, None, -100, -100, -100])
 
 
 class TestGenlistLengthRange(unittest.TestCase):
@@ -472,7 +548,7 @@ class TestGenlistLengthRange(unittest.TestCase):
             When ``schema`` is empty, ``_get_inclusive_integer_range(schema)`` returns ``None, None``.
         """
         schema = {}
-        min_items, max_items = _get_range_of_length(schema)
+        min_items, max_items = _get_range_of_length(schema, Context.root(schema))
         self.assertIsNone(min_items)
         self.assertIsNone(max_items)
 
@@ -498,7 +574,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items in items_list:
             with self.subTest(items=items):
                 schema = {"items": items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertIsNone(min_items)
                 self.assertIsNone(max_items)
 
@@ -523,7 +599,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_min_items in itertools.product(items_list, min_items_list):
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertIsNone(max_items)
 
@@ -545,7 +621,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_min_items in itertools.product(items_list, min_items_list):
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertIsNone(max_items)
 
@@ -570,7 +646,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_min_items in itertools.product(items_list, min_items_list):
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items, "additionalItems": True}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertIsNone(max_items)
 
@@ -595,7 +671,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_min_items in itertools.product(items_list, min_items_list):
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items, "additionalItems": items[0]}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertIsNone(max_items)
 
@@ -621,7 +697,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for schema_min_items, items in parameter_list:
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items, "additionalItems": False}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, len(items))
 
@@ -629,8 +705,8 @@ class TestGenlistLengthRange(unittest.TestCase):
         """ Semi-normalized System Test
 
          When ``schema`` is tuple-validation style and ``schema.additionalItems = False``, a result of
-         ``genlist(schema)`` cannot has elements more than ``len(schema.items)``. So if ``schema.minItem`` is greater
-         than the length of ``schema.items``, then SchemaConflictError is raised.
+         ``ListGenerator().gen(schema)`` cannot has elements more than ``len(schema.items)``. So if ``schema.minItem``
+         is greater than the length of ``schema.items``, then SchemaConflictError is raised.
 
         assert that:
             When ``schema.additionalItems = False`` and ``len(schema.items) < schema.minItems``,
@@ -645,7 +721,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for schema_min_items, items in parameter_list:
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items, "additionalItems": False}
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema))
+                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
 
     def test_list_length_range_with_list_schema_with_max(self):
         """ Normalized System Test
@@ -668,7 +744,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_max_items in itertools.product(items_list, max_items_list):
             with self.subTest(items=items, max_items=schema_max_items):
                 schema = {"items": items, "maxItems": schema_max_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertIsNone(min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -691,7 +767,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_max_items in itertools.product(items_list, max_items_list):
             with self.subTest(items=items, max_items=schema_max_items):
                 schema = {"items": items, "maxItems": schema_max_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertIsNone(min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -716,7 +792,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_max_items in itertools.product(items_list, max_items_list):
             with self.subTest(items=items, max_items=schema_max_items):
                 schema = {"items": items, "maxItems": schema_max_items, "additionalItems": True}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertIsNone(min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -741,7 +817,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, schema_max_items in itertools.product(items_list, max_items_list):
             with self.subTest(items=items, max_items=schema_max_items):
                 schema = {"items": items, "maxItems": schema_max_items, "additionalItems": items[0]}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertIsNone(min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -764,7 +840,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for schema_max_items, items in parameter_list:
             with self.subTest(items=items, max_items=schema_max_items):
                 schema = {"items": items, "maxItems": schema_max_items, "additionalItems": False}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, None)
                 self.assertEqual(max_items, min(len(items), schema_max_items))
 
@@ -793,7 +869,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
             with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
                 schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -819,7 +895,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
             with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
                 schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -843,7 +919,7 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
             with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
                 schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema))
+                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
 
     def test_list_length_range_with_tuple_schema_with_min_max_additional_true(self):
         """ Normalized System Test
@@ -872,7 +948,7 @@ class TestGenlistLengthRange(unittest.TestCase):
                     "maxItems": schema_max_items,
                     "additionalItems": True,
                 }
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -904,7 +980,7 @@ class TestGenlistLengthRange(unittest.TestCase):
                     "maxItems": schema_max_items,
                     "additionalItems": items[0],
                 }
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, schema_max_items)
 
@@ -939,7 +1015,7 @@ class TestGenlistLengthRange(unittest.TestCase):
                     "maxItems": schema_max_items,
                     "additionalItems": False,
                 }
-                min_items, max_items = _get_range_of_length(schema)
+                min_items, max_items = _get_range_of_length(schema, Context.root(schema))
                 self.assertEqual(min_items, schema_min_items)
                 self.assertEqual(max_items, min(len(items), schema_max_items))
 
@@ -967,7 +1043,7 @@ class TestGenlistLengthRange(unittest.TestCase):
                     "maxItems": schema_max_items,
                     "additionalItems": False,
                 }
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema))
+                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
 
 
 def _type_to_cls(type_str: str):

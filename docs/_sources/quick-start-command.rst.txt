@@ -34,3 +34,7 @@ In the following example, generated.json will be generated in the current direct
 .. code-block:: shell
 
     $ python -m ranjg ./schema.json --json_output ./generated.json
+
+
+You can also use ``--options <options_file>`` option to specify generation rules that are not specified in the schema.
+See also :doc:`ranjg-options`.

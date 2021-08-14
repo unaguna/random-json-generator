@@ -36,6 +36,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Options" href="ranjg-options.html" />
     <link rel="prev" title="Array Generation" href="ranjg-json-schema_array.html" /> 
 </head>
 
@@ -100,6 +101,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
 </ul>
 
             
@@ -195,9 +197,17 @@
 <span class="gp">... </span>    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">generated</span><span class="p">[</span><span class="s1">&#39;pro2&#39;</span><span class="p">],</span> <span class="nb">float</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="field-list simple">
+<dl class="field-list">
 <dt class="field-odd">note</dt>
-<dd class="field-odd"><p>Even if a key is specified in <code class="docutils literal notranslate"><span class="pre">properties</span></code>, it does not necessarily mean that the generated dict will contain that key. The keys that must be included in the generated dict are specified with the <code class="docutils literal notranslate"><span class="pre">required</span></code> keyword.</p>
+<dd class="field-odd"><p>If <code class="docutils literal notranslate"><span class="pre">options.priority_schema_of_properties</span></code> is specified and the generated property is included in the option,
+the option <code class="docutils literal notranslate"><span class="pre">options.priority_schema_of_properties[key]</span></code> takes precedence over <code class="docutils literal notranslate"><span class="pre">schema.properties[key]</span></code>.
+See also <a class="reference internal" href="ranjg-options_object.html"><span class="doc">Options for Object Generation</span></a>.</p>
+</dd>
+<dt class="field-even">note</dt>
+<dd class="field-even"><p>Even if a key is specified in <code class="docutils literal notranslate"><span class="pre">properties</span></code>, it does not necessarily mean that the generated dict will contain
+that key. The keys that must be included in the generated dict are specified with the <code class="docutils literal notranslate"><span class="pre">required</span></code> keyword.</p>
+<p>If the key is in <code class="docutils literal notranslate"><span class="pre">properties</span></code> but not in <code class="docutils literal notranslate"><span class="pre">required</span></code>, the generated dict has the key with probability
+<code class="docutils literal notranslate"><span class="pre">options.default_prob_of_optional_properties</span></code>. See also <a class="reference internal" href="ranjg-options_object.html"><span class="doc">Options for Object Generation</span></a>.</p>
 </dd>
 </dl>
 </div>
@@ -229,6 +239,8 @@
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ranjg-options.html" class="btn btn-neutral float-right" title="Options" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ranjg-json-schema_array.html" class="btn btn-neutral float-left" title="Array Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

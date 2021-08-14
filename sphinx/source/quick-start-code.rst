@@ -23,3 +23,5 @@ Then, you can generate values according to :doc:`ranjg-json-schema` with followi
 
 The ``schema`` specified in the above example is according to :doc:`ranjg-json-schema`.
 Then ``generated`` satisfies the schema.
+
+You can also use :doc:`ranjg-options` to specify generation rules that are not specified in the schema.

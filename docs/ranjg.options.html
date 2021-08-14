@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ranjg.options package &mdash; random-json-generator  documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ranjg-JSON-schema" href="ranjg-json-schema.html" />
+    <link rel="prev" title="ranjg.error package" href="ranjg.error.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> random-json-generator
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick-start-code.html">Quick Start (Python Code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ranjg.html">ranjg package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ranjg.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ranjg.error.html">ranjg.error package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ranjg.options package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-ranjg.options">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg.html#module-ranjg">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">random-json-generator</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="ranjg.html">ranjg package</a> &raquo;</li>
+        
+      <li>ranjg.options package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/ranjg.options.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ranjg-options-package">
+<h1>ranjg.options package<a class="headerlink" href="#ranjg-options-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-ranjg.options">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ranjg.options" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="ranjg.options.Options">
+<em class="property">class </em><code class="sig-prename descclassname">ranjg.options.</code><code class="sig-name descname">Options</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">regeneration_attempt_limit</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">50</span></em>, <em class="sig-param"><span class="n">default_prob_of_true_given_bool</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">default_length_range_of_genstr</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">default_min_length_of_string</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">default_max_length_of_string</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">default_prob_of_optional_properties</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0.5</span></em>, <em class="sig-param"><span class="n">default_schema_of_properties</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">{'type': 'null'}</span></em>, <em class="sig-param"><span class="n">priority_schema_of_properties</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">{}</span></em>, <em class="sig-param"><span class="n">default_schema_of_items</span><span class="p">:</span> <span class="n">dict</span> <span class="o">=</span> <span class="default_value">{'type': 'null'}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.options.Options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Options of <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="ranjg-options.html"><span class="doc">Options</span></a>:</dt><dd><p>To know what options are used in each generation.</p>
+</dd>
+</dl>
+</div>
+<dl class="py method">
+<dt id="ranjg.options.Options.default">
+<em class="property">classmethod </em><code class="sig-name descname">default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.options.Options.default" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default options</p>
+<p>It is used when an user don’t specify options.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Default options</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#ranjg.options.Options" title="ranjg.options.Options">Options</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_length_range_of_genstr">
+<code class="sig-name descname">default_length_range_of_genstr</code><em class="property">: int</em><a class="headerlink" href="#ranjg.options.Options.default_length_range_of_genstr" title="Permalink to this definition">¶</a></dt>
+<dd><p>In string generation, it is used as the difference between minLength and maxLength, if necessary.
+If only one of minLength and maxLength is specified, it is used to determine the other.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_max_length_of_string">
+<code class="sig-name descname">default_max_length_of_string</code><em class="property">: int</em><a class="headerlink" href="#ranjg.options.Options.default_max_length_of_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>In string generation, it is used as the value of maxLength when both minLength and maxLength are not specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_min_length_of_string">
+<code class="sig-name descname">default_min_length_of_string</code><em class="property">: int</em><a class="headerlink" href="#ranjg.options.Options.default_min_length_of_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>In string generation, it is used as the value of minLength when both minLength and maxLength are not specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_prob_of_optional_properties">
+<code class="sig-name descname">default_prob_of_optional_properties</code><em class="property">: Union<span class="p">[</span>int<span class="p">, </span>float<span class="p">]</span></em><a class="headerlink" href="#ranjg.options.Options.default_prob_of_optional_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>In dict generation, every optional property in the schema is contained in the result dict with a x probability
+independently</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_prob_of_true_given_bool">
+<code class="sig-name descname">default_prob_of_true_given_bool</code><em class="property">: Union<span class="p">[</span>int<span class="p">, </span>float<span class="p">]</span></em><a class="headerlink" href="#ranjg.options.Options.default_prob_of_true_given_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>In bool generation, returns True with probability x, False with probability 1-x.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_schema_of_items">
+<code class="sig-name descname">default_schema_of_items</code><em class="property">: dict</em><a class="headerlink" href="#ranjg.options.Options.default_schema_of_items" title="Permalink to this definition">¶</a></dt>
+<dd><p>In list generation, it is used to generate elements for which no schema is specified.
+For example, when <cite>item</cite> is specified as tuple format, and minLength is greater than its length.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.default_schema_of_properties">
+<code class="sig-name descname">default_schema_of_properties</code><em class="property">: dict</em><a class="headerlink" href="#ranjg.options.Options.default_schema_of_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>In dict generation, it is used to generate properties for which no schema is specified.
+For example, a property is required but its schema is not specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.priority_schema_of_properties">
+<code class="sig-name descname">priority_schema_of_properties</code><em class="property">: dict</em><a class="headerlink" href="#ranjg.options.Options.priority_schema_of_properties" title="Permalink to this definition">¶</a></dt>
+<dd><p>In dict generation, when a property whose name matches each key is generated, the corresponding value is used as
+the schema.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="ranjg.options.Options.regeneration_attempt_limit">
+<code class="sig-name descname">regeneration_attempt_limit</code><em class="property">: int</em><a class="headerlink" href="#ranjg.options.Options.regeneration_attempt_limit" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum number of generation when multiple attempts are required to obtain a result that satisfies the
+schema.
+If it is None, regeneration is repeated until a result that matches the schema is obtained.
+If it is too small, there is a high probability that the generation will fail and raise an GenerateError.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="ranjg.options.load">
+<code class="sig-prename descclassname">ranjg.options.</code><code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filepath</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#ranjg.options.Options" title="ranjg.options.Options">ranjg.options.Options</a><a class="headerlink" href="#ranjg.options.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>load an option file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ranjg.error.html#ranjg.error.OptionsFileIOError" title="ranjg.error.OptionsFileIOError"><strong>OptionsFileIOError</strong></a> – When loading file is failed</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="ranjg-json-schema.html" class="btn btn-neutral float-right" title="ranjg-JSON-schema" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="ranjg.error.html" class="btn btn-neutral float-left" title="ranjg.error package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020-2021, k-izumi
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

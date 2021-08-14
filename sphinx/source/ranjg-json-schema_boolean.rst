@@ -9,3 +9,5 @@ When ``boolean`` is adopted as :doc:`type <ranjg-json-schema_type>`, ``ranjg.gen
 <class 'bool'>
 
 
+:note:
+    It returns True with a probability of ``options.default_prob_of_true_given_bool`` and False with the remaining probability. See also :doc:`ranjg-options_boolean`.

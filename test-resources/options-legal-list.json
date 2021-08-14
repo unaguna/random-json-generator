@@ -1,0 +1,4 @@
+{
+  "default_prob_of_optional_properties": 1.0,
+  "priority_schema_of_properties": {"comment": {"type": "string", "pattern": "2"}}
+}

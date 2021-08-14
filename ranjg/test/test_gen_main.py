@@ -94,3 +94,23 @@ class TestGenMain(unittest.TestCase):
                 self.assertEqual(output, "")
                 self.assertTrue(path.exists(output_file))
                 jsonschema.validate(generated, schema)
+
+    def test_gen_main_with_options_file(self):
+        """ Normalized System Test
+        """
+        schema_file = "./test-resources/schema-legal-list.json"
+        options_file = "./test-resources/options-legal-list.json"
+
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+        test_args = ["__main__.py", schema_file, "--options", options_file]
+
+        with captured_stdout() as stdout:
+            with patch.object(sys, 'argv', test_args):
+                module_main()
+
+        output_str = stdout.getvalue()
+        output = json.loads(output_str)
+
+        self.assertEqual(output[0]["comment"], '2')
+        jsonschema.validate(output, schema)
