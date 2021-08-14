@@ -27,7 +27,17 @@ By specifying ``properties``, you can control each property of the generated dic
 >>> if 'pro2' in generated:
 ...     assert isinstance(generated['pro2'], float)
 
-:note: Even if a key is specified in ``properties``, it does not necessarily mean that the generated dict will contain that key. The keys that must be included in the generated dict are specified with the ``required`` keyword.
+:note:
+    If ``options.priority_schema_of_properties`` is specified and the generated property is included in the option,
+    the option ``options.priority_schema_of_properties[key]`` takes precedence over ``schema.properties[key]``.
+    See also :doc:`ranjg-options_object`.
+
+:note:
+    Even if a key is specified in ``properties``, it does not necessarily mean that the generated dict will contain
+    that key. The keys that must be included in the generated dict are specified with the ``required`` keyword.
+
+    If the key is in ``properties`` but not in ``required``, the generated dict has the key with probability
+    ``options.default_prob_of_optional_properties``. See also :doc:`ranjg-options_object`.
 
 
 Required Properties

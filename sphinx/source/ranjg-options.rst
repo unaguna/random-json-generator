@@ -38,5 +38,6 @@ The following pages show keywords of Options.
    ranjg-options_string
    ranjg-options_boolean
    ranjg-options_array
+   ranjg-options_object
 
 .. _JSON schema: https://json-schema.org/
