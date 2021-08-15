@@ -29,10 +29,10 @@ class DictFactory(Factory[dict]):
 
         self._schema = schema if schema is not None else {}
 
-    def gen_without_schema_check(self,
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> dict:
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> dict:
         if options is None:
             options = Options.default()
         if context is None:

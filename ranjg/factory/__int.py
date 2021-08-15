@@ -23,10 +23,10 @@ class IntFactory(Factory[int]):
         self._schema_minimum = _get_inclusive_integer_minimum(self._schema)
         self._schema_maximum = _get_inclusive_integer_maximum(self._schema)
 
-    def gen_without_schema_check(self,
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> int:
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> int:
         if context is None:
             context = Context.root(self._schema)
 

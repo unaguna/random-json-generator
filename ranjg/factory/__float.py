@@ -131,10 +131,10 @@ class NumFactory(Factory[float]):
         # 生成する数値の範囲
         self._number_range = NumberRange.from_schema(self._schema)
 
-    def gen_without_schema_check(self,
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> float:
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> float:
         if options is None:
             options = Options.default()
         if context is None:

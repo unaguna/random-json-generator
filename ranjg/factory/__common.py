@@ -15,16 +15,9 @@ class Factory(abc.ABC, Generic[_T]):
         if schema is not None and not schema_is_validated:
             validate_schema(schema)
 
+    @abc.abstractmethod
     def gen(self,
             *,
             options: Optional[Options] = None,
             context: Optional[Context] = None) -> _T:
-
-        return self.gen_without_schema_check(context=context, options=options)
-
-    @abc.abstractmethod
-    def gen_without_schema_check(self,
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> _T:
         pass
