@@ -108,10 +108,10 @@ def gen(schema: dict = None,
     if options_file is not None:
         options = load_options(options_file)
 
-    generator = create_factory(schema, schema_is_validated=True)
+    factory = create_factory(schema, schema_is_validated=True)
 
     # ランダムに値を生成
-    generated = generator.gen(options=options, context=context)
+    generated = factory.gen(options=options, context=context)
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
