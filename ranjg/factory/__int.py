@@ -11,11 +11,17 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 
 class IntFactory(Factory[int]):
     _schema: dict
+    _schema_minimum: Optional[int]
+    _schema_maximum: Optional[int]
 
     def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
         super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
 
         self._schema = schema if schema is not None else {}
+
+        # Convert float or exclusive value in schema to integer inclusive value.
+        self._schema_minimum = _get_inclusive_integer_minimum(self._schema)
+        self._schema_maximum = _get_inclusive_integer_maximum(self._schema)
 
     def gen_without_schema_check(self,
                                  *,
@@ -24,14 +30,11 @@ class IntFactory(Factory[int]):
         if context is None:
             context = Context.root(self._schema)
 
-        # Convert float or exclusive value in schema to integer inclusive value.
-        minimum = _get_inclusive_integer_minimum(self._schema)
-        maximum = _get_inclusive_integer_maximum(self._schema)
-
-        if minimum is not None and maximum is not None and minimum > maximum:
+        if self._schema_minimum is not None and self._schema_maximum is not None and \
+                self._schema_minimum > self._schema_maximum:
             raise SchemaConflictError("There are no integers in the range specified by the schema.", context)
 
-        minimum, maximum = _apply_default(minimum, maximum)
+        minimum, maximum = _apply_default(self._schema_minimum, self._schema_maximum)
 
         return random.randint(minimum, maximum)
 
