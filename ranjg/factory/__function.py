@@ -32,6 +32,19 @@ def create_factory(schema: Optional[dict], *, schema_is_validated: bool = False)
             (In normal usage, this argument is not specified.)
     Returns:
         A factory to generate values according the schema.
+
+    Examples:
+        The following code is most simple usage.
+
+        >>> from ranjg.factory import create_factory
+        >>> schema_dict = { 'type': 'string' }
+        >>> factory = create_factory(schema_dict)    # -> A factory according the schema
+        >>> generated_1 = factory.gen()    # -> A value according the schema
+        >>> generated_2 = factory.gen()    # -> A value according the schema (Almost certainly different than before.)
+        >>> generated_3 = factory.gen()    # It can be generated as many times as you want.
+
+        ``factory.gen`` can receive a keyword argument ``options``.
+        See also :doc:`ranjg-options` to know about options.
     """
     if schema is None:
         schema = {}
