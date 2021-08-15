@@ -1,6 +1,5 @@
 import json
-import random
-from typing import Union, List, Optional, TextIO
+from typing import Optional, TextIO
 
 from ._context import Context
 from .options import Options
@@ -109,8 +108,7 @@ def gen(schema: dict = None,
     if options_file is not None:
         options = load_options(options_file)
 
-    gen_type = _raffle_type(schema.get("type"))
-    generator = create_factory(gen_type, schema, schema_is_validated=True)
+    generator = create_factory(schema, schema_is_validated=True)
 
     # ランダムに値を生成
     generated = generator.gen(options=options, context=context)
@@ -123,20 +121,3 @@ def gen(schema: dict = None,
         json.dump(generated, output_fp)
 
     return generated
-
-
-def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
-    """Returns a type string specified by the schema.
-
-    Args:
-        schema_type: The type(s) specified by the schema.
-
-    Returns:
-        A type string. If argument ``schema_type`` is None, it returns None.
-    """
-    if schema_type is None or type(schema_type) == str:
-        return schema_type
-    elif len(schema_type) <= 0:
-        raise ValueError("type must not be an empty list.")
-    else:
-        return random.choice(schema_type)
