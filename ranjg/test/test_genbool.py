@@ -34,8 +34,8 @@ class TestGenbool(unittest.TestCase):
         for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg.factory.BoolFactory.gen') as mock_gen:
                 genbool(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
-                                                 options=options)
+                mock_gen.assert_called_once_with(context=context, options=options)
+            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestBoolFactory(unittest.TestCase):
@@ -52,7 +52,7 @@ class TestBoolFactory(unittest.TestCase):
         assert that:
             ``BoolFactory#gen()`` returns boolean value.
         """
-        self.assertIsInstance(BoolFactory().gen({}), bool)
+        self.assertIsInstance(BoolFactory({}).gen(), bool)
 
     def test_gen_with_option_default_prob_of_true_given_bool(self):
         """ Normalized System Test
@@ -72,13 +72,13 @@ class TestBoolFactory(unittest.TestCase):
         # x = 0.0
         # Since this is a test of probabilistic events, it should be performed multiple times.
         for _ in range(10):
-            generated = BoolFactory().gen(schema, options=options_0)
+            generated = BoolFactory(schema).gen(options=options_0)
 
             assert generated is False
 
         # x = 1.0
         # Since this is a test of probabilistic events, it should be performed multiple times.
         for _ in range(10):
-            generated = BoolFactory().gen(schema, options=options_1)
+            generated = BoolFactory(schema).gen(options=options_1)
 
             assert generated is True

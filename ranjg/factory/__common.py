@@ -10,21 +10,20 @@ _T = TypeVar('_T')
 
 class Factory(abc.ABC, Generic[_T]):
 
-    def gen(self,
-            schema: Optional[dict],
-            *,
-            options: Optional[Options] = None,
-            context: Optional[Context] = None,
-            schema_is_validated: bool = False) -> _T:
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
         # スキーマの不正判定
-        if not schema_is_validated:
+        if schema is not None and not schema_is_validated:
             validate_schema(schema)
 
-        return self.gen_without_schema_check(schema, context=context, options=options)
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> _T:
+
+        return self.gen_without_schema_check(context=context, options=options)
 
     @abc.abstractmethod
     def gen_without_schema_check(self,
-                                 schema: Optional[dict],
                                  *,
                                  options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> _T:

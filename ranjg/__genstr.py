@@ -23,4 +23,4 @@ def genstr(schema: Optional[dict] = None,
     Returns:
         Generated string value.
     """
-    return StrFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return StrFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

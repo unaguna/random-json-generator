@@ -34,8 +34,8 @@ class TestGennone(unittest.TestCase):
         for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg.factory.NoneFactory.gen') as mock_gen:
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
-                                                 options=options)
+                mock_gen.assert_called_once_with(context=context, options=options)
+            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestNoneFactory(unittest.TestCase):
@@ -47,9 +47,9 @@ class TestNoneFactory(unittest.TestCase):
     def test_gen_with_empty_schema(self):
         """ Normalized System Test
 
-        ``NoneFactory().gen(schema)`` returns ``None``. It does nothing else.
+        ``NoneFactory(schema).gen()`` returns ``None``. It does nothing else.
 
         assert that:
-            ``NoneFactory().gen(schema)`` returns ``None``.
+            ``NoneFactory(schema).gen()`` returns ``None``.
         """
-        self.assertIsNone(NoneFactory().gen({}))
+        self.assertIsNone(NoneFactory({}).gen())

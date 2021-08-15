@@ -21,4 +21,4 @@ def genbool(schema: Optional[dict] = None,
     Returns:
         Generated boolean value.
     """
-    return BoolFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return BoolFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

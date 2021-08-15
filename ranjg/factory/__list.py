@@ -124,30 +124,34 @@ def _get_items_schema_list(schema: dict, item_count: int, default_schema_of_item
 
 
 class ListFactory(Factory[list]):
+    _schema: dict
+
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(ListFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
+
     def gen_without_schema_check(self,
-                                 schema: Optional[dict],
                                  *,
                                  options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> list:
-        if schema is None:
-            schema = {}
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
         # 生成するリスト
         result = []
 
         # 生成する list の大きさの範囲
-        min_items, max_items = _get_range_of_length(schema, context)
+        min_items, max_items = _get_range_of_length(self._schema, context)
         min_items, max_items = _apply_default_length(min_items, max_items)
 
         # 生成する list の大きさ
         item_count = random.randint(min_items, max_items)
 
         # 各要素のスキーマ
-        item_schema_list = _get_items_schema_list(schema, item_count, options.default_schema_of_items)
+        item_schema_list = _get_items_schema_list(self._schema, item_count, options.default_schema_of_items)
 
         # 要素を1つずつ生成
         for key, item_schema in enumerate(item_schema_list):

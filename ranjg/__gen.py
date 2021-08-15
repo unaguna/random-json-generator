@@ -110,10 +110,10 @@ def gen(schema: dict = None,
         options = load_options(options_file)
 
     gen_type = _raffle_type(schema.get("type"))
-    generator = create_factory(gen_type)
+    generator = create_factory(gen_type, schema, schema_is_validated=True)
 
     # ランダムに値を生成
-    generated = generator.gen(schema, schema_is_validated=True, options=options, context=context)
+    generated = generator.gen(options=options, context=context)
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:

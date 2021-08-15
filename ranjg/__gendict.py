@@ -23,4 +23,4 @@ def gendict(schema: Optional[dict] = None,
     Returns:
         Generated dict value.
     """
-    return DictFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return DictFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

@@ -22,17 +22,21 @@ def _schema_of(key: str,
 
 
 class DictFactory(Factory[dict]):
+    _schema: dict
+
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
+
     def gen_without_schema_check(self,
-                                 schema: Optional[dict],
                                  *,
                                  options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> dict:
-        if schema is None:
-            schema = None
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
         generated = dict()
 
@@ -40,8 +44,8 @@ class DictFactory(Factory[dict]):
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
         generated_keys = dict()
 
-        required: list = schema.get("required", [])
-        properties: dict = schema.get("properties", {})
+        required: list = self._schema.get("required", [])
+        properties: dict = self._schema.get("properties", {})
         not_required = diff(properties.keys(), required)
 
         # 必須項目を生成する

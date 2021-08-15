@@ -21,4 +21,4 @@ def gennone(schema: Optional[dict] = None,
     Returns:
         Generated ``None``.
     """
-    return NoneFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return NoneFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

@@ -24,4 +24,4 @@ def genint(schema: Optional[dict] = None,
         Generated integer value.
     """
 
-    return IntFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return IntFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

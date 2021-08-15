@@ -37,8 +37,8 @@ class TestGennum(unittest.TestCase):
         for schema, context, is_validated, options in params_list:
             with mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
-                                                 options=options)
+                mock_gen.assert_called_once_with(context=context, options=options)
+            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestNumFactory(unittest.TestCase):
@@ -50,14 +50,14 @@ class TestNumFactory(unittest.TestCase):
     def test_gen_with_empty_schema(self):
         """ Normalized System Test
 
-        ``NumFactory().gen(schema)`` returns a number value even if ``schema`` is empty.
+        ``NumFactory(schema).gen()`` returns a number value even if ``schema`` is empty.
 
         assert that:
-            When the schema is empty, ``NumFactory().gen(schema)`` returns ``float`` value.
+            When the schema is empty, ``NumFactory(schema).gen()`` returns ``float`` value.
         """
         schema = {}
 
-        generated = NumFactory().gen(schema)
+        generated = NumFactory(schema).gen()
         self.assertIsInstance(generated, float)
         jsonschema.validate(generated, schema)
 
@@ -67,7 +67,7 @@ class TestNumFactory(unittest.TestCase):
         When ``properties.minimum`` is specified, the result number ``x`` satisfies `` x >= minimum``.
 
         assert that:
-            When the schema has ``minimum``, ``NumFactory().gen(schema)`` returns ``float`` value ``x`` and it
+            When the schema has ``minimum``, ``NumFactory(schema).gen()`` returns ``float`` value ``x`` and it
             satisfies `` x >= minimum``.
         """
         threshold_list = (-1.4, 0, 1.23)
@@ -77,7 +77,7 @@ class TestNumFactory(unittest.TestCase):
                 schema = {
                     "minimum": threshold,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertGreaterEqual(generated, threshold)
                 jsonschema.validate(generated, schema)
@@ -88,7 +88,7 @@ class TestNumFactory(unittest.TestCase):
         When ``properties.maximum`` is specified, the result number ``x`` satisfies `` x <= maximum``.
 
         assert that:
-            When the schema has ``maximum``, ``NumFactory().gen(schema)`` returns ``float`` value ``x`` and it
+            When the schema has ``maximum``, ``NumFactory(schema).gen()`` returns ``float`` value ``x`` and it
             satisfies `` x <= maximum``.
         """
         threshold_list = (-1.4, 0, 1.23)
@@ -98,7 +98,7 @@ class TestNumFactory(unittest.TestCase):
                 schema = {
                     "maximum": threshold,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertLessEqual(generated, threshold)
                 jsonschema.validate(generated, schema)
@@ -110,7 +110,7 @@ class TestNumFactory(unittest.TestCase):
         `` x > exclusiveMinimum``.
 
         assert that:
-            When the schema has ``properties.exclusiveMinimum`` as number, ``NumFactory().gen(schema)`` returns
+            When the schema has ``properties.exclusiveMinimum`` as number, ``NumFactory(schema).gen()`` returns
             ``float`` value ``x`` and it satisfies `` x > exclusiveMinimum``.
         """
         threshold_list = (-1.4, 0, 1.23)
@@ -120,7 +120,7 @@ class TestNumFactory(unittest.TestCase):
                 schema = {
                     "exclusiveMinimum": threshold,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertGreater(generated, threshold)
                 jsonschema.validate(generated, schema)
@@ -132,7 +132,7 @@ class TestNumFactory(unittest.TestCase):
         `` x < exclusiveMaximum``.
 
         assert that:
-            When the schema has ``properties.exclusiveMaximum`` as number, ``NumFactory().gen(schema)`` returns
+            When the schema has ``properties.exclusiveMaximum`` as number, ``NumFactory(schema).gen()`` returns
             ``float`` value ``x`` and it satisfies `` x < exclusiveMaximum``.
         """
         threshold_list = (-1.4, 0, 1.23)
@@ -142,7 +142,7 @@ class TestNumFactory(unittest.TestCase):
                 schema = {
                     "exclusiveMaximum": threshold,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertLess(generated, threshold)
                 jsonschema.validate(generated, schema)
@@ -155,7 +155,7 @@ class TestNumFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.minimum`` and ``properties.exclusiveMinimum`` as number,
-            ``NumFactory().gen(schema)`` returns ``float`` value ``x`` and it satisfies ``x >= minimum`` and
+            ``NumFactory(schema).gen()`` returns ``float`` value ``x`` and it satisfies ``x >= minimum`` and
             ``x > exclusiveMinimum``.
         """
         thresholds_list = ((1.23E+200, 1.23),
@@ -166,7 +166,7 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMinimum": exclusive_minimum,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertGreaterEqual(generated, minimum)
                 self.assertGreater(generated, exclusive_minimum)
@@ -180,7 +180,7 @@ class TestNumFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.maximum`` and ``properties.exclusiveMaximum`` as number,
-            ``NumFactory().gen(schema)`` returns ``float`` value ``x`` and it satisfies ``x <= maximum`` and
+            ``NumFactory(schema).gen()`` returns ``float`` value ``x`` and it satisfies ``x <= maximum`` and
             ``x < exclusiveMaximum``.
         """
         thresholds_list = ((1.23E+200, 1.23),
@@ -191,7 +191,7 @@ class TestNumFactory(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertLessEqual(generated, maximum)
                 self.assertLess(generated, exclusive_maximum)
@@ -204,7 +204,7 @@ class TestNumFactory(unittest.TestCase):
         ``x`` satisfies ``minimum <= x <= maximum``.
 
         assert that:
-            When the schema has ``properties.minimum`` and ``properties.maximum`, ``NumFactory().gen(schema)`` returns
+            When the schema has ``properties.minimum`` and ``properties.maximum`, ``NumFactory(schema).gen()`` returns
             ``float`` value ``x`` and it satisfies ``minimum <= x <= maximum``.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -221,7 +221,7 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "maximum": maximum,
                 }
-                generated = NumFactory().gen(schema)
+                generated = NumFactory(schema).gen()
                 self.assertIsInstance(generated, float)
                 self.assertGreaterEqual(generated, minimum)
                 self.assertLessEqual(generated, maximum)
@@ -235,7 +235,7 @@ class TestNumFactory(unittest.TestCase):
         raised.
 
         assert that:
-            When the schema has ``properties.minimum > properties.maximum`, ``NumFactory().gen(schema)`` raised
+            When the schema has ``properties.minimum > properties.maximum`, ``NumFactory(schema).gen()`` raised
             SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -249,7 +249,7 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory().gen(schema))
+                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
 
     def test_gen_with_param_conflict_exclusive_minimum_maximum(self):
         """ Semi-normalized System Test
@@ -259,7 +259,7 @@ class TestNumFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.maximum <= properties.exclusive_minimum`, ``NumFactory().gen(schema)``
+            When the schema has ``properties.maximum <= properties.exclusive_minimum`, ``NumFactory(schema).gen()``
             raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -276,7 +276,7 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory().gen(schema))
+                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
 
     def test_gen_with_param_conflict_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -286,7 +286,7 @@ class TestNumFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.exclusive_maximum <= properties.minimum`, ``NumFactory().gen(schema)``
+            When the schema has ``properties.exclusive_maximum <= properties.minimum`, ``NumFactory(schema).gen()``
             raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -303,7 +303,7 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory().gen(schema))
+                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
 
     def test_gen_with_param_conflict_exclusive_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -314,7 +314,7 @@ class TestNumFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.exclusive_minimum >= properties.exclusive_maximum`,
-            ``NumFactory().gen(schema)`` raised SchemaConflictError.
+            ``NumFactory(schema).gen()`` raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
                            (-1.2, -1.2),
@@ -330,4 +330,4 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory().gen(schema))
+                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())

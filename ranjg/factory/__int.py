@@ -10,20 +10,23 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 
 
 class IntFactory(Factory[int]):
+    _schema: dict
+
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
 
     def gen_without_schema_check(self,
-                                 schema: Optional[dict],
                                  *,
                                  options: Optional[Options] = None,
                                  context: Optional[Context] = None) -> int:
-        if schema is None:
-            schema = {}
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
         # Convert float or exclusive value in schema to integer inclusive value.
-        minimum = _get_inclusive_integer_minimum(schema)
-        maximum = _get_inclusive_integer_maximum(schema)
+        minimum = _get_inclusive_integer_minimum(self._schema)
+        maximum = _get_inclusive_integer_maximum(self._schema)
 
         if minimum is not None and maximum is not None and minimum > maximum:
             raise SchemaConflictError("There are no integers in the range specified by the schema.", context)

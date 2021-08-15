@@ -23,4 +23,4 @@ def genlist(schema: Optional[dict] = None,
     Returns:
         Generated list.
     """
-    return ListFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return ListFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)
