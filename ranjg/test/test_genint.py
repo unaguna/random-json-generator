@@ -6,8 +6,8 @@ import jsonschema
 
 from ranjg import genint, Options
 from .._context import Context
-from .._generator import IntGenerator
-from .._generator.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
+from ..factory import IntGenerator
+from ..factory.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
 from ranjg.error import SchemaConflictError
 
 
@@ -37,7 +37,7 @@ class TestGenint(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.IntGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.IntGenerator.gen') as mock_gen:
                 genint(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

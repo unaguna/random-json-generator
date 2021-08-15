@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import StrGenerator
+from .factory import StrGenerator
 
 
 def genstr(schema: Optional[dict] = None,

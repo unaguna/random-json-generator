@@ -3,7 +3,7 @@ from unittest import mock
 
 from ranjg import gennone, Options
 from .._context import Context
-from .._generator import NoneGenerator
+from ..factory import NoneGenerator
 
 
 class TestGennone(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestGennone(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.NoneGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.NoneGenerator.gen') as mock_gen:
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import BoolGenerator
+from .factory import BoolGenerator
 
 
 def genbool(schema: Optional[dict] = None,

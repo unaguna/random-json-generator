@@ -5,8 +5,8 @@ import jsonschema
 
 from ranjg import gendict, Options
 from .._context import Context
-from .._generator import DictGenerator
-from .._generator.__dict import _schema_of
+from ..factory import DictGenerator
+from ..factory.__dict import _schema_of
 
 
 class TestGendict(unittest.TestCase):
@@ -35,7 +35,7 @@ class TestGendict(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.DictGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.DictGenerator.gen') as mock_gen:
                 gendict(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

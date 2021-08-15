@@ -6,7 +6,7 @@ import jsonschema
 from ranjg import gennum, Options
 from .._context import Context
 from ranjg.error import SchemaConflictError
-from .._generator import NumGenerator
+from ..factory import NumGenerator
 
 
 class TestGennum(unittest.TestCase):
@@ -35,7 +35,7 @@ class TestGennum(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.NumGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.NumGenerator.gen') as mock_gen:
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

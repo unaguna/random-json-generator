@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import NoneGenerator
+from .factory import NoneGenerator
 
 
 def gennone(schema: Optional[dict] = None,

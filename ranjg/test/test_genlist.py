@@ -6,8 +6,8 @@ from unittest import mock
 import jsonschema
 from ranjg import genlist, Options
 from ranjg._context import Context
-from .._generator import ListGenerator
-from .._generator.__list import _get_range_of_length
+from ..factory import ListGenerator
+from ..factory.__list import _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 
@@ -37,7 +37,7 @@ class TestGenlist(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.ListGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.ListGenerator.gen') as mock_gen:
                 genlist(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

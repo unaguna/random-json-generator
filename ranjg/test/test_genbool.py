@@ -3,7 +3,7 @@ from unittest import mock
 
 from ranjg import genbool, Options
 from .._context import Context
-from .._generator import BoolGenerator
+from ..factory import BoolGenerator
 
 
 class TestGenbool(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestGenbool(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.BoolGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.BoolGenerator.gen') as mock_gen:
                 genbool(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

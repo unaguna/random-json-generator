@@ -5,7 +5,7 @@ from typing import Union, List, Optional, TextIO
 from ._context import Context
 from .options import Options
 from .options import load as load_options
-from ._generator import get_generator
+from .factory import get_generator
 from .schema import load as load_schema
 from .schema import validate as validate_schema
 

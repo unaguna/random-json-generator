@@ -4,7 +4,7 @@ from unittest import mock
 import jsonschema
 from ranjg import genstr, Options
 from .._context import Context
-from .._generator import StrGenerator
+from ..factory import StrGenerator
 from ranjg.error import InvalidSchemaError, SchemaConflictError
 
 
@@ -34,7 +34,7 @@ class TestGenstr(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.StrGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.StrGenerator.gen') as mock_gen:
                 genstr(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)

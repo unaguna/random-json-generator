@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import DictGenerator
+from .factory import DictGenerator
 
 
 def gendict(schema: Optional[dict] = None,

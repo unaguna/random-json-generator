@@ -5,7 +5,7 @@ from . import Generator, NoneGenerator, IntGenerator, BoolGenerator, StrGenerato
 
 
 def get_generator(gen_type: Optional[str]) -> Generator:
-    """Returns a ranjg._generator.Generator instance according to gen_type.
+    """Returns a ranjg.factory.Generator instance according to gen_type.
 
     Args:
         gen_type:
