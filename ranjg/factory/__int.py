@@ -2,33 +2,39 @@ import math
 import random
 from typing import Optional, Union, Tuple
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..error import SchemaConflictError
 from ..options import Options
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
 
-class IntGenerator(Generator[int]):
+class IntFactory(Factory[int]):
+    _schema: dict
+    _schema_minimum: Optional[int]
+    _schema_maximum: Optional[int]
 
-    def gen_without_schema_check(self,
-                                 schema: Optional[dict],
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> int:
-        if schema is None:
-            schema = {}
-        if context is None:
-            context = Context.root(schema)
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
 
         # Convert float or exclusive value in schema to integer inclusive value.
-        minimum = _get_inclusive_integer_minimum(schema)
-        maximum = _get_inclusive_integer_maximum(schema)
+        self._schema_minimum = _get_inclusive_integer_minimum(self._schema)
+        self._schema_maximum = _get_inclusive_integer_maximum(self._schema)
 
-        if minimum is not None and maximum is not None and minimum > maximum:
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> int:
+        if context is None:
+            context = Context.root(self._schema)
+
+        if self._schema_minimum is not None and self._schema_maximum is not None and \
+                self._schema_minimum > self._schema_maximum:
             raise SchemaConflictError("There are no integers in the range specified by the schema.", context)
 
-        minimum, maximum = _apply_default(minimum, maximum)
+        minimum, maximum = _apply_default(self._schema_minimum, self._schema_maximum)
 
         return random.randint(minimum, maximum)
 

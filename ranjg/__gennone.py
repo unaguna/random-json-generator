@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import NoneGenerator
+from .factory import NoneFactory
 
 
 def gennone(schema: Optional[dict] = None,
@@ -21,4 +21,4 @@ def gennone(schema: Optional[dict] = None,
     Returns:
         Generated ``None``.
     """
-    return NoneGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return NoneFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

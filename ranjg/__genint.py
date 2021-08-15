@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from ._generator import IntGenerator
+from .factory import IntFactory
 
 
 def genint(schema: Optional[dict] = None,
@@ -24,4 +24,4 @@ def genint(schema: Optional[dict] = None,
         Generated integer value.
     """
 
-    return IntGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return IntFactory(schema, schema_is_validated=schema_is_validated).gen(options=options, context=context)

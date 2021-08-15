@@ -4,7 +4,7 @@ from typing import Optional
 
 import rstr
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..error import SchemaConflictError
 from ..options import Options
@@ -47,21 +47,24 @@ def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
     return n_schema
 
 
-class StrGenerator(Generator[str]):
+class StrFactory(Factory[str]):
+    _schema: dict
 
-    def gen_without_schema_check(self,
-                                 schema: Optional[dict],
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> str:
-        if schema is None:
-            schema = {}
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(StrFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
+
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> str:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
-        schema = _normalize_schema(schema, options, context)
+        schema = _normalize_schema(self._schema, options, context)
 
         pattern = re.compile(schema["pattern"]) if schema["pattern"] is not None else None
         min_length = schema["minLength"]

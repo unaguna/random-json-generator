@@ -5,8 +5,8 @@ import jsonschema
 
 from ranjg import gendict, Options
 from .._context import Context
-from .._generator import DictGenerator
-from .._generator.__dict import _schema_of
+from ..factory import DictFactory
+from ..factory.__dict import _schema_of
 
 
 class TestGendict(unittest.TestCase):
@@ -18,10 +18,10 @@ class TestGendict(unittest.TestCase):
     def test_gendict(self):
         """ Normalized System Test
 
-        ``gendict()`` is wrapper of ``DictGenerator#gen()``.
+        ``gendict()`` is wrapper of ``DictFactory#gen()``.
 
         assert that:
-            When ``gendict`` is called, then ``DictGenerator#gen()`` runs.
+            When ``gendict`` is called, then ``DictFactory#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
         _options_dummy = Options.default()
@@ -35,31 +35,31 @@ class TestGendict(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.DictGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.DictFactory.gen') as mock_gen:
                 gendict(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
-                                                 options=options)
+                mock_gen.assert_called_once_with(context=context, options=options)
+            # TODO: schema, schema_is_validated についても assert する
 
 
-class TestDictGenerator(unittest.TestCase):
-    """Test class of ``DictGenerator``
+class TestDictFactory(unittest.TestCase):
+    """Test class of ``DictFactory``
 
-    Test ``DictGenerator``
+    Test ``DictFactory``
     """
 
     def test_gen_with_empty_schema(self):
         """ Normalized System Test
 
-        ``DictGenerator#gen(schema)`` returns dict. The result dict has only key in ``schema.required`` or
+        ``DictFactory#gen(schema)`` returns dict. The result dict has only key in ``schema.required`` or
         ``schema.properties``.
         And ``schema.additionalProperties`` is ignored. As a consequence, when ``schema`` has no effective parameters,
         returns empty dict.
 
         assert that:
-            When the schema is empty, ``DictGenerator#gen(schema)`` returns empty dict.
+            When the schema is empty, ``DictFactory#gen(schema)`` returns empty dict.
         """
         schema = {}
-        generated = DictGenerator().gen(schema)
+        generated = DictFactory(schema).gen()
         self.assertIsInstance(generated, dict)
         self.assertDictEqual(generated, {})
         jsonschema.validate(generated, schema)
@@ -67,20 +67,20 @@ class TestDictGenerator(unittest.TestCase):
     def test_gen_with_required(self):
         """ Normalized System Test
 
-        ``DictGenerator#gen(schema)`` returns dict. When ``schema.required`` is specified, the result dict has all keys
+        ``DictFactory#gen(schema)`` returns dict. When ``schema.required`` is specified, the result dict has all keys
         in ``schema.required`` even if the key is not in ``schema.properties``.
 
         Because of the result dict has only key in ``schema.required`` or ``schema.properties``, the result dict has
         keys equal to ``schema.required`` when ``schema.properties`` is not specified.
 
         assert that:
-            When schema has required, ``DictGenerator#gen(schema)`` returns a dict and
+            When schema has required, ``DictFactory#gen(schema)`` returns a dict and
             every key are in the dict iff the key is in ``schema.required``.
         """
         schema = {
             "required": ["aaa", "bbb"],
         }
-        generated = DictGenerator().gen(schema)
+        generated = DictFactory(schema).gen()
         self.assertIsInstance(generated, dict)
         self.assertSetEqual(set(generated.keys()), {"aaa", "bbb"})
         jsonschema.validate(generated, schema)
@@ -98,7 +98,7 @@ class TestDictGenerator(unittest.TestCase):
                 "zzz": {},
             },
         }
-        generated = DictGenerator().gen(schema)
+        generated = DictFactory(schema).gen()
         self.assertIsInstance(generated, dict)
         self.assertSetEqual(set(generated.keys()),
                             {"aaa", "bbb", "ccc", "ddd", "eee", "xxx", "zzz"})
@@ -114,7 +114,7 @@ class TestDictGenerator(unittest.TestCase):
     def test_gen_with_option_default_prob_of_optional_properties(self):
         """ Normalized System Test
 
-        ``DictGenerator#gen(schema)`` uses a option ``default_prob_of_optional_properties`` (float, 0.0 <= x <= 1.0).
+        ``DictFactory#gen(schema)`` uses a option ``default_prob_of_optional_properties`` (float, 0.0 <= x <= 1.0).
 
         If ``default_prob_of_optional_properties`` x is specified, every optional property in the schema is contained
         in the result dict with a x probability independently.
@@ -137,7 +137,7 @@ class TestDictGenerator(unittest.TestCase):
         # x = 0.0
         # Since this is a test of probabilistic events, it should be performed multiple times.
         for _ in range(10):
-            generated = DictGenerator().gen(schema, options=options_0)
+            generated = DictFactory(schema).gen(options=options_0)
 
             # contains the required property
             assert 'p1' in generated
@@ -149,7 +149,7 @@ class TestDictGenerator(unittest.TestCase):
         # x = 1.0
         # Since this is a test of probabilistic events, it should be performed multiple times.
         for _ in range(10):
-            generated = DictGenerator().gen(schema, options=options_1)
+            generated = DictFactory(schema).gen(options=options_1)
 
             # contains the required property
             assert 'p1' in generated
@@ -173,8 +173,8 @@ class TestDictGenerator(unittest.TestCase):
         schema = {"type": "object", "required": ["p1"]}
         dummy_schema = {"type": "string", "pattern": "dummy"}
         default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
-        generated = DictGenerator().gen(schema, options=Options(default_schema_of_properties=default_schema,
-                                                                default_schema_of_items=dummy_schema))
+        generated = DictFactory(schema).gen(options=Options(default_schema_of_properties=default_schema,
+                                                              default_schema_of_items=dummy_schema))
         self.assertDictEqual(generated, {"p1": -100})
 
     def test_priority_schema_of_properties_with_prior(self):
@@ -191,11 +191,11 @@ class TestDictGenerator(unittest.TestCase):
         options = Options(priority_schema_of_properties={key: priority_schema})
 
         for schema in schema_list:
-            generated = DictGenerator().gen(schema, options=options)
+            generated = DictFactory(schema).gen(options=options)
             self.assertEqual(generated, {key: -100})
 
             schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictGenerator().gen(schema_nest, options=options)
+            generated = DictFactory(schema_nest).gen(options=options)
             self.assertEqual(generated["parent"], {key: -100})
 
     def test_priority_schema_of_properties_with_not_prior(self):
@@ -211,11 +211,11 @@ class TestDictGenerator(unittest.TestCase):
         options = Options(priority_schema_of_properties={"px": priority_schema})
 
         for schema in schema_list:
-            generated = DictGenerator().gen(schema, options=options)
+            generated = DictFactory(schema).gen(options=options)
             self.assertIsInstance(generated[key], bool)
 
             schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictGenerator().gen(schema_nest, options=options)
+            generated = DictFactory(schema_nest).gen(options=options)
             self.assertIsInstance(generated["parent"][key], bool)
 
     def test_priority_schema_of_properties_with_not_required_key(self):
@@ -234,11 +234,11 @@ class TestDictGenerator(unittest.TestCase):
                           default_prob_of_optional_properties=0.0)
 
         for schema in schema_list:
-            generated = DictGenerator().gen(schema, options=options)
+            generated = DictFactory(schema).gen(options=options)
             self.assertTrue(key not in generated)
 
             schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictGenerator().gen(schema_nest, options=options)
+            generated = DictFactory(schema_nest).gen(options=options)
             self.assertTrue(key not in generated["parent"])
 
     def test_priority_schema_of_properties_with_not_required_key_2(self):
@@ -256,11 +256,11 @@ class TestDictGenerator(unittest.TestCase):
                           default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
-            generated = DictGenerator().gen(schema, options=options)
+            generated = DictFactory(schema).gen(options=options)
             self.assertEqual(generated[key], -100)
 
             schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictGenerator().gen(schema_nest, options=options)
+            generated = DictFactory(schema_nest).gen(options=options)
             self.assertEqual(generated["parent"][key], -100)
 
     def test_priority_schema_of_properties_with_not_required_key_3(self):
@@ -278,11 +278,11 @@ class TestDictGenerator(unittest.TestCase):
                           default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
-            generated = DictGenerator().gen(schema, options=options)
+            generated = DictFactory(schema).gen(options=options)
             self.assertTrue(key not in generated)
 
             schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictGenerator().gen(schema_nest, options=options)
+            generated = DictFactory(schema_nest).gen(options=options)
             self.assertTrue(key not in generated["parent"])
 
     def test_schema_of_uses_default(self):

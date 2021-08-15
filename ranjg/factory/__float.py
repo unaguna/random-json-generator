@@ -2,7 +2,7 @@ import random
 import sys
 from typing import Optional
 
-from .__common import Generator
+from .__common import Factory
 from ..__number_range import NumberRange
 from .._context import Context
 from ..options import Options
@@ -119,23 +119,30 @@ def _little_less(number: float) -> float:
         return -1.0
 
 
-class NumGenerator(Generator[float]):
-    def gen_without_schema_check(self,
-                                 schema: Optional[dict],
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> float:
-        if schema is None:
-            schema = {}
+class NumFactory(Factory[float]):
+    _schema: dict
+    _number_range: NumberRange
+
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
+
+        # 生成する数値の範囲
+        self._number_range = NumberRange.from_schema(self._schema)
+
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> float:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
         # 生成する数値の範囲
-        number_range = NumberRange.from_schema(schema)
-        _check_consistency(number_range, context)
-        number_range = _apply_default(number_range)
+        _check_consistency(self._number_range, context)
+        number_range = _apply_default(self._number_range)
 
         # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
         # Schema に合致する値を引くまで生成を繰り返す。

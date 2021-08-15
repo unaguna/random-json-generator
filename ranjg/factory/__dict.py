@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 import ranjg
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..options import Options
 from ..util.listutil import diff
@@ -21,18 +21,22 @@ def _schema_of(key: str,
         return default_schema
 
 
-class DictGenerator(Generator[dict]):
-    def gen_without_schema_check(self,
-                                 schema: Optional[dict],
-                                 *,
-                                 options: Optional[Options] = None,
-                                 context: Optional[Context] = None) -> dict:
-        if schema is None:
-            schema = None
+class DictFactory(Factory[dict]):
+    _schema: dict
+
+    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
+        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+
+        self._schema = schema if schema is not None else {}
+
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[Context] = None) -> dict:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(schema)
+            context = Context.root(self._schema)
 
         generated = dict()
 
@@ -40,8 +44,8 @@ class DictGenerator(Generator[dict]):
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
         generated_keys = dict()
 
-        required: list = schema.get("required", [])
-        properties: dict = schema.get("properties", {})
+        required: list = self._schema.get("required", [])
+        properties: dict = self._schema.get("properties", {})
         not_required = diff(properties.keys(), required)
 
         # 必須項目を生成する
