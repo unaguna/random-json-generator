@@ -3,7 +3,7 @@ from unittest import mock
 
 from ranjg import gennone, Options
 from .._context import Context
-from ..factory import NoneGenerator
+from ..factory import NoneFactory
 
 
 class TestGennone(unittest.TestCase):
@@ -15,10 +15,10 @@ class TestGennone(unittest.TestCase):
     def test_gennone(self):
         """ Normalized System Test
 
-        ``gennone()`` is wrapper of ``NoneGenerator#gen()``.
+        ``gennone()`` is wrapper of ``NoneFactory#gen()``.
 
         assert that:
-            When ``gennone`` is called, then ``NoneGenerator#gen()`` runs.
+            When ``gennone`` is called, then ``NoneFactory#gen()`` runs.
         """
         _context_dummy = Context.root({}).resolve('key', {})
         _options_dummy = Options.default()
@@ -32,24 +32,24 @@ class TestGennone(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.NoneGenerator.gen') as mock_gen:
+            with mock.patch('ranjg.factory.NoneFactory.gen') as mock_gen:
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
                                                  options=options)
 
 
-class TestNoneGenerator(unittest.TestCase):
-    """Test class of ``NoneGenerator``
+class TestNoneFactory(unittest.TestCase):
+    """Test class of ``NoneFactory``
 
-    Test ``NoneGenerator``
+    Test ``NoneFactory``
     """
 
     def test_gen_with_empty_schema(self):
         """ Normalized System Test
 
-        ``NoneGenerator().gen(schema)`` returns ``None``. It does nothing else.
+        ``NoneFactory().gen(schema)`` returns ``None``. It does nothing else.
 
         assert that:
-            ``NoneGenerator().gen(schema)`` returns ``None``.
+            ``NoneFactory().gen(schema)`` returns ``None``.
         """
-        self.assertIsNone(NoneGenerator().gen({}))
+        self.assertIsNone(NoneFactory().gen({}))

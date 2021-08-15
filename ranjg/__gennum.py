@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from .factory import NumGenerator
+from .factory import NumFactory
 
 
 def gennum(schema: Optional[dict] = None,
@@ -23,4 +23,4 @@ def gennum(schema: Optional[dict] = None,
     Returns:
         Generated number.
     """
-    return NumGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return NumFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

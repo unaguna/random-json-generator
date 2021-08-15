@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from .factory import DictGenerator
+from .factory import DictFactory
 
 
 def gendict(schema: Optional[dict] = None,
@@ -23,4 +23,4 @@ def gendict(schema: Optional[dict] = None,
     Returns:
         Generated dict value.
     """
-    return DictGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return DictFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

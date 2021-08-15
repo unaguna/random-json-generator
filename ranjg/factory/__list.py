@@ -3,7 +3,7 @@ import random
 from typing import Tuple, Optional, List
 
 import ranjg
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..error import SchemaConflictError
 from ..options import Options
@@ -123,7 +123,7 @@ def _get_items_schema_list(schema: dict, item_count: int, default_schema_of_item
         return item_count * [schema.get("items", default_schema_of_items)]
 
 
-class ListGenerator(Generator[list]):
+class ListFactory(Factory[list]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,

@@ -5,7 +5,7 @@ from typing import Union, List, Optional, TextIO
 from ._context import Context
 from .options import Options
 from .options import load as load_options
-from .factory import get_generator
+from .factory import create_factory
 from .schema import load as load_schema
 from .schema import validate as validate_schema
 
@@ -110,7 +110,7 @@ def gen(schema: dict = None,
         options = load_options(options_file)
 
     gen_type = _raffle_type(schema.get("type"))
-    generator = get_generator(gen_type)
+    generator = create_factory(gen_type)
 
     # ランダムに値を生成
     generated = generator.gen(schema, schema_is_validated=True, options=options, context=context)

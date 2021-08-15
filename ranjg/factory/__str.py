@@ -4,7 +4,7 @@ from typing import Optional
 
 import rstr
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..error import SchemaConflictError
 from ..options import Options
@@ -47,7 +47,7 @@ def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
     return n_schema
 
 
-class StrGenerator(Generator[str]):
+class StrFactory(Factory[str]):
 
     def gen_without_schema_check(self,
                                  schema: Optional[dict],

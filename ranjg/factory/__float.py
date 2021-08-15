@@ -2,7 +2,7 @@ import random
 import sys
 from typing import Optional
 
-from .__common import Generator
+from .__common import Factory
 from ..__number_range import NumberRange
 from .._context import Context
 from ..options import Options
@@ -119,7 +119,7 @@ def _little_less(number: float) -> float:
         return -1.0
 
 
-class NumGenerator(Generator[float]):
+class NumFactory(Factory[float]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,

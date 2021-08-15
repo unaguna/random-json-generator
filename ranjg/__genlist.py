@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from .factory import ListGenerator
+from .factory import ListFactory
 
 
 def genlist(schema: Optional[dict] = None,
@@ -23,4 +23,4 @@ def genlist(schema: Optional[dict] = None,
     Returns:
         Generated list.
     """
-    return ListGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return ListFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

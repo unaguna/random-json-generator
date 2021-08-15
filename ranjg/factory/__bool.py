@@ -1,12 +1,12 @@
 import random
 from typing import Optional
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..options import Options
 
 
-class BoolGenerator(Generator[bool]):
+class BoolFactory(Factory[bool]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,

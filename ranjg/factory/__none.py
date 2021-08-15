@@ -1,11 +1,11 @@
 from typing import Optional
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..options import Options
 
 
-class NoneGenerator(Generator[None]):
+class NoneFactory(Factory[None]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,

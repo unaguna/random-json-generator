@@ -1,35 +1,34 @@
 from typing import Optional
 
-from . import Generator, NoneGenerator, IntGenerator, BoolGenerator, StrGenerator, DictGenerator, \
-    ListGenerator, NumGenerator
+from . import Factory, NoneFactory, IntFactory, BoolFactory, StrFactory, DictFactory, ListFactory, NumFactory
 
 
-def get_generator(gen_type: Optional[str]) -> Generator:
-    """Returns a ranjg.factory.Generator instance according to gen_type.
+def create_factory(gen_type: Optional[str]) -> Factory:
+    """Returns a ranjg.factory.Factory instance according to gen_type.
 
     Args:
         gen_type:
             generator's type
     Returns:
-        generator
+        random-value factory
     """
 
     if gen_type is None:
         # TODO: None 固定でよいか要検討
-        return NoneGenerator()
+        return NoneFactory()
     elif gen_type == "null":
-        return NoneGenerator()
+        return NoneFactory()
     elif gen_type == "integer":
-        return IntGenerator()
+        return IntFactory()
     elif gen_type == "number":
-        return NumGenerator()
+        return NumFactory()
     elif gen_type == "boolean":
-        return BoolGenerator()
+        return BoolFactory()
     elif gen_type == "string":
-        return StrGenerator()
+        return StrFactory()
     elif gen_type == "object":
-        return DictGenerator()
+        return DictFactory()
     elif gen_type == "array":
-        return ListGenerator()
+        return ListFactory()
     else:
         raise ValueError(f"Unsupported type: {gen_type}")

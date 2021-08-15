@@ -2,14 +2,14 @@ import math
 import random
 from typing import Optional, Union, Tuple
 
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..error import SchemaConflictError
 from ..options import Options
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
 
 
-class IntGenerator(Generator[int]):
+class IntFactory(Factory[int]):
 
     def gen_without_schema_check(self,
                                  schema: Optional[dict],

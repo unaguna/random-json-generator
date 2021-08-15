@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from .factory import BoolGenerator
+from .factory import BoolFactory
 
 
 def genbool(schema: Optional[dict] = None,
@@ -21,4 +21,4 @@ def genbool(schema: Optional[dict] = None,
     Returns:
         Generated boolean value.
     """
-    return BoolGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return BoolFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

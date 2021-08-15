@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import Context
 from .options import Options
-from .factory import StrGenerator
+from .factory import StrFactory
 
 
 def genstr(schema: Optional[dict] = None,
@@ -23,4 +23,4 @@ def genstr(schema: Optional[dict] = None,
     Returns:
         Generated string value.
     """
-    return StrGenerator().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)
+    return StrFactory().gen(schema, schema_is_validated=schema_is_validated, options=options, context=context)

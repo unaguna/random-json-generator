@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 import ranjg
-from .__common import Generator
+from .__common import Factory
 from .._context import Context
 from ..options import Options
 from ..util.listutil import diff
@@ -21,7 +21,7 @@ def _schema_of(key: str,
         return default_schema
 
 
-class DictGenerator(Generator[dict]):
+class DictFactory(Factory[dict]):
     def gen_without_schema_check(self,
                                  schema: Optional[dict],
                                  *,

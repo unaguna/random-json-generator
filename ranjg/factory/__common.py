@@ -8,7 +8,7 @@ from ..schema import validate as validate_schema
 _T = TypeVar('_T')
 
 
-class Generator(abc.ABC, Generic[_T]):
+class Factory(abc.ABC, Generic[_T]):
 
     def gen(self,
             schema: Optional[dict],
