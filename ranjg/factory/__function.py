@@ -21,7 +21,9 @@ def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
         return random.choice(schema_type)
 
 
-def create_factory(schema: Optional[dict], *, schema_is_validated: bool = False) -> Factory:
+def create_factory(schema: Optional[dict], *,
+                   schema_is_validated: bool = False,
+                   gen_type: Union[str, None] = None) -> Factory:
     """Returns a ranjg.factory.Factory instance according to the schema.
 
     Args:
@@ -29,6 +31,9 @@ def create_factory(schema: Optional[dict], *, schema_is_validated: bool = False)
             JSON schema object. See also :doc:`ranjg-json-schema`.
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
+            (In normal usage, this argument is not specified.)
+        gen_type (str, optional):
+            If specified, ignore ``schema.type`` and create a factory that generates values of the specified type.
             (In normal usage, this argument is not specified.)
     Returns:
         A factory to generate values according the schema.
@@ -49,7 +54,8 @@ def create_factory(schema: Optional[dict], *, schema_is_validated: bool = False)
     if schema is None:
         schema = {}
 
-    gen_type = _raffle_type(schema.get("type"))
+    if gen_type is None:
+        gen_type = _raffle_type(schema.get("type"))
 
     if gen_type is None:
         # TODO: NoneFactory 固定でよいか要検討

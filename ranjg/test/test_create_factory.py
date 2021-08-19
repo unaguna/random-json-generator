@@ -1,3 +1,4 @@
+import itertools
 import unittest
 
 from ranjg.factory import *
@@ -45,6 +46,33 @@ class TestCreateFactory(unittest.TestCase):
 
                     self.assertIn(factory.__class__, clz_list)
                     self.assertIn(generated, expected_list)
+
+    def test_create_factory_with_gen_type(self):
+        """ Normalized System Test
+        """
+        gen_type_list = (
+            ('null', NoneFactory),
+            ('boolean', BoolFactory),
+            ('integer', IntFactory),
+            ('number', NumFactory),
+            ('string', StrFactory),
+            ('array', ListFactory),
+            ('object', DictFactory),
+        )
+        schema_list = (
+            ({"type": "null"}, ),
+            ({"type": "boolean"}, ),
+            ({"type": "integer", "minimum": 100, "maximum": 100}, ),
+            ({"type": "number", "minimum": 10.25, "maximum": 10.25}, ),
+            ({"type": "string", "pattern": "st"}, ),
+            ({"type": "array", "minItems": 1, "maxItems": 1}, ),
+            ({"type": "object", "required": ["p1"]}, ),
+        )
+
+        for (gen_type, clz), (schema,) in itertools.product(gen_type_list, schema_list):
+            with self.subTest(gen_type=gen_type, schema=schema):
+                factory = create_factory(schema, gen_type=gen_type)
+                self.assertIsInstance(factory, clz)
 
 
 class TestRaffleType(unittest.TestCase):
