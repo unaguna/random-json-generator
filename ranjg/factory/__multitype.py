@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Dict, Sequence
+from typing import Optional, List
 
 from .__function import _create_factory_by_type
 from .__common import Factory
@@ -9,25 +9,21 @@ from ..options import Options
 
 class MultiFactory(Factory[None]):
     _schema: dict
-    _factories: Dict[str, Factory]
-    _type_list: Sequence[str]
+    _factories: List[Factory]
 
     def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
         super(MultiFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
 
-        # TODO: schema['type'] がリストでない場合 (strであるばあいを含む) 例外を生じる
-        self._type_list = schema['type']
+        # TODO: schema['type'] がリストでない場合 (strであるばあいを含む) やリストが空である場合例外を生じる
 
-        self._factories = {}
-        for schema_type in self._type_list:
-            # 各 type の factory を生成
-            # 親クラスの__init__でバリデーションチェックは済んでいるので schema_is_validated=True
-            self._factories[schema_type] = _create_factory_by_type(schema_type, schema_is_validated=True,
-                                                                   schema=schema)
+        # 各 type の factory を生成
+        # 親クラスの__init__でバリデーションチェックは済んでいるので schema_is_validated=True
+        self._factories = [_create_factory_by_type(typ, schema_is_validated=True, schema=schema)
+                           for typ in schema['type']]
 
     def gen(self,
             *,
             options: Optional[Options] = None,
             context: Optional[Context] = None) -> None:
-        schema_type = random.choice(self._type_list)
-        return self._factories[schema_type].gen(options=options, context=context)
+        factory = random.choice(self._factories)
+        return factory.gen(options=options, context=context)
