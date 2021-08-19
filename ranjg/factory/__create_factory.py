@@ -1,26 +1,8 @@
-import random
-from typing import Optional, Union, List, Iterable
+from typing import Optional, Union, Iterable
 
 from . import MultiFactory
 from .__common import Factory
 from .__function import _create_factory_by_type
-
-
-def _raffle_type(schema_type: Union[str, List[str], None]) -> Optional[str]:
-    """Returns a type string specified by the schema.
-
-    Args:
-        schema_type: The type(s) specified by the schema.
-
-    Returns:
-        A type string. If argument ``schema_type`` is None, it returns None.
-    """
-    if schema_type is None or type(schema_type) == str:
-        return schema_type
-    elif len(schema_type) <= 0:
-        raise ValueError("type must not be an empty list.")
-    else:
-        return random.choice(schema_type)
 
 
 def create_factory(schema: Optional[dict], *,
