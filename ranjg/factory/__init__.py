@@ -6,4 +6,5 @@ from .__int import IntFactory
 from .__list import ListFactory
 from .__none import NoneFactory
 from .__str import StrFactory
+from .__multitype import MultiFactory
 from .__function import create_factory
