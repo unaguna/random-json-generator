@@ -2,7 +2,7 @@ import itertools
 import unittest
 
 from ranjg.factory import *
-from ranjg.factory.__function import _raffle_type
+from ranjg.factory.__create_factory import _raffle_type
 
 
 class TestCreateFactory(unittest.TestCase):
