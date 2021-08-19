@@ -16,13 +16,13 @@ class TestMultiFactory(unittest.TestCase):
         ``MultiFactory(schema).gen()`` returns value according the schema regardless of schema.type.
         """
         case_list = (
-            ({"type": "null"}, (None,)),
-            ({"type": "boolean"}, (True, False)),
-            ({"type": "integer", "minimum": 100, "maximum": 100}, (100,)),
-            ({"type": "number", "minimum": 10.25, "maximum": 10.25}, (10.25,)),
-            ({"type": "string", "pattern": "st"}, ("st",)),
-            ({"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "string", "pattern": "st"}}, (["st"],)),
-            ({"type": "object", "required": ["p1"], "properties": {"p1": {"type": "string", "pattern": "st"}}},
+            ({"type": ["null"]}, (None,)),
+            ({"type": ["boolean"]}, (True, False)),
+            ({"type": ["integer"], "minimum": 100, "maximum": 100}, (100,)),
+            ({"type": ["number"], "minimum": 10.25, "maximum": 10.25}, (10.25,)),
+            ({"type": ["string"], "pattern": "st"}, ("st",)),
+            ({"type": ["array"], "minItems": 1, "maxItems": 1, "items": {"type": "string", "pattern": "st"}}, (["st"],)),
+            ({"type": ["object"], "required": ["p1"], "properties": {"p1": {"type": "string", "pattern": "st"}}},
              ({"p1": "st"},)),
             ({"type": ["null", "boolean"]}, (None, True, False)),
             ({"type": ["integer", "boolean"], "minimum": 100, "maximum": 100}, (100, True, False)),
@@ -42,13 +42,13 @@ class TestMultiFactory(unittest.TestCase):
         ``MultiFactory(schema).gen()`` uses factories to generate value.
         """
         case_list = (
-            ({"type": "null"}, NoneFactory),
-            ({"type": "boolean"}, BoolFactory),
-            ({"type": "integer", "minimum": 100, "maximum": 100}, IntFactory),
-            ({"type": "number", "minimum": 10.25, "maximum": 10.25}, NumFactory),
-            ({"type": "string", "pattern": "st"}, StrFactory),
-            ({"type": "array", "minItems": 1, "maxItems": 1}, ListFactory),
-            ({"type": "object", "required": ["p1"]}, DictFactory),
+            ({"type": ["null"]}, NoneFactory),
+            ({"type": ["boolean"]}, BoolFactory),
+            ({"type": ["integer"], "minimum": 100, "maximum": 100}, IntFactory),
+            ({"type": ["number"], "minimum": 10.25, "maximum": 10.25}, NumFactory),
+            ({"type": ["string"], "pattern": "st"}, StrFactory),
+            ({"type": ["array"], "minItems": 1, "maxItems": 1}, ListFactory),
+            ({"type": ["object"], "required": ["p1"]}, DictFactory),
         )
 
         for schema, clz in case_list:
