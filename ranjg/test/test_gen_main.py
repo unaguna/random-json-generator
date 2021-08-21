@@ -1,3 +1,4 @@
+import itertools
 import json
 import sys
 import os
@@ -114,3 +115,37 @@ class TestGenMain(unittest.TestCase):
 
         self.assertEqual(output[0]["comment"], '2')
         jsonschema.validate(output, schema)
+
+    def test_gen_main_with_multiplicity(self):
+        """ Normalized System Test
+
+        Module execution received an optional argument ``--line`` as multiplicity.
+        If it's specified, it repeats the generation for the specified number of times and output the results as a list.
+
+        ``-l`` is an abbreviation for ``--line``.
+
+        assert that:
+            With an argument ``-l``, module execution output a list whose element valid schema.
+            With an argument ``--line``, perform the same action.
+        """
+        schema_file_list = ("./test-resources/schema-legal-type_str.json",
+                            "./test-resources/schema-legal-user_object.json",
+                            "./test-resources/schema-legal-list.json",)
+
+        for schema_file, arg, multiplicity in itertools.product(schema_file_list, ('-l', '--list'), range(10)):
+            test_args = ["__main__.py", schema_file, arg, str(multiplicity)]
+            with self.subTest(args=test_args):
+                with open(schema_file) as fp:
+                    schema = json.load(fp)
+
+                with captured_stdout() as stdout:
+                    with patch.object(sys, 'argv', test_args):
+                        module_main()
+
+                output_str = stdout.getvalue()
+                output = json.loads(output_str)
+
+                self.assertIsInstance(output, list)
+                self.assertEqual(len(output), multiplicity)
+                for output_elem in output:
+                    jsonschema.validate(output_elem, schema)
