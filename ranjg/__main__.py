@@ -13,7 +13,8 @@ def main():
     # 出力先を決定
     output_file, output_fp = get_output_target(args)
 
-    gen(schema_file=args.schema_file_path, output_file=output_file, output_fp=output_fp, options_file=args.options)
+    gen(schema_file=args.schema_file_path, output_file=output_file, output_fp=output_fp, options_file=args.options,
+        multiplicity=args.multiplicity)
 
 
 def parse_args():
@@ -27,6 +28,9 @@ def parse_args():
     parser.add_argument("schema_file_path", help="Path of json schema file. This file is used as base schema.")
     parser.add_argument("--json_output", "-j", help="Path to which json file is written.")
     parser.add_argument("--options", help="Path of options file.")
+    parser.add_argument("--list", "-l", dest="multiplicity", type=int,
+                        help="If specified, repeats the generation for the specified number of times "
+                             "and outputs the results as a list.")
 
     return parser.parse_args()
 
