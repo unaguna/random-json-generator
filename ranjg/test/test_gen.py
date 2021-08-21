@@ -1,3 +1,4 @@
+import itertools
 import json
 import os
 from os import path
@@ -208,3 +209,41 @@ class TestGen(unittest.TestCase):
 
         with self.assertRaises(ValueError, msg='options and options_file'):
             gen(schema, options=ranjg.options.Options(), options_file=options_file)
+
+    def test_gen_with_multiplicity(self):
+        schema_list = (
+            {"type": "null"},
+            {"type": "boolean"},
+            {"type": "integer", "minimum": 10, "maximum": 20},
+            {"type": "number", "minimum": 10, "maximum": 20},
+            {"type": "string", "pattern": r"\d\d\dA"},
+            {"type": "array", "minItems": 2, "maxItems": 5, "items": {"type": "boolean"}},
+            {"type": "object", "required": ["p1"], "properties": {"p1": {"type": "boolean"}}},
+        )
+
+        for schema, multiplicity in itertools.product(schema_list, range(5)):
+            with self.subTest(multiplicity=multiplicity, schema=schema):
+                generated = gen(schema, multiplicity=multiplicity)
+
+                self.assertIsInstance(generated, list)
+                self.assertEqual(len(generated), multiplicity)
+                for generated_elem in generated:
+                    jsonschema.validate(generated_elem, schema)
+
+    def test_gen_with_multiplicity_and_multi_type(self):
+        schema = {"type": ["null", "boolean"]}
+
+        generated_list = gen(schema, multiplicity=100)
+
+        self.assertIsInstance(generated_list, list)
+        # type が複数ある場合に、すべてが使用されることを確かめる
+        self.assertSetEqual(set(generated_list), {None, True, False})
+
+    def test_gen_with_illegal_multiplicity(self):
+        multiplicity_list = (-1, -2, 1.5, '1', [], dict(), tuple())
+        schema = {"type": "boolean"}
+
+        for multiplicity in multiplicity_list:
+            with self.subTest(multiplicity=multiplicity):
+                with self.assertRaises(ValueError):
+                    gen(schema, multiplicity=multiplicity)

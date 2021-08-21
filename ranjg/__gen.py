@@ -16,6 +16,7 @@ def gen(schema: dict = None,
         output_fp: TextIO = None,
         options: Optional[Options] = None,
         options_file: str = None,
+        multiplicity: Optional[int] = None,
         schema_is_validated: bool = False,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
@@ -58,12 +59,18 @@ def gen(schema: dict = None,
             Only one of this argument or ``schema_file`` needs to be specified.
         schema_file (str, optional):
             The path to JSON schema file. This JSON schema is used instead of the argument ``schema``.
-        output_file (str, optional): The path to a file where the result will be output as JSON.
-        output_fp (TextIO, optional): The writing object of a file where the result will be output as JSON.
+        output_file (str, optional):
+            The path to a file where the result will be output as JSON.
+            If ``multiplicity`` is specified, a list consisting of the generated values will be output as json.
+        output_fp (TextIO, optional):
+            The writing object of a file where the result will be output as JSON.
+            If ``multiplicity`` is specified, a list consisting of the generated values will be output as json.
         options (Options, optional):
             The options for generation.
         options_file (str, optional):
             The path to options file. This is parsed as JSON to an Options instance.
+        multiplicity (int, optional):
+            If specified, it repeats the generation for the specified number of times and returns the results as a list.
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
             (In normal usage, this argument is not specified.)
@@ -73,6 +80,7 @@ def gen(schema: dict = None,
 
     Returns:
         Generated something. It is satisfies the JSON schema.
+        However, if ``multiplicity`` is specified, it returns a list, each element of which satisfies the schema.
 
     Raises:
         SchemaFileIOError:
