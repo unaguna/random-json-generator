@@ -7,6 +7,7 @@ from .options import load as load_options
 from .factory import create_factory
 from .schema import load as load_schema
 from .schema import validate as validate_schema
+from .util.numutil import is_integer
 
 
 def gen(schema: dict = None,
@@ -103,6 +104,8 @@ def gen(schema: dict = None,
         raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
     if options is not None and options_file is not None:
         raise ValueError("Only one of options and options_file can be set. (You don't have to set either one.)")
+    if multiplicity is not None and not (is_integer(multiplicity) and 0 <= multiplicity):
+        raise ValueError(f"Illegal argument 'multiplicity': {multiplicity}")
 
     # スキーマファイルを読み込み
     if schema_file is not None:
@@ -119,7 +122,10 @@ def gen(schema: dict = None,
     factory = create_factory(schema, schema_is_validated=True)
 
     # ランダムに値を生成
-    generated = factory.gen(options=options, context=context)
+    if multiplicity is None:
+        generated = factory.gen(options=options, context=context)
+    else:
+        generated = [factory.gen(options=options, context=context) for _ in range(multiplicity)]
 
     # 出力先指定がある場合、JSONとして出力する
     if output_file is not None:
