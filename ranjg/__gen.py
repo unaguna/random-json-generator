@@ -26,6 +26,7 @@ def gen(schema: dict = None,
         options_file: str = None,
         multiplicity: Optional[int] = None,
         schema_is_validated: bool = False,
+        no_output: bool = False,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -88,6 +89,11 @@ def gen(schema: dict = None,
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
             (In normal usage, this argument is not specified.)
+        no_output (bool, default=False):
+            If it is True, this function returns None.
+            (If it is False, the result contains all outputs.
+            In particular, if it is repeated a lot, such as when a large list is specified in output_file_list,
+            it may overwhelm memory.)
         context (Context):
             The context of construction.
             (In normal usage, this argument is not specified. This argument is for using this function recursively.)

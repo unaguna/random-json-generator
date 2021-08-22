@@ -337,3 +337,21 @@ class TestGen(unittest.TestCase):
                     gen(schema, multiplicity=multiplicity)
 
     # TODO: multiplicity を指定し、かつ output_file や output_fp をリストにした場合の動作仕様を決定し試験を作成する。
+
+    def test_gen_with_no_output(self):
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_fp_output.json")
+
+        with open(output_file, "w") as fp:
+            generated = gen(schema_file="./test-resources/schema-legal-user_object.json",
+                            output_fp=fp,
+                            no_output=True)
+
+        self.assertIsNone(generated)
+
+        # validate output
+        with open(output_file) as fp:
+            output = json.load(fp)
+        jsonschema.validate(output, schema)
