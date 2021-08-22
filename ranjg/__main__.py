@@ -42,10 +42,7 @@ def parse_args():
 
     # -n の指定時は --json_output が必須
     if args.file_num is not None and args.json_output is None:
-        parser.print_usage(sys.stderr)
-        print(f"{sys.argv[0]}: error: the following arguments are required when -n is specified: --json_output",
-              file=sys.stderr)
-        sys.exit(2)
+        parser.error("the following arguments are required when -n is specified: --json_output")
 
     # TODO: -n は1以上でなくてはならない
     # TODO: -n に指定がある場合、--json_output は1つのプレースホルダーを持つフォーマットでなくてはならない
