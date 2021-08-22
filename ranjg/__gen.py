@@ -153,16 +153,25 @@ def gen(schema: dict = None,
 
     factory = create_factory(schema, schema_is_validated=True)
 
-    generated_list = []
+    # メソッドの戻り値を保持するリストを作成
+    if no_output:
+        # 戻り値による出力を行わない場合、要素を保持しないダミーリストを使用する。
+        # これにより、生成したものがリスト内に残らなくなり、早期にガベージコレクションされるようになる。
+        result_list = _DummyList()
+    else:
+        # 戻り値を返す場合、生成したものをすべて保持する必要があるため、リストに保持する。
+        result_list = []
+
+    # 出力先の数だけ生成処理を繰り返す。
     for output_file, output_fp in output_list:
 
         # ランダムに値を生成
         if multiplicity is None:
             generated = factory.gen(options=options, context=context)
-            generated_list.append(generated)
+            result_list.append(generated)
         else:
             generated = [factory.gen(options=options, context=context) for _ in range(multiplicity)]
-            generated_list.extend(generated)
+            result_list.extend(generated)
 
         # 出力先指定がある場合、JSONとして出力する
         if output_file is not None:
@@ -171,7 +180,32 @@ def gen(schema: dict = None,
         if output_fp is not None:
             json.dump(generated, output_fp)
 
-    if output_file_list is None and output_fp_list is None and multiplicity is None:
-        return generated_list[0]
+    if no_output:
+        return None
+    elif output_file_list is None and output_fp_list is None and multiplicity is None:
+        return result_list[0]
     else:
-        return generated_list
+        return result_list
+
+
+class _DummyList(list):
+    """List to ignore change operations.
+    """
+
+    def __setitem__(self, key, value):
+        # ignore change operations
+        pass
+
+    def append(self, __object) -> None:
+        # ignore change operations
+        pass
+
+    def extend(self, __iterable) -> None:
+        # ignore change operations
+        pass
+
+    def __getitem__(self, key):
+        return None
+
+    def __len__(self) -> int:
+        return 0
