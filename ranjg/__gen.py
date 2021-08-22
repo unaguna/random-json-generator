@@ -11,6 +11,10 @@ from .schema import validate as validate_schema
 from .util.numutil import is_integer
 
 
+def __count_not_null(*args) -> int:
+    return len(tuple(filter(lambda v: v is not None, args)))
+
+
 def gen(schema: dict = None,
         *,
         schema_file: str = None,
@@ -109,8 +113,9 @@ def gen(schema: dict = None,
         raise ValueError("schema or schema_file must be specified.")
     if schema is not None and schema_file is not None:
         raise ValueError("Only one of schema and schema_file can be set.")
-    if output_file is not None and output_fp is not None:
-        raise ValueError("Only one of output_file and output_fp can be set. (You don't have to set either one.)")
+    if __count_not_null(output_file, output_fp, output_file_list, output_fp_list) >= 2:
+        raise ValueError("Only one of (output_file, output_fp, output_file_list, output_fp_list) can be set. "
+                         "(You don't have to set either one.)")
     if options is not None and options_file is not None:
         raise ValueError("Only one of options and options_file can be set. (You don't have to set either one.)")
     if multiplicity is not None and not (is_integer(multiplicity) and 0 <= multiplicity):

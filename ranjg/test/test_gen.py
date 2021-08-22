@@ -254,27 +254,33 @@ class TestGen(unittest.TestCase):
                 output_fp_list = (fp1, fp2)
 
                 with self.subTest('output_file, output_fp'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_file=output_file_1, output_fp=fp1)
 
                 with self.subTest('output_file, output_file_list'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_file=output_file_1, output_file_list=output_file_list)
 
                 with self.subTest('output_file, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_file=output_file_1, output_fp_list=output_fp_list)
 
                 with self.subTest('output_fp, output_file_list'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_fp=fp1, output_file_list=output_file_list)
 
                 with self.subTest('output_fp, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_fp=fp1, output_fp_list=output_fp_list)
 
                 with self.subTest('output_file_list, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of '):
+                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
+                                                           'output_fp_list) can be set.'):
                         gen(schema, output_file_list=output_file_list, output_fp_list=output_fp_list)
 
     def test_gen_with_options_file(self):
