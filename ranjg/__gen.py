@@ -1,5 +1,5 @@
 import json
-from typing import Optional, TextIO
+from typing import Optional, TextIO, Iterable
 
 from ._context import Context
 from .options import Options
@@ -14,7 +14,9 @@ def gen(schema: dict = None,
         *,
         schema_file: str = None,
         output_file: str = None,
+        output_file_list: Iterable[str] = None,
         output_fp: TextIO = None,
+        output_fp_list: Iterable[TextIO] = None,
         options: Optional[Options] = None,
         options_file: str = None,
         multiplicity: Optional[int] = None,
@@ -63,9 +65,15 @@ def gen(schema: dict = None,
         output_file (str, optional):
             The path to a file where the result will be output as JSON.
             If ``multiplicity`` is specified, a list consisting of the generated values will be output as json.
+        output_file_list (Iterable[str], optional):
+            The list of paths to a file where the result will be output as JSON.
+            It repeats the generation and outputs each result to each file.
         output_fp (TextIO, optional):
             The writing object of a file where the result will be output as JSON.
             If ``multiplicity`` is specified, a list consisting of the generated values will be output as json.
+        output_fp_list (Iterable[TextIO], optional):
+            The list of writing objects of files where the result will be output as JSON.
+            It repeats the generation and outputs each result to each file.
         options (Options, optional):
             The options for generation.
         options_file (str, optional):

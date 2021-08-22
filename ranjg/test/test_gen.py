@@ -1,6 +1,7 @@
 import itertools
 import json
 import os
+from contextlib import ExitStack
 from os import path
 import random
 import shutil
@@ -118,6 +119,33 @@ class TestGen(unittest.TestCase):
         jsonschema.validate(output, schema)
         self.assertDictEqual(generated, output)
 
+    def test_gen_with_output_file_path_list(self):
+        """ Normalized System Test
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+        output_file_list = (path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_1.json"),
+                            path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_2.json"),
+                            path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_3.json"),)
+
+        # output_file として list や tuple ではなくイテレータを受け取っても正しく動作することを確認
+        generated = gen(schema_file=schema_file, output_file_list=iter(output_file_list))
+
+        # validate return value
+        self.assertIsInstance(generated, list)
+        self.assertEqual(len(generated), len(output_file_list))
+        for generated_elem in generated:
+            jsonschema.validate(generated_elem, schema)
+
+        # validate output
+        for output_file, generated_elem in zip(output_file_list, generated):
+            self.assertTrue(path.exists(output_file))
+            with open(output_file) as fp:
+                output = json.load(fp)
+            jsonschema.validate(output, schema)
+            self.assertDictEqual(generated_elem, output)
+
     def test_gen_with_output_fp(self):
         """ Normalized System Test
 
@@ -146,6 +174,35 @@ class TestGen(unittest.TestCase):
             output = json.load(fp)
         jsonschema.validate(output, schema)
         self.assertDictEqual(generated, output)
+
+    def test_gen_with_output_fp_list(self):
+        """ Normalized System Test
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+        output_file_list = (path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_1.json"),
+                            path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_2.json"),
+                            path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_3.json"),)
+
+        with ExitStack() as stack:
+            fp_list = [stack.enter_context(open(output_file, "w")) for output_file in output_file_list]
+            generated = gen(schema_file="./test-resources/schema-legal-user_object.json",
+                            output_fp_list=fp_list)
+
+        # validate return value
+        self.assertIsInstance(generated, list)
+        self.assertEqual(len(generated), len(output_file_list))
+        for generated_elem in generated:
+            jsonschema.validate(generated_elem, schema)
+
+        # validate output
+        for output_file, generated_elem in zip(output_file_list, generated):
+            self.assertTrue(path.exists(output_file))
+            with open(output_file) as fp:
+                output = json.load(fp)
+            jsonschema.validate(output, schema)
+            self.assertDictEqual(generated_elem, output)
 
     def test_gen_with_schema_and_schema_file(self):
         """ Semi-normalized System Test
@@ -247,3 +304,5 @@ class TestGen(unittest.TestCase):
             with self.subTest(multiplicity=multiplicity):
                 with self.assertRaises(ValueError):
                     gen(schema, multiplicity=multiplicity)
+
+    # TODO: multiplicity を指定し、かつ output_file や output_fp をリストにした場合の動作仕様を決定し試験を作成する。
