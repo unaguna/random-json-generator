@@ -236,21 +236,46 @@ class TestGen(unittest.TestCase):
     def test_gen_with_output_file_and_output_fp(self):
         """ Semi-normalized System Test
 
-        ``ranjg.gen`` receive only one of arguments ``output_file`` and ``output_fp``. When both are specified,
-        ``ranjg.gen`` raises ``ValueError``.
+        ``ranjg.gen`` receive only one of arguments ``output_file``, ``output_fp``, ``output_file_list`` and
+        ``output_fp_list``. When two of them are specified, ``ranjg.gen`` raises ``ValueError``.
 
         assert that:
-            When calling ``gen`` with arguments ``output_file`` and ``output_fp``, ``ValueError`` is raised.
+            When calling ``gen`` with two arguments of ``output_file``, ``output_fp``, ``output_file_list`` and
+        ``output_fp_list``, ``ValueError`` is raised.
 
         """
         schema = {}
-        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output.json")
+        output_file_1 = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_1.json")
+        output_file_2 = path.join(self.TEST_TMP_DIR_PRE, "test_gen_with_output_file_path_output_2.json")
+        output_file_list = (output_file_1, output_file_2)
 
-        with open(output_file, "w") as fp:
-            self.assertRaises(ValueError,
-                              lambda: gen(schema,
-                                          output_file=output_file,
-                                          output_fp=fp))
+        with open(output_file_1, "w") as fp1:
+            with open(output_file_2, "w") as fp2:
+                output_fp_list = (fp1, fp2)
+
+                with self.subTest('output_file, output_fp'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_file=output_file_1, output_fp=fp1)
+
+                with self.subTest('output_file, output_file_list'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_file=output_file_1, output_file_list=output_file_list)
+
+                with self.subTest('output_file, output_fp_list'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_file=output_file_1, output_fp_list=output_fp_list)
+
+                with self.subTest('output_fp, output_file_list'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_fp=fp1, output_file_list=output_file_list)
+
+                with self.subTest('output_fp, output_fp_list'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_fp=fp1, output_fp_list=output_fp_list)
+
+                with self.subTest('output_file_list, output_fp_list'):
+                    with self.assertRaises(ValueError, msg='Only one of '):
+                        gen(schema, output_file_list=output_file_list, output_fp_list=output_fp_list)
 
     def test_gen_with_options_file(self):
         options_file = "./test-resources/options-legal.json"
