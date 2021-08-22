@@ -1,3 +1,4 @@
+import itertools
 import json
 from typing import Optional, TextIO, Iterable
 
@@ -127,19 +128,39 @@ def gen(schema: dict = None,
     if options_file is not None:
         options = load_options(options_file)
 
+    # ファイル出力先を正規化
+    if output_file is not None:
+        output_list = ((output_file, None),)
+    elif output_fp is not None:
+        output_list = ((None, output_fp),)
+    elif output_file_list is not None:
+        output_list = itertools.zip_longest(output_file_list, tuple())
+    elif output_fp_list is not None:
+        output_list = itertools.zip_longest(tuple(), output_fp_list)
+    else:
+        output_list = ((None, None),)
+
     factory = create_factory(schema, schema_is_validated=True)
 
-    # ランダムに値を生成
-    if multiplicity is None:
-        generated = factory.gen(options=options, context=context)
+    generated_list = []
+    for output_file, output_fp in output_list:
+
+        # ランダムに値を生成
+        if multiplicity is None:
+            generated = factory.gen(options=options, context=context)
+            generated_list.append(generated)
+        else:
+            generated = [factory.gen(options=options, context=context) for _ in range(multiplicity)]
+            generated_list.extend(generated)
+
+        # 出力先指定がある場合、JSONとして出力する
+        if output_file is not None:
+            with open(output_file, "w+") as fp:
+                json.dump(generated, fp)
+        if output_fp is not None:
+            json.dump(generated, output_fp)
+
+    if output_file_list is None and output_fp_list is None and multiplicity is None:
+        return generated_list[0]
     else:
-        generated = [factory.gen(options=options, context=context) for _ in range(multiplicity)]
-
-    # 出力先指定がある場合、JSONとして出力する
-    if output_file is not None:
-        with open(output_file, "w+") as fp:
-            json.dump(generated, fp)
-    if output_fp is not None:
-        json.dump(generated, output_fp)
-
-    return generated
+        return generated_list
