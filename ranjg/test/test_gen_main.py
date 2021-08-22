@@ -5,7 +5,7 @@ import os
 from os import path
 import random
 import shutil
-from test.support import captured_stdout
+from test.support import captured_stdout, captured_stderr
 import unittest
 from unittest.mock import patch
 import jsonschema
@@ -149,3 +149,64 @@ class TestGenMain(unittest.TestCase):
                 self.assertEqual(len(output), multiplicity)
                 for output_elem in output:
                     jsonschema.validate(output_elem, schema)
+
+    def test_gen_main_with_num(self):
+        """ Normalized System Test
+
+        Module execution received an optional argument ``-n`` as the number of output files.
+        If it's specified, it repeats the generation for the specified number of times and outputs to each file.
+
+        As filenames, strings in which placeholders in the string specified by ``--json_output`` are replaced with
+        sequential numbers will be used.
+
+        assert that:
+            With an argument ``-n``, module execution output to multiple files.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_{}.json")
+        num = 5
+
+        test_args = ["__main__.py", schema_file, '-n', str(num), '--json_output', output_file]
+
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+
+        with captured_stdout() as stdout:
+            with patch.object(sys, 'argv', test_args):
+                module_main()
+
+        # output nothing to stdout when --num is specified.
+        output_str = stdout.getvalue()
+        self.assertEqual(output_str, '')
+
+        for i in range(num):
+            with open(output_file.format(i)) as fp:
+                generated = json.load(fp)
+            jsonschema.validate(generated, schema)
+
+        self.assertFalse(path.exists(output_file.format(num)))
+
+    def test_gen_main_with_num_without_output_file(self):
+        """ Normalized System Test
+
+        When Module execution received an optional argument ``-n``, another option ``--json_output`` is required.
+
+        assert that:
+            With an argument ``-n`` and without an argument ``--json_output``, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num = 5
+
+        test_args = ["__main__.py", schema_file, '-n', str(num)]
+
+        with captured_stdout() as stdout, captured_stderr() as stderr:
+            with patch.object(sys, 'argv', test_args):
+                with self.assertRaises(SystemExit) as error_ctx:
+                    module_main()
+                self.assertEqual(error_ctx.exception.code, 2)
+
+        output_str = stdout.getvalue()
+        self.assertEqual(output_str, '')
+
+        stderr_str = stderr.getvalue()
+        self.assertIn("error: the following arguments are required when -n is specified: --json_output", stderr_str)
