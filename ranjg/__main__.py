@@ -36,7 +36,7 @@ def parse_args():
                              "Repeats the generation for the specified number of times and outputs the result to each "
                              "file. If it is specified, --json_output is required and used as format of filepath.")
     parser.add_argument("--options", help="Path of options file.")
-    parser.add_argument("--list", "-l", dest="multiplicity", type=int,
+    parser.add_argument("--list", "-l", dest="multiplicity", type=positive_integer,
                         help="If specified, repeats the generation for the specified number of times "
                              "and outputs the results as a list.")
 
