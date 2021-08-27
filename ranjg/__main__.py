@@ -1,6 +1,8 @@
 import sys
 import argparse
 from typing import Tuple, Optional, TextIO, Iterable
+
+from ._arg_parser import positive_int
 from . import gen
 
 
@@ -29,7 +31,7 @@ def parse_args():
 
     parser.add_argument("schema_file_path", help="Path of json schema file. This file is used as base schema.")
     parser.add_argument("--json_output", "-j", help="Path to which json file is written.")
-    parser.add_argument("-n", dest="file_num", type=int,
+    parser.add_argument("-n", dest="file_num", type=positive_int,
                         help="The number of output json file. "
                              "Repeats the generation for the specified number of times and outputs the result to each "
                              "file. If it is specified, --json_output is required and used as format of filepath.")
@@ -44,7 +46,6 @@ def parse_args():
     if args.file_num is not None and args.json_output is None:
         parser.error("the following arguments are required when -n is specified: --json_output")
 
-    # TODO: -n は1以上でなくてはならない
     # TODO: -n に指定がある場合、--json_output は1つのプレースホルダーを持つフォーマットでなくてはならない
 
     return args
