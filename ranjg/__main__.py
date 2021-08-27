@@ -16,7 +16,7 @@ def main():
     gen(schema_file=args.schema_file_path, output_file=output_file, output_fp=output_fp, options_file=args.options,
         multiplicity=args.multiplicity, output_file_list=output_file_list,
         # To ensure that generated value is exposed to garbage collection earlier.
-        no_output=True)
+        return_none=True)
 
 
 def parse_args():

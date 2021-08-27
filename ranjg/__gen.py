@@ -26,7 +26,7 @@ def gen(schema: dict = None,
         options_file: str = None,
         multiplicity: Optional[int] = None,
         schema_is_validated: bool = False,
-        no_output: bool = False,
+        return_none: bool = False,
         context: Optional[Context] = None):
     """Generate something randomly according to the JSON schema.
 
@@ -89,7 +89,7 @@ def gen(schema: dict = None,
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
             (In normal usage, this argument is not specified.)
-        no_output (bool, default=False):
+        return_none (bool, default=False):
             If it is True, this function returns None.
             (If it is False, the result contains all outputs.
             In particular, if it is repeated a lot, such as when a large list is specified in output_file_list,
@@ -154,7 +154,7 @@ def gen(schema: dict = None,
     factory = create_factory(schema, schema_is_validated=True)
 
     # メソッドの戻り値を保持するリストを作成
-    if no_output:
+    if return_none:
         # 戻り値による出力を行わない場合、要素を保持しないダミーリストを使用する。
         # これにより、生成したものがリスト内に残らなくなり、早期にガベージコレクションされるようになる。
         result_list = _DummyList()
@@ -180,7 +180,7 @@ def gen(schema: dict = None,
         if output_fp is not None:
             json.dump(generated, output_fp)
 
-    if no_output:
+    if return_none:
         return None
     elif output_file_list is None and output_fp_list is None and multiplicity is None:
         return result_list[0]
