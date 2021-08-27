@@ -210,3 +210,30 @@ class TestGenMain(unittest.TestCase):
 
         stderr_str = stderr.getvalue()
         self.assertIn("error: the following arguments are required when -n is specified: --json_output", stderr_str)
+
+    def test_gen_main_with_illegal_file_num(self):
+        """ Normalized System Test
+
+        When Module execution received an optional argument ``-n``, it must be positive integer.
+
+        assert that:
+            With an argument ``-n`` and illegal value, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num_list = ('0', '-1', '1.1', 'e')
+
+        for num in num_list:
+            with self.subTest(num=num):
+                test_args = ["__main__.py", schema_file, '-n', num]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn("error: argument -n: invalid positive_int value:", stderr_str)
