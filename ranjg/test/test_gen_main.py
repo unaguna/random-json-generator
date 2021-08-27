@@ -132,7 +132,7 @@ class TestGenMain(unittest.TestCase):
                             "./test-resources/schema-legal-user_object.json",
                             "./test-resources/schema-legal-list.json",)
 
-        for schema_file, arg, multiplicity in itertools.product(schema_file_list, ('-l', '--list'), range(10)):
+        for schema_file, arg, multiplicity in itertools.product(schema_file_list, ('-l', '--list'), range(1, 10)):
             test_args = ["__main__.py", schema_file, arg, str(multiplicity)]
             with self.subTest(args=test_args):
                 with open(schema_file) as fp:
@@ -149,6 +149,33 @@ class TestGenMain(unittest.TestCase):
                 self.assertEqual(len(output), multiplicity)
                 for output_elem in output:
                     jsonschema.validate(output_elem, schema)
+
+    def test_gen_main_with_illegal_multiplicity(self):
+        """ Semi-normalized System Test
+
+        When Module execution received an optional argument ``-line`` or ``-l``, it must be positive integer.
+
+        assert that:
+            With an argument ``--line`` or ``-l`` of illegal value, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        multiplicity_list = ('0', '-1', '1.1', 'e')
+
+        for multiplicity, arg in itertools.product(multiplicity_list, ('-l', '--list')):
+            with self.subTest(arg=arg, multiplicity=multiplicity):
+                test_args = ["__main__.py", schema_file, arg, multiplicity]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn(f"error: argument --list/-l: invalid positive_integer value:", stderr_str)
 
     def test_gen_main_with_num(self):
         """ Normalized System Test
@@ -212,7 +239,7 @@ class TestGenMain(unittest.TestCase):
         self.assertIn("error: the following arguments are required when -n is specified: --json_output", stderr_str)
 
     def test_gen_main_with_illegal_file_num(self):
-        """ Normalized System Test
+        """ Semi-normalized System Test
 
         When Module execution received an optional argument ``-n``, it must be positive integer.
 
