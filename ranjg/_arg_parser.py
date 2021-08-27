@@ -2,7 +2,7 @@
 """
 
 
-def positive_int(string: str) -> int:
+def positive_integer(string: str) -> int:
     value = int(string)
 
     if value <= 0:

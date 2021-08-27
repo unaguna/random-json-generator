@@ -2,7 +2,7 @@ import sys
 import argparse
 from typing import Tuple, Optional, TextIO, Iterable
 
-from ._arg_parser import positive_int
+from ._arg_parser import positive_integer
 from . import gen
 
 
@@ -31,7 +31,7 @@ def parse_args():
 
     parser.add_argument("schema_file_path", help="Path of json schema file. This file is used as base schema.")
     parser.add_argument("--json_output", "-j", help="Path to which json file is written.")
-    parser.add_argument("-n", dest="file_num", type=positive_int,
+    parser.add_argument("-n", dest="file_num", type=positive_integer,
                         help="The number of output json file. "
                              "Repeats the generation for the specified number of times and outputs the result to each "
                              "file. If it is specified, --json_output is required and used as format of filepath.")

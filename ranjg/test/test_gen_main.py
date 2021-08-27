@@ -236,4 +236,4 @@ class TestGenMain(unittest.TestCase):
                 self.assertEqual(output_str, '')
 
                 stderr_str = stderr.getvalue()
-                self.assertIn("error: argument -n: invalid positive_int value:", stderr_str)
+                self.assertIn("error: argument -n: invalid positive_integer value:", stderr_str)
