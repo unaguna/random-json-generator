@@ -210,7 +210,7 @@ class TestGen(unittest.TestCase):
         schema = {"type": "string"}
         schema_file = "./test-resources/schema-legal-type_str.json"
 
-        with self.assertRaises(ValueError, msg='schema and schema_file'):
+        with self.assertRaisesRegex(ValueError, 'schema and schema_file'):
             gen(schema, schema_file=schema_file)
 
     def test_gen_with_illegal_schema_file_path(self):
@@ -254,33 +254,33 @@ class TestGen(unittest.TestCase):
                 output_fp_list = (fp1, fp2)
 
                 with self.subTest('output_file, output_fp'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_file=output_file_1, output_fp=fp1)
 
                 with self.subTest('output_file, output_file_list'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_file=output_file_1, output_file_list=output_file_list)
 
                 with self.subTest('output_file, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_file=output_file_1, output_fp_list=output_fp_list)
 
                 with self.subTest('output_fp, output_file_list'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_fp=fp1, output_file_list=output_file_list)
 
                 with self.subTest('output_fp, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_fp=fp1, output_fp_list=output_fp_list)
 
                 with self.subTest('output_file_list, output_fp_list'):
-                    with self.assertRaises(ValueError, msg='Only one of (output_file, output_fp, output_file_list, '
-                                                           'output_fp_list) can be set.'):
+                    with self.assertRaisesRegex(ValueError, r'Only one of \(output_file, output_fp, output_file_list, '
+                                                            r'output_fp_list\) can be set.'):
                         gen(schema, output_file_list=output_file_list, output_fp_list=output_fp_list)
 
     def test_gen_with_options_file(self):
@@ -295,7 +295,7 @@ class TestGen(unittest.TestCase):
         options_file = "./test-resources/options-legal.json"
         schema = {"type": "object", "required": ["p1"]}
 
-        with self.assertRaises(ValueError, msg='options and options_file'):
+        with self.assertRaisesRegex(ValueError, 'options and options_file'):
             gen(schema, options=ranjg.options.Options(), options_file=options_file)
 
     def test_gen_with_multiplicity(self):
