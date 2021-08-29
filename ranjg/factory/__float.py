@@ -77,12 +77,21 @@ def _check_consistency(number_range: NumberRange, context: Context):
         return
 
     if number_range.minimum > number_range.maximum:
-        raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.", context)
-    if number_range.minimum == number_range.maximum:
-        if number_range.exclusive_minimum:
+        if number_range.exclusive_minimum is False and number_range.exclusive_maximum is False:
+            raise SchemaConflictError("Minimum value must be lower than or equal to the maximum value.", context)
+        if number_range.exclusive_minimum is True and number_range.exclusive_maximum is False:
             raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.", context)
-        elif number_range.exclusive_maximum:
-            raise SchemaConflictError("ExclusiveMaximum value must be greater than the minimum value.", context)
+        if number_range.exclusive_minimum is False and number_range.exclusive_maximum is True:
+            raise SchemaConflictError("Minimum value must be lower than the exclusiveMaximum value.", context)
+        if number_range.exclusive_minimum is True and number_range.exclusive_maximum is True:
+            raise SchemaConflictError("ExclusiveMinimum value must be lower than the exclusiveMaximum value.", context)
+    elif number_range.minimum == number_range.maximum:
+        if number_range.exclusive_minimum is True and number_range.exclusive_maximum is False:
+            raise SchemaConflictError("ExclusiveMinimum value must be lower than the maximum value.", context)
+        if number_range.exclusive_minimum is False and number_range.exclusive_maximum is True:
+            raise SchemaConflictError("Minimum value must be lower than the exclusiveMaximum value.", context)
+        if number_range.exclusive_minimum is True and number_range.exclusive_maximum is True:
+            raise SchemaConflictError("ExclusiveMinimum value must be lower than the exclusiveMaximum value.", context)
 
 
 def _little_greater(number: float) -> float:
