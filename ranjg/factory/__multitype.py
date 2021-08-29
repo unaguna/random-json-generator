@@ -22,7 +22,7 @@ class MultiFactory(Factory[None]):
         # 各 type の factory を生成
         # 親クラスの__init__でバリデーションチェックは済んでいるので schema_is_validated=True
         self._factories = [_create_factory_by_type(typ, schema_is_validated=True, schema=schema)
-                           for typ in schema['type']]
+                           for typ in schema_type]
 
     def gen(self,
             *,
