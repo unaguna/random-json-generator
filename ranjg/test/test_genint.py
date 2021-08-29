@@ -493,7 +493,9 @@ class TestIntFactory(unittest.TestCase):
                     "minimum": minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_min_exMax(self):
         """ Semi-normalized System Test
@@ -521,7 +523,9 @@ class TestIntFactory(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_min_max_exMax_true(self):
         """ Semi-normalized System Test
@@ -550,7 +554,9 @@ class TestIntFactory(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMaximum": True,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_min_max_exMax_false(self):
         """ Semi-normalized System Test
@@ -576,7 +582,9 @@ class TestIntFactory(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMaximum": False,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_exMin_max(self):
         """ Semi-normalized System Test
@@ -604,7 +612,9 @@ class TestIntFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_min_max_exMin_true(self):
         """ Semi-normalized System Test
@@ -633,7 +643,9 @@ class TestIntFactory(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMinimum": True,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_conflict_min_max_exMin_false(self):
         """ Semi-normalized System Test
@@ -659,7 +671,9 @@ class TestIntFactory(unittest.TestCase):
                     "maximum": maximum,
                     "exclusiveMinimum": False,
                 }
-                self.assertRaises(SchemaConflictError, lambda: IntFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range specified by the schema'):
+                    IntFactory(schema).gen()
 
     def test_gen_with_param_minimum_exclusiveMinimum(self):
         """ Normalized System Test

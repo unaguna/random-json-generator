@@ -107,7 +107,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "maxLength": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{schema.get("maxLength")} is less than the minimum of 0'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_integer_maxLength(self):
         """ Semi-normalized System Test
@@ -121,7 +124,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "maxLength": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{schema.get("maxLength")} is not a multiple of 1'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_number_maxLength(self):
         """ Semi-normalized System Test
@@ -135,7 +141,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "maxLength": "1"
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{repr(schema.get("maxLength"))} is not of type \'number\''):
+            StrFactory(schema).gen()
 
     def test_gen_with_minLength(self):
         """ Normalized System Test
@@ -169,7 +178,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "minLength": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{schema.get("minLength")} is less than the minimum of 0'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_integer_minLength(self):
         """ Semi-normalized System Test
@@ -183,7 +195,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "minLength": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{schema.get("minLength")} is not a multiple of 1'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_number_minLength(self):
         """ Semi-normalized System Test
@@ -197,7 +212,10 @@ class TestStrFactory(unittest.TestCase):
         schema = {
             "minLength": "1"
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{repr(schema.get("minLength"))} is not of type \'number\''):
+            StrFactory(schema).gen()
 
     def test_gen_with_length(self):
         """ Normalized System Test
@@ -239,7 +257,9 @@ class TestStrFactory(unittest.TestCase):
         for max_length, min_length in thresholds_list:
             with self.subTest(min_length=min_length, max_length=max_length):
                 schema = {"minLength": min_length, "maxLength": max_length}
-                self.assertRaises(SchemaConflictError, lambda: StrFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            '"minLength" must be lower than or equal to the "maxLength" value'):
+                    StrFactory(schema).gen()
 
     def test_gen_with_pattern(self):
         """ Normalized System Test
@@ -280,7 +300,8 @@ class TestStrFactory(unittest.TestCase):
                 generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertRegex(generated, pattern)
-                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+                with self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minLength'"):
+                    jsonschema.validate(generated, schema)
 
     def test_gen_with_pattern_and_maxLength(self):
         """ Normalized System Test
@@ -301,7 +322,8 @@ class TestStrFactory(unittest.TestCase):
                 generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertRegex(generated, pattern)
-                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+                with self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxLength'"):
+                    jsonschema.validate(generated, schema)
 
     def test_gen_with_illegal_pattern(self):
         """ Semi-normalized System Test
@@ -320,7 +342,8 @@ class TestStrFactory(unittest.TestCase):
         for pattern in pattern_list:
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern}
-                self.assertRaises(InvalidSchemaError, lambda: StrFactory(schema).gen())
+                with self.assertRaisesRegex(InvalidSchemaError, "is not a 'regex'"):
+                    StrFactory(schema).gen()
 
 
 class TestOptionDefaultLength(unittest.TestCase):
@@ -470,7 +493,9 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         for options in options_list:
             with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
-                with self.assertRaises(SchemaConflictError):
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            '"options.default_min_length_of_string" must be lower than or equal to '
+                                            'the "options.default_max_length_of_string" value'):
                     StrFactory(schema).gen(options=options)
 
     def test_negative_default_min_length(self):

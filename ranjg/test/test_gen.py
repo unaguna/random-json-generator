@@ -73,7 +73,8 @@ class TestGen(unittest.TestCase):
         schema = {
             "type": [],
         }
-        self.assertRaises(InvalidSchemaError, lambda: gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError, r'\[\] is too short'):
+            gen(schema)
 
     def test_gen_with_schema_file_path(self):
         """ Normalized System Test
@@ -218,7 +219,7 @@ class TestGen(unittest.TestCase):
         """
         schema_file = "./test-resources/json-illegal.json"
 
-        with self.assertRaises(SchemaFileIOError):
+        with self.assertRaisesRegex(SchemaFileIOError, f'This file cannot be parsed as schema: {schema_file}'):
             gen(schema_file=schema_file)
 
     def test_gen_without_schema(self):
@@ -231,7 +232,8 @@ class TestGen(unittest.TestCase):
             When calling ``gen`` with no arguments, ``ValueError`` is raised.
 
         """
-        self.assertRaises(ValueError, lambda: gen())
+        with self.assertRaisesRegex(ValueError, 'schema or schema_file must be specified'):
+            gen()
 
     def test_gen_with_output_file_and_output_fp(self):
         """ Semi-normalized System Test
@@ -333,7 +335,7 @@ class TestGen(unittest.TestCase):
 
         for multiplicity in multiplicity_list:
             with self.subTest(multiplicity=multiplicity):
-                with self.assertRaises(ValueError):
+                with self.assertRaisesRegex(ValueError, f"Illegal argument 'multiplicity'"):
                     gen(schema, multiplicity=multiplicity)
 
     # TODO: multiplicity を指定し、かつ output_file や output_fp をリストにした場合の動作仕様を決定し試験を作成する。

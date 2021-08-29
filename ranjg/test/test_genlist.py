@@ -116,7 +116,9 @@ class TestListFactory(unittest.TestCase):
         schema = {
             "minItems": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: ListFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError, fr'On instance\["minItems"\]:\s+'
+                                                        fr'{schema.get("minItems")} is less than the minimum of 0'):
+            ListFactory(schema).gen()
 
     def test_gen_with_negative_maxItems(self):
         """ Semi-normalized System Test
@@ -130,7 +132,9 @@ class TestListFactory(unittest.TestCase):
         schema = {
             "maxItems": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: ListFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError, fr'On instance\["maxItems"\]:\s+'
+                                                        fr'{schema.get("maxItems")} is less than the minimum of 0'):
+            ListFactory(schema).gen()
 
     def test_gen_with_non_integer_minItems(self):
         """ Semi-normalized System Test
@@ -144,7 +148,9 @@ class TestListFactory(unittest.TestCase):
         schema = {
             "minItems": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: ListFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError, fr'On instance\["minItems"\]:\s+'
+                                                        fr'{schema.get("minItems")} is not a multiple of 1'):
+            ListFactory(schema).gen()
 
     def test_gen_with_non_integer_maxItems(self):
         """ Semi-normalized System Test
@@ -158,7 +164,9 @@ class TestListFactory(unittest.TestCase):
         schema = {
             "maxItems": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: ListFactory(schema).gen())
+        with self.assertRaisesRegex(InvalidSchemaError, fr'On instance\["maxItems"\]:\s+'
+                                                        fr'{schema.get("maxItems")} is not a multiple of 1'):
+            ListFactory(schema).gen()
 
     def test_gen_with_tight_length(self):
         """ Normalized System Test
@@ -203,7 +211,9 @@ class TestListFactory(unittest.TestCase):
                     "minItems": min_items,
                     "maxItems": max_items,
                 }
-                self.assertRaises(SchemaConflictError, lambda: ListFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range of length specified by the schema'):
+                    ListFactory(schema).gen()
 
     def test_gen_with_single_items(self):
         """ Normalized System Test
@@ -461,7 +471,10 @@ class TestListFactory(unittest.TestCase):
                 {"type": "integer"},
             ]
         }
-        self.assertRaises(SchemaConflictError, lambda: ListFactory(schema).gen())
+        with self.assertRaisesRegex(SchemaConflictError,
+                                    'In tuple validation, when "additionalItems" is false, '
+                                    '"minItems" must be less than or equal to size of "items".'):
+            ListFactory(schema).gen()
 
     def test_gen_with_tuple_items_and_minItems_and_additional_false(self):
         """ Normalized System Test
@@ -721,7 +734,10 @@ class TestGenlistLengthRange(unittest.TestCase):
         for schema_min_items, items in parameter_list:
             with self.subTest(items=items, min_items=schema_min_items):
                 schema = {"items": items, "minItems": schema_min_items, "additionalItems": False}
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'In tuple validation, when "additionalItems" is false, '
+                                            '"minItems" must be less than or equal to size of "items".'):
+                    _get_range_of_length(schema, Context.root(schema))
 
     def test_list_length_range_with_list_schema_with_max(self):
         """ Normalized System Test
@@ -919,7 +935,9 @@ class TestGenlistLengthRange(unittest.TestCase):
         for items, (schema_min_items, schema_max_items) in itertools.product(items_list, threshold_list):
             with self.subTest(items=items, min_items=schema_min_items, max_items=schema_max_items):
                 schema = {"items": items, "minItems": schema_min_items, "maxItems": schema_max_items}
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'There are no integers in the range of length specified by the schema'):
+                    _get_range_of_length(schema, Context.root(schema))
 
     def test_list_length_range_with_tuple_schema_with_min_max_additional_true(self):
         """ Normalized System Test
@@ -1043,7 +1061,10 @@ class TestGenlistLengthRange(unittest.TestCase):
                     "maxItems": schema_max_items,
                     "additionalItems": False,
                 }
-                self.assertRaises(SchemaConflictError, lambda: _get_range_of_length(schema, Context.root(schema)))
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'In tuple validation, when "additionalItems" is false, '
+                                            '"minItems" must be less than or equal to size of "items".'):
+                    _get_range_of_length(schema, Context.root(schema))
 
 
 def _type_to_cls(type_str: str):

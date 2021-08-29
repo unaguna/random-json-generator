@@ -249,7 +249,9 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'Minimum value must be lower than or equal to the maximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_exclusive_minimum_maximum(self):
         """ Semi-normalized System Test
@@ -276,7 +278,9 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'ExclusiveMinimum value must be lower than the maximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -303,7 +307,9 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'Minimum value must be lower than the exclusiveMaximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_exclusive_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -330,4 +336,6 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'ExclusiveMinimum value must be lower than the exclusiveMaximum value'):
+                    NumFactory(schema).gen()
