@@ -238,6 +238,45 @@ class TestGenMain(unittest.TestCase):
         stderr_str = stderr.getvalue()
         self.assertIn("error: the following arguments are required when -n is specified: --json_output", stderr_str)
 
+    def test_gen_main_with_num_and_illegal_output_file(self):
+        """ Normalized System Test
+
+        When Module execution received an optional argument ``-n``, another option ``--json_output`` must have
+        one placeholder.
+
+        assert that:
+            With an argument ``-n`` and an argument ``--json_output`` without placeholder, module execution raises
+            exception.
+            With an argument ``-n`` and an argument ``--json_output`` with at most 2 placeholders, module execution
+            raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num = 5
+
+        output_file_list = (
+            path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_and_illegal_output_file.json"),
+            path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_and_illegal_output_file_{}{}.json"),
+        )
+
+        for output_file in output_file_list:
+            with self.subTest(output_file=output_file):
+
+                test_args = ["__main__.py", schema_file, '-n', str(num), '--json_output', output_file]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn("error: "
+                              "when -n is specified, --json_output must have exactly one placeholder such as '{}'",
+                              stderr_str)
+
     def test_gen_main_with_illegal_file_num(self):
         """ Semi-normalized System Test
 
