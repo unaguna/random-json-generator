@@ -58,7 +58,7 @@ def parse_args():
 
         # -n に指定がある場合、--json_output は1つのプレースホルダーを持つフォーマットでなくてはならない
         if _count_placeholder(args.json_output) != 1:
-            parser.error("error: when -n is specified, --json_output must have exactly one placeholder such as '{}'")
+            parser.error("when -n is specified, --json_output must have exactly one placeholder such as '{}'")
 
     return args
 
