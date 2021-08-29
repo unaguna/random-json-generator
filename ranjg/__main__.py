@@ -3,11 +3,12 @@ import sys
 import argparse
 from typing import Tuple, Optional, TextIO, Iterable
 
+from .util.listutil import count
 from ._arg_parser import positive_integer
 from . import gen
 
 
-__output_path_formatter = string.Formatter()
+__formatter = string.Formatter()
 
 
 def main():
@@ -26,7 +27,7 @@ def main():
 
 
 def _count_placeholder(format_string: str) -> int:
-    return len(list(filter(lambda t: t[1] is not None, __output_path_formatter.parse(format_string))))
+    return count(lambda t: t[1] is not None, __formatter.parse(format_string))
 
 
 def parse_args():
@@ -50,13 +51,14 @@ def parse_args():
 
     args = parser.parse_args()
 
-    # -n の指定時は --json_output が必須
-    if args.file_num is not None and args.json_output is None:
-        parser.error("the following arguments are required when -n is specified: --json_output")
+    if args.file_num is not None:
+        # -n の指定時は --json_output が必須
+        if args.json_output is None:
+            parser.error("the following arguments are required when -n is specified: --json_output")
 
-    # -n に指定がある場合、--json_output は1つのプレースホルダーを持つフォーマットでなくてはならない
-    if args.file_num is not None and _count_placeholder(args.json_output) != 1:
-        parser.error("error: when -n is specified, --json_output must have exactly one placeholder such as '{}'")
+        # -n に指定がある場合、--json_output は1つのプレースホルダーを持つフォーマットでなくてはならない
+        if _count_placeholder(args.json_output) != 1:
+            parser.error("error: when -n is specified, --json_output must have exactly one placeholder such as '{}'")
 
     return args
 

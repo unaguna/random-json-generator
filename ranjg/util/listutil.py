@@ -1,4 +1,6 @@
-from typing import Iterable
+from typing import Iterable, TypeVar, Callable
+
+_T = TypeVar('_T')
 
 
 def diff(base: Iterable, removed: Iterable) -> list:
@@ -44,3 +46,9 @@ def fix_length(base: list, length: int, padding_item) -> list:
         return base[:length]
     else:
         return base.copy() + [padding_item] * (length - len(base))
+
+
+def count(function: Callable[[_T], bool], iterable: Iterable[_T]) -> int:
+    """Count items in iterable.
+    """
+    return sum(1 for _ in filter(function, iterable))
