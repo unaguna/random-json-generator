@@ -56,3 +56,20 @@ class TestMultiFactory(unittest.TestCase):
                 with mock.patch(f'{clz}.gen') as mock_gen:
                     MultiFactory(schema).gen()
                     mock_gen.assert_called()
+
+    def test_gen_with_illegal_type(self):
+        """ Semi-normalized System Test
+
+        ``MultiFactory(schema)`` raises error if schema.type is not Iterable[str].
+        """
+        schema_list = (
+            {"type": "string"},
+            {"type": []},
+            {},
+        )
+
+        for schema in schema_list:
+            with self.subTest(type=schema.get("type")):
+                with self.assertRaises(ValueError,
+                                       msg="For MultiFactory, schema.type must be iterable of at least 1 strings"):
+                    MultiFactory(schema)
