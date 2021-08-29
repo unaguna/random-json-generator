@@ -54,7 +54,8 @@ class TestGen(unittest.TestCase):
         assert that:
             When ``schema.type`` is a list, ``gen(schema)`` returns a value type of a type in ``schema.type``.
         """
-        for i in range(5):
+        # 確率的事象につき、何度か試す
+        for _ in range(5):
             schema = {
                 "type": ["string", "number"],
             }

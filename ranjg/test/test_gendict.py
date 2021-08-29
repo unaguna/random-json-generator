@@ -35,7 +35,8 @@ class TestGendict(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.DictFactory.gen') as mock_gen:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.DictFactory.gen') as mock_gen:
                 gendict(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
             # TODO: schema, schema_is_validated についても assert する
@@ -191,12 +192,13 @@ class TestDictFactory(unittest.TestCase):
         options = Options(priority_schema_of_properties={key: priority_schema})
 
         for schema in schema_list:
-            generated = DictFactory(schema).gen(options=options)
-            self.assertEqual(generated, {key: -100})
+            with self.subTest(schema=schema):
+                generated = DictFactory(schema).gen(options=options)
+                self.assertEqual(generated, {key: -100})
 
-            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictFactory(schema_nest).gen(options=options)
-            self.assertEqual(generated["parent"], {key: -100})
+                schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+                generated = DictFactory(schema_nest).gen(options=options)
+                self.assertEqual(generated["parent"], {key: -100})
 
     def test_priority_schema_of_properties_with_not_prior(self):
         """ Normalized System Test
@@ -211,12 +213,13 @@ class TestDictFactory(unittest.TestCase):
         options = Options(priority_schema_of_properties={"px": priority_schema})
 
         for schema in schema_list:
-            generated = DictFactory(schema).gen(options=options)
-            self.assertIsInstance(generated[key], bool)
+            with self.subTest(schema=schema):
+                generated = DictFactory(schema).gen(options=options)
+                self.assertIsInstance(generated[key], bool)
 
-            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictFactory(schema_nest).gen(options=options)
-            self.assertIsInstance(generated["parent"][key], bool)
+                schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+                generated = DictFactory(schema_nest).gen(options=options)
+                self.assertIsInstance(generated["parent"][key], bool)
 
     def test_priority_schema_of_properties_with_not_required_key(self):
         """ Normalized System Test
@@ -234,12 +237,13 @@ class TestDictFactory(unittest.TestCase):
                           default_prob_of_optional_properties=0.0)
 
         for schema in schema_list:
-            generated = DictFactory(schema).gen(options=options)
-            self.assertTrue(key not in generated)
+            with self.subTest(schema=schema):
+                generated = DictFactory(schema).gen(options=options)
+                self.assertTrue(key not in generated)
 
-            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictFactory(schema_nest).gen(options=options)
-            self.assertTrue(key not in generated["parent"])
+                schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+                generated = DictFactory(schema_nest).gen(options=options)
+                self.assertTrue(key not in generated["parent"])
 
     def test_priority_schema_of_properties_with_not_required_key_2(self):
         """ Normalized System Test
@@ -256,12 +260,13 @@ class TestDictFactory(unittest.TestCase):
                           default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
-            generated = DictFactory(schema).gen(options=options)
-            self.assertEqual(generated[key], -100)
+            with self.subTest(schema=schema):
+                generated = DictFactory(schema).gen(options=options)
+                self.assertEqual(generated[key], -100)
 
-            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictFactory(schema_nest).gen(options=options)
-            self.assertEqual(generated["parent"][key], -100)
+                schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+                generated = DictFactory(schema_nest).gen(options=options)
+                self.assertEqual(generated["parent"][key], -100)
 
     def test_priority_schema_of_properties_with_not_required_key_3(self):
         """ Normalized System Test
@@ -278,12 +283,13 @@ class TestDictFactory(unittest.TestCase):
                           default_prob_of_optional_properties=1.0)
 
         for schema in schema_list:
-            generated = DictFactory(schema).gen(options=options)
-            self.assertTrue(key not in generated)
+            with self.subTest(schema=schema):
+                generated = DictFactory(schema).gen(options=options)
+                self.assertTrue(key not in generated)
 
-            schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
-            generated = DictFactory(schema_nest).gen(options=options)
-            self.assertTrue(key not in generated["parent"])
+                schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
+                generated = DictFactory(schema_nest).gen(options=options)
+                self.assertTrue(key not in generated["parent"])
 
     def test_schema_of_uses_default(self):
         """ Normalized System Test
@@ -339,7 +345,8 @@ class TestDictFactory(unittest.TestCase):
         default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
 
         for properties in properties_list:
-            schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
-                                default_schema=default_schema)
+            with self.subTest(properties=properties):
+                schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
+                                    default_schema=default_schema)
 
-            self.assertDictEqual(schema, priority_properties[key])
+                self.assertDictEqual(schema, priority_properties[key])

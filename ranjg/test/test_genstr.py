@@ -34,7 +34,8 @@ class TestGenstr(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.StrFactory.gen') as mock_gen:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.StrFactory.gen') as mock_gen:
                 genstr(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
             # TODO: schema, schema_is_validated についても assert する
@@ -373,8 +374,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": str_length, "maxLength": str_length}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_default_length_with_schema_min_without_schema_max(self):
         """ Normalized System Test
@@ -397,8 +400,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": min_length}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(min_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(min_length, len(generated))
 
     def test_default_length_with_schema_max_without_schema_min(self):
         """ Normalized System Test
@@ -421,8 +426,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "maxLength": max_length}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(max_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(max_length, len(generated))
 
     def test_default_length_without_schema_min_max(self):
         """ Normalized System Test
@@ -443,8 +450,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string"}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_negative_default_length_range(self):
         """ Semi-normalized System Test
@@ -467,14 +476,20 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": str_length}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(target='minLength',
+                              min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
         schema = {"type": "string", "maxLength": str_length}
 
         for options in options_list:
-            generated = StrFactory(schema).gen(options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(target='maxLength',
+                              min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_reversed_default_length(self):
         """ Semi-normalized System Test

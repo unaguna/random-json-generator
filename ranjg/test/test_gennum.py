@@ -35,7 +35,8 @@ class TestGennum(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
             # TODO: schema, schema_is_validated についても assert する
