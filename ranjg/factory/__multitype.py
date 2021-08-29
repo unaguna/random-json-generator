@@ -1,5 +1,5 @@
 import random
-from typing import Optional, List
+from typing import Optional, List, Iterable
 
 from .__function import _create_factory_by_type
 from .__common import Factory
@@ -14,7 +14,10 @@ class MultiFactory(Factory[None]):
     def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
         super(MultiFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
 
-        # TODO: schema['type'] がリストでない場合 (strであるばあいを含む) やリストが空である場合例外を生じる
+        # schema['type'] がリストでない場合 (strであるばあいを含む) やリストが空である場合例外を生じる
+        schema_type = schema.get('type')
+        if isinstance(schema_type, str) or not isinstance(schema_type, Iterable) or len(schema_type) <= 0:
+            raise ValueError('For MultiFactory, schema.type must be iterable of at least 1 strings')
 
         # 各 type の factory を生成
         # 親クラスの__init__でバリデーションチェックは済んでいるので schema_is_validated=True

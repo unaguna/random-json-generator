@@ -64,7 +64,6 @@ class TestMultiFactory(unittest.TestCase):
         """
         schema_list = (
             {"type": "string"},
-            {"type": []},
             {},
         )
 
