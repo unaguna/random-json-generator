@@ -15,7 +15,33 @@ class TestGendict(unittest.TestCase):
     Test ``ranjg.gendict``
     """
 
-    def test_gendict(self):
+    def test_when_gendict_then_call_init(self):
+        """ Normalized System Test
+
+        ``gendict()`` is wrapper of ``DictFactory#gen()``.
+
+        assert that:
+            When ``gendict`` is called, then ``DictFactory()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "object"}, None, False, None),
+            ({"type": "object"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.DictFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factory.DictFactory.gen'):
+                gendict(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
+
+    def test_when_gendict_then_call_gen(self):
         """ Normalized System Test
 
         ``gendict()`` is wrapper of ``DictFactory#gen()``.
@@ -39,7 +65,6 @@ class TestGendict(unittest.TestCase):
                     mock.patch('ranjg.factory.DictFactory.gen') as mock_gen:
                 gendict(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
-            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestDictFactory(unittest.TestCase):

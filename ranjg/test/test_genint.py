@@ -17,7 +17,33 @@ class TestGenint(unittest.TestCase):
     Test ``ranjg.genint``
     """
 
-    def test_genint(self):
+    def test_when_genint_then_call_init(self):
+        """ Normalized System Test
+
+        ``genint()`` is wrapper of ``IntFactory#gen()``.
+
+        assert that:
+            When ``genint`` is called, then ``IntFactory()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "integer"}, None, False, None),
+            ({"type": "integer"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.IntFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factory.IntFactory.gen'):
+                genint(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
+
+    def test_when_genint_then_call_gen(self):
         """ Normalized System Test
 
         ``genint()`` is wrapper of ``IntFactory#gen()``.
@@ -41,7 +67,6 @@ class TestGenint(unittest.TestCase):
                     mock.patch('ranjg.factory.IntFactory.gen') as mock_gen:
                 genint(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
-            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestIntFactory(unittest.TestCase):

@@ -14,7 +14,33 @@ class TestGenstr(unittest.TestCase):
     Test ``ranjg.genstr``
     """
 
-    def test_genstr(self):
+    def test_when_gennum_then_call_init(self):
+        """ Normalized System Test
+
+        ``genstr()`` is wrapper of ``StrFactory#gen()``.
+
+        assert that:
+            When ``genstr`` is called, then ``StrFactory()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "string"}, None, False, None),
+            ({"type": "string"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.StrFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factory.StrFactory.gen'):
+                genstr(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
+
+    def test_when_gennum_then_call_gen(self):
         """ Normalized System Test
 
         ``genstr()`` is wrapper of ``StrFactory#gen()``.
@@ -38,7 +64,6 @@ class TestGenstr(unittest.TestCase):
                     mock.patch('ranjg.factory.StrFactory.gen') as mock_gen:
                 genstr(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
-            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestStrFactory(unittest.TestCase):
