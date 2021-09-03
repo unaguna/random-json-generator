@@ -6,6 +6,7 @@ from unittest import mock
 import jsonschema
 from ranjg import genlist, Options
 from ranjg._context import Context
+from .res import sample_schema
 from ..factory import ListFactory
 from ..factory.__list import _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
@@ -262,11 +263,11 @@ class TestListFactory(unittest.TestCase):
                 schema = {
                     "type": "array",
                     "minItems": 5,
-                    "items": {
-                        "type": type_name,
-                    }
+                    "items": sample_schema(type_cls),
                 }
                 generated = ListFactory(schema).gen()
+
+                self.assertIsInstance(generated, list)
                 self.assertGreater(len(generated), 0)
                 for item in generated:
                     self.assertIsInstance(item, type_cls)
@@ -286,21 +287,21 @@ class TestListFactory(unittest.TestCase):
         """
         items_list = [
             [
-                {"type": "string"},
-                {"type": "null"},
-                {"type": "integer"},
+                sample_schema('string'),
+                sample_schema('null'),
+                sample_schema('integer'),
             ],
             [
-                {"type": "string"},
-                {"type": "integer"},
-                {"type": "number"},
-                {"type": "integer"},
+                sample_schema('string'),
+                sample_schema('integer'),
+                sample_schema('number'),
+                sample_schema('integer'),
             ],
             [
-                {"type": "object"},
+                sample_schema('object'),
             ],
             [
-                {"type": "array"},
+                sample_schema('array'),
             ],
         ]
 
@@ -332,7 +333,7 @@ class TestListFactory(unittest.TestCase):
             When ``schema.additionalItems`` is ``True`` and ``schema.minItems == schema.maxItems``, the result list is
             length of ``minItems``.
         """
-        threshold_list = (0, 1, 5, 10.0, 20)
+        threshold_list = (0, 1, 7, 10.0, 20)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -342,11 +343,13 @@ class TestListFactory(unittest.TestCase):
                     "minItems": threshold,
                     "maxItems": threshold,
                     "items": [
-                        {"type": "string"},
-                        {"type": "null"},
-                        {"type": "integer"},
-                        {"type": "integer"},
-                        {"type": "number"},
+                        sample_schema('string'),
+                        sample_schema('null'),
+                        sample_schema('array'),
+                        sample_schema('object'),
+                        sample_schema('number'),
+                        sample_schema('integer'),
+                        sample_schema('boolean'),
                     ]
                 }
                 generated = ListFactory(schema).gen()
@@ -371,7 +374,7 @@ class TestListFactory(unittest.TestCase):
             When ``schema.additionalItems`` is not specified and ``schema.minItems`` is specified, the result list
             is length of at least ``minItems``.
         """
-        threshold_list = (0, 1, 5, 10.0, 20)
+        threshold_list = (0, 1, 7, 10.0, 20)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -380,11 +383,13 @@ class TestListFactory(unittest.TestCase):
                     "minItems": threshold,
                     "maxItems": threshold,
                     "items": [
-                        {"type": "string"},
-                        {"type": "null"},
-                        {"type": "integer"},
-                        {"type": "integer"},
-                        {"type": "number"},
+                        sample_schema('string'),
+                        sample_schema('null'),
+                        sample_schema('array'),
+                        sample_schema('object'),
+                        sample_schema('number'),
+                        sample_schema('integer'),
+                        sample_schema('boolean'),
                     ]
                 }
                 generated = ListFactory(schema).gen()
@@ -421,12 +426,12 @@ class TestListFactory(unittest.TestCase):
             with self.subTest(additional_items_type=additional_items_type):
                 schema = {
                     "type": "array",
-                    "additionalItems": {"type": additional_items_type},
+                    "additionalItems": sample_schema(additional_items_type),
                     "minItems": 5,
                     "items": [
-                        {"type": "string"},
-                        {"type": "null"},
-                        {"type": "integer"},
+                        sample_schema('string'),
+                        sample_schema('null'),
+                        sample_schema('integer'),
                     ]
                 }
                 generated = ListFactory(schema).gen()
@@ -450,7 +455,7 @@ class TestListFactory(unittest.TestCase):
             each schema's ``type``.
             When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
         """
-        max_items_list = (0, 1, 5, 10.0, 20)
+        max_items_list = (0, 1, 7, 10.0, 20)
 
         for max_items in max_items_list:
             with self.subTest(max_items=max_items):
@@ -458,11 +463,13 @@ class TestListFactory(unittest.TestCase):
                     "type": "array",
                     "maxItems": max_items,
                     "items": [
-                        {"type": "string"},
-                        {"type": "null"},
-                        {"type": "integer"},
-                        {"type": "integer"},
-                        {"type": "number"},
+                        sample_schema('string'),
+                        sample_schema('null'),
+                        sample_schema('array'),
+                        sample_schema('object'),
+                        sample_schema('number'),
+                        sample_schema('integer'),
+                        sample_schema('boolean'),
                     ]
                 }
                 generated = ListFactory(schema).gen()
@@ -521,9 +528,9 @@ class TestListFactory(unittest.TestCase):
                     "additionalItems": False,
                     "minItems": min_items,
                     "items": [
-                        {"type": "string"},
-                        {"type": "null"},
-                        {"type": "integer"},
+                        sample_schema('string'),
+                        sample_schema('null'),
+                        sample_schema('integer'),
                     ]
                 }
                 generated = ListFactory(schema).gen()
@@ -541,12 +548,13 @@ class TestListFactory(unittest.TestCase):
             ``options.default_schema_of_items``.
         """
         schema = {"type": "array", "minItems": 5, "maxItems": 5}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        default_schema = sample_schema('integer')
         generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
-        self.assertListEqual(generated, [-100]*5)
+        for i in range(5):
+            jsonschema.validate(generated[i], default_schema)
 
         schema = {"type": "array", "minItems": 6, "maxItems": 6}
-        default_schema = {"type": "string"}
+        default_schema = sample_schema('string')
         generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
         self.assertIsInstance(generated, Sequence)
         self.assertEqual(len(generated), 6)
@@ -565,9 +573,14 @@ class TestListFactory(unittest.TestCase):
             ``options.default_schema_of_items``.
         """
         schema = {"type": "array", "minItems": 5, "maxItems": 5, "items": [{"type": "null"}, {"type": "null"}]}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        default_schema = sample_schema('integer')
         generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
-        self.assertListEqual(generated, [None, None, -100, -100, -100])
+
+        self.assertIsInstance(generated, list)
+        self.assertEqual(generated[0], None)
+        self.assertEqual(generated[1], None)
+        for i in range(2, 5):
+            jsonschema.validate(generated[i], default_schema)
 
 
 class TestGenlistLengthRange(unittest.TestCase):

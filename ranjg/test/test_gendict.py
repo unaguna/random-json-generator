@@ -4,6 +4,7 @@ from unittest import mock
 import jsonschema
 
 from ranjg import gendict, Options
+from .res import sample_schema
 from .._context import Context
 from ..factory import DictFactory
 from ..factory.__dict import _schema_of
@@ -115,12 +116,12 @@ class TestDictFactory(unittest.TestCase):
         schema = {
             "required": ["aaa", "bbb", "ccc", "ddd", "eee", "xxx", "zzz"],
             "properties": {
-                "aaa": {"type": "number"},
-                "bbb": {"type": "object"},
-                "ccc": {"type": "string"},
-                "ddd": {"type": "boolean"},
-                "eee": {"type": "array"},
-                "xxx": {"type": "null"},
+                "aaa": sample_schema('number'),
+                "bbb": sample_schema('object'),
+                "ccc": sample_schema('string'),
+                "ddd": sample_schema('boolean'),
+                "eee": sample_schema('array'),
+                "xxx": sample_schema('null'),
                 "zzz": {},
             },
         }
@@ -130,7 +131,6 @@ class TestDictFactory(unittest.TestCase):
                             {"aaa", "bbb", "ccc", "ddd", "eee", "xxx", "zzz"})
         self.assertIsInstance(generated["aaa"], float)
         self.assertIsInstance(generated["bbb"], dict)
-        self.assertDictEqual(generated["bbb"], {})
         self.assertIsInstance(generated["ccc"], str)
         self.assertIsInstance(generated["ddd"], bool)
         self.assertIsInstance(generated["eee"], list)
@@ -153,10 +153,10 @@ class TestDictFactory(unittest.TestCase):
         options_1 = Options(default_prob_of_optional_properties=1.0)
         schema = {'type': 'object',
                   'properties': {
-                      'p1': {'type': 'integer'},
-                      'p2': {'type': 'boolean'},
-                      'p3': {'type': 'string'},
-                      'p4': {'type': 'number'},
+                      'p1': sample_schema('integer'),
+                      'p2': sample_schema('boolean'),
+                      'p3': sample_schema('string'),
+                      'p4': sample_schema('number'),
                   },
                   'required': ['p1']}
 
@@ -172,6 +172,8 @@ class TestDictFactory(unittest.TestCase):
             assert 'p3' not in generated
             assert 'p4' not in generated
 
+            jsonschema.validate(generated, schema)
+
         # x = 1.0
         # Since this is a test of probabilistic events, it should be performed multiple times.
         for _ in range(10):
@@ -183,6 +185,8 @@ class TestDictFactory(unittest.TestCase):
             assert 'p2' in generated
             assert 'p3' in generated
             assert 'p4' in generated
+
+            jsonschema.validate(generated, schema)
 
     def test_default_schema_of_properties(self):
         """ Normalized System Test
@@ -198,10 +202,11 @@ class TestDictFactory(unittest.TestCase):
         """
         schema = {"type": "object", "required": ["p1"]}
         dummy_schema = {"type": "string", "pattern": "dummy"}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        default_schema = sample_schema('integer')
         generated = DictFactory(schema).gen(options=Options(default_schema_of_properties=default_schema,
-                                                              default_schema_of_items=dummy_schema))
-        self.assertDictEqual(generated, {"p1": -100})
+                                                            default_schema_of_items=dummy_schema))
+        jsonschema.validate(generated['p1'], default_schema)
+        jsonschema.validate(generated, schema)
 
     def test_priority_schema_of_properties_with_prior(self):
         """ Normalized System Test
@@ -213,17 +218,17 @@ class TestDictFactory(unittest.TestCase):
         key = "p1"
         schema_list = ({"type": "object", "required": [key]},
                        {"type": "object", "required": [key], "properties": {key: {"type": "boolean"}}},)
-        priority_schema = {"type": "integer", "maximum": -100, "minimum": -100}
+        priority_schema = sample_schema('integer')
         options = Options(priority_schema_of_properties={key: priority_schema})
 
         for schema in schema_list:
             with self.subTest(schema=schema):
                 generated = DictFactory(schema).gen(options=options)
-                self.assertEqual(generated, {key: -100})
+                jsonschema.validate(generated[key], priority_schema)
 
                 schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
                 generated = DictFactory(schema_nest).gen(options=options)
-                self.assertEqual(generated["parent"], {key: -100})
+                jsonschema.validate(generated['parent'][key], priority_schema)
 
     def test_priority_schema_of_properties_with_not_prior(self):
         """ Normalized System Test
