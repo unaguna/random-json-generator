@@ -3,3 +3,4 @@ jsonschema
 rstr
 
 ###### dependent for tests ######
+setuptools
