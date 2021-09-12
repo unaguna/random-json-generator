@@ -547,19 +547,18 @@ class TestListFactory(unittest.TestCase):
             When ``schema.items`` is not specified, elements in generated list is satisfy a schema
             ``options.default_schema_of_items``.
         """
-        schema = {"type": "array", "minItems": 5, "maxItems": 5}
-        default_schema = sample_schema('integer')
-        generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
-        for i in range(5):
-            jsonschema.validate(generated[i], default_schema)
+        length_list = (5, 6, 7)
+        default_schema_list = (sample_schema('integer'), sample_schema('string'))
 
-        schema = {"type": "array", "minItems": 6, "maxItems": 6}
-        default_schema = sample_schema('string')
-        generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
-        self.assertIsInstance(generated, Sequence)
-        self.assertEqual(len(generated), 6)
-        for element in generated:
-            self.assertIsInstance(element, str)
+        for length, default_schema in itertools.product(length_list, default_schema_list):
+            with self.subTest(length=length, default_schema=default_schema):
+                schema = {"type": "array", "minItems": length, "maxItems": length}
+                generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
+
+                self.assertIsInstance(generated, Sequence)
+                self.assertEqual(len(generated), length)
+                for element in generated:
+                    jsonschema.validate(element, default_schema)
 
     def test_gen_with_tuple_items_and_options_default_schema_of_items(self):
         """ Normalized System Test
@@ -572,15 +571,21 @@ class TestListFactory(unittest.TestCase):
             element(s) without corresponding schema in ``schema.items`` is satisfy a schema
             ``options.default_schema_of_items``.
         """
-        schema = {"type": "array", "minItems": 5, "maxItems": 5, "items": [{"type": "null"}, {"type": "null"}]}
-        default_schema = sample_schema('integer')
-        generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
+        length_list = (2, 3, 4)
+        default_schema_list = (sample_schema('integer'), sample_schema('string'))
 
-        self.assertIsInstance(generated, list)
-        self.assertEqual(generated[0], None)
-        self.assertEqual(generated[1], None)
-        for i in range(2, 5):
-            jsonschema.validate(generated[i], default_schema)
+        for length, default_schema in itertools.product(length_list, default_schema_list):
+            with self.subTest(length=length, default_schema=default_schema):
+                schema = {"type": "array", "minItems": length, "maxItems": length,
+                          "items": [{"type": "null"}, {"type": "null"}]}
+                generated = ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
+
+                self.assertIsInstance(generated, Sequence)
+                self.assertEqual(len(generated), length)
+                self.assertEqual(generated[0], None)
+                self.assertEqual(generated[1], None)
+                for element in generated[2: length]:
+                    jsonschema.validate(element, default_schema)
 
 
 class TestGenlistLengthRange(unittest.TestCase):
