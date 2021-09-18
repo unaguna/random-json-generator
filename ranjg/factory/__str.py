@@ -5,7 +5,7 @@ from typing import Optional
 import rstr
 
 from .__common import Factory
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..error import SchemaConflictError, GenerateConflictError
 from ..options import Options
 
@@ -50,8 +50,9 @@ def _normalize_schema(schema: dict, options: Options, context: GenerationContext
 class StrFactory(Factory[str]):
     _schema: dict
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(StrFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(StrFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         self._schema = schema if schema is not None else {}
 

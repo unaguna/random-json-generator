@@ -3,7 +3,7 @@ import random
 from typing import Optional, Union, Tuple
 
 from .__common import Factory
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..error import SchemaConflictError
 from ..options import Options
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
@@ -14,8 +14,9 @@ class IntFactory(Factory[int]):
     _schema_minimum: Optional[int]
     _schema_maximum: Optional[int]
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         self._schema = schema if schema is not None else {}
 

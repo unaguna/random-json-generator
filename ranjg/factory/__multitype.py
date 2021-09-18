@@ -3,7 +3,7 @@ from typing import Optional, List, Iterable
 
 from .__function import _create_factory_by_type
 from .__common import Factory
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..options import Options
 
 
@@ -11,8 +11,9 @@ class MultiFactory(Factory[None]):
     _schema: dict
     _factories: List[Factory]
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(MultiFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(MultiFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         # schema['type'] がリストでない場合 (strであるばあいを含む) やリストが空である場合例外を生じる
         schema_type = schema.get('type')

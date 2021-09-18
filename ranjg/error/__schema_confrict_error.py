@@ -1,4 +1,4 @@
-from ranjg._context import GenerationContext
+from ranjg._context import SchemaContext
 
 
 class SchemaConflictError(Exception):
@@ -9,7 +9,6 @@ class SchemaConflictError(Exception):
 
     When the schema is invalid (exp: ``schema.type`` is illegal string), ``InvalidSchemaError`` is raised.
     """
-    def __init__(self, message: str, context: GenerationContext):
-        # TODO: context の型を Factory 生成文脈クラスへ
+    def __init__(self, message: str, context: SchemaContext):
         super(Exception, self).__init__(message)
         self.context = context

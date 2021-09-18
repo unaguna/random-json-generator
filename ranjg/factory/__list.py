@@ -4,7 +4,7 @@ from typing import Tuple, Optional, List
 
 import ranjg
 from .__common import Factory
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..error import SchemaConflictError
 from ..options import Options
 from ..util.listutil import fix_length
@@ -24,7 +24,7 @@ def __schema_is_tuple_validation(schema: dict) -> bool:
     return isinstance(items, collections.Sequence)
 
 
-def _get_range_of_length(schema: dict, context: GenerationContext) -> Tuple[Optional[int], Optional[int]]:
+def _get_range_of_length(schema: dict, context: SchemaContext) -> Tuple[Optional[int], Optional[int]]:
     """Determine the range of the size of the list to be generated with the schema.
 
     If each of them are not specified in the schema, returns None. This function checks for inconsistencies in the
@@ -126,8 +126,9 @@ def _get_items_schema_list(schema: dict, item_count: int, default_schema_of_item
 class ListFactory(Factory[list]):
     _schema: dict
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(ListFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(ListFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         self._schema = schema if schema is not None else {}
 

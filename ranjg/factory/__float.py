@@ -4,7 +4,7 @@ from typing import Optional
 
 from .__common import Factory
 from ..__number_range import NumberRange
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..options import Options
 from ..error import SchemaConflictError, GenerateError
 
@@ -132,8 +132,9 @@ class NumFactory(Factory[float]):
     _schema: dict
     _number_range: NumberRange
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         self._schema = schema if schema is not None else {}
 

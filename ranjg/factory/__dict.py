@@ -3,7 +3,7 @@ from typing import Optional
 
 import ranjg
 from .__common import Factory
-from .._context import GenerationContext
+from .._context import GenerationContext, SchemaContext
 from ..options import Options
 from ..util.listutil import diff
 
@@ -24,8 +24,9 @@ def _schema_of(key: str,
 class DictFactory(Factory[dict]):
     _schema: dict
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         self._schema = schema if schema is not None else {}
 
