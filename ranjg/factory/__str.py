@@ -6,7 +6,7 @@ import rstr
 
 from .__common import Factory
 from .._context import GenerationContext
-from ..error import SchemaConflictError
+from ..error import SchemaConflictError, GenerateConflictError
 from ..options import Options
 
 
@@ -33,8 +33,8 @@ def _normalize_schema(schema: dict, options: Options, context: GenerationContext
         n_schema["maxLength"] = options.default_max_length_of_string
 
         if n_schema["minLength"] > n_schema["maxLength"]:
-            raise SchemaConflictError("\"options.default_min_length_of_string\" must be lower than or equal to the "
-                                      "\"options.default_max_length_of_string\" value.", context)
+            raise GenerateConflictError("\"options.default_min_length_of_string\" must be lower than or equal to the "
+                                        "\"options.default_max_length_of_string\" value.", context)
     # minLength が設定されていて maxLength が指定されていない場合
     elif "maxLength" not in n_schema:
         length_range = max(0, options.default_length_range_of_genstr)

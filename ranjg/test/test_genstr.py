@@ -5,7 +5,7 @@ import jsonschema
 from ranjg import genstr, Options
 from .._context import GenerationContext
 from ..factory import StrFactory
-from ranjg.error import InvalidSchemaError, SchemaConflictError
+from ranjg.error import InvalidSchemaError, SchemaConflictError, GenerateConflictError
 
 
 class TestGenstr(unittest.TestCase):
@@ -533,7 +533,7 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         for options in options_list:
             with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
-                with self.assertRaisesRegex(SchemaConflictError,
+                with self.assertRaisesRegex(GenerateConflictError,
                                             '"options.default_min_length_of_string" must be lower than or equal to '
                                             'the "options.default_max_length_of_string" value'):
                     StrFactory(schema).gen(options=options)
