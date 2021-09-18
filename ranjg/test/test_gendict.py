@@ -204,11 +204,22 @@ class TestDictFactory(unittest.TestCase):
         """
         schema = {"type": "object", "required": ["p1"]}
         dummy_schema = {"type": "string", "pattern": "dummy"}
-        default_schema = sample_schema('integer')
-        generated = DictFactory(schema).gen(options=Options(default_schema_of_properties=default_schema,
-                                                            default_schema_of_items=dummy_schema))
-        jsonschema.validate(generated['p1'], default_schema)
-        jsonschema.validate(generated, schema)
+        default_schema_list = (
+            sample_schema('null'),
+            sample_schema('boolean'),
+            sample_schema('integer'),
+            sample_schema('number'),
+            sample_schema('string'),
+            sample_schema('array'),
+            # sample_schema('object'),  # 仕様上、子要素再帰が無限に続く
+        )
+
+        for default_schema in default_schema_list:
+            with self.subTest(default_schema=default_schema):
+                generated = DictFactory(schema).gen(options=Options(default_schema_of_properties=default_schema,
+                                                                    default_schema_of_items=dummy_schema))
+                jsonschema.validate(generated['p1'], default_schema)
+                jsonschema.validate(generated, schema)
 
     def test_priority_schema_of_properties_with_prior(self):
         """ Normalized System Test
