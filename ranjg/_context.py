@@ -31,7 +31,7 @@ class SchemaContext:
 
     @classmethod
     def root(cls, current_schema: dict):
-        return GenerationContext(path=tuple(), current_schema=current_schema)
+        return SchemaContext(path=tuple(), current_schema=current_schema)
 
     def __init__(self, path: Iterable[Union[int, str]], current_schema: dict):
         self._key_path = tuple(path)
@@ -42,4 +42,4 @@ class SchemaContext:
         return self._key_path
 
     def resolve(self, key: Union[int, str], current_schema: dict):
-        return GenerationContext(path=(*self._key_path, key), current_schema=current_schema)
+        return SchemaContext(path=(*self._key_path, key), current_schema=current_schema)
