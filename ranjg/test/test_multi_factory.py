@@ -70,6 +70,6 @@ class TestMultiFactory(unittest.TestCase):
 
         for schema in schema_list:
             with self.subTest(type=schema.get("type")):
-                with self.assertRaises(ValueError,
-                                       msg="For MultiFactory, schema.type must be iterable of at least 1 strings"):
+                with self.assertRaisesRegex(ValueError,
+                                            "For MultiFactory, schema.type must be iterable of at least 1 strings"):
                     MultiFactory(schema)

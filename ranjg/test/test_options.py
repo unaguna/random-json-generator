@@ -30,17 +30,17 @@ class TestOptions(unittest.TestCase):
         # ファイルが存在しないパス
         options_file = "./test-resources/not-exists/options.json"
 
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaisesRegex(FileNotFoundError, options_file):
             ranjg.options.load(options_file)
 
     def test_load_invalid_as_options(self):
         options_file = "./test-resources/options-illegal-param.json"
 
-        with self.assertRaises(OptionsFileIOError, msg=options_file):
+        with self.assertRaisesRegex(OptionsFileIOError, options_file):
             ranjg.options.load(options_file)
 
     def test_load_invalid_as_json(self):
         options_file = "./test-resources/json-illegal.json"
 
-        with self.assertRaises(OptionsFileIOError, msg=options_file):
+        with self.assertRaisesRegex(OptionsFileIOError, options_file):
             ranjg.options.load(options_file)

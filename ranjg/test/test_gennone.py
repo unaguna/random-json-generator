@@ -12,7 +12,33 @@ class TestGennone(unittest.TestCase):
     Test ``ranjg.gennone``
     """
 
-    def test_gennone(self):
+    def test_when_gennone_then_call_init(self):
+        """ Normalized System Test
+
+        ``gennone()`` is wrapper of ``NoneFactory#gen()``.
+
+        assert that:
+            When ``gennone`` is called, then ``NoneFactory()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "null"}, None, False, None),
+            ({"type": "null"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.NoneFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factory.NoneFactory.gen'):
+                gennone(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
+
+    def test_when_gennone_then_call_gen(self):
         """ Normalized System Test
 
         ``gennone()`` is wrapper of ``NoneFactory#gen()``.
@@ -32,10 +58,10 @@ class TestGennone(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.NoneFactory.gen') as mock_gen:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.NoneFactory.gen') as mock_gen:
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
-            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestNoneFactory(unittest.TestCase):

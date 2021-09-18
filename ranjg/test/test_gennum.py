@@ -15,7 +15,33 @@ class TestGennum(unittest.TestCase):
     Test ``ranjg.gennum``
     """
 
-    def test_gennum(self):
+    def test_when_gennum_then_call_init(self):
+        """ Normalized System Test
+
+        ``gennum()`` is wrapper of ``NumFactory#gen()``.
+
+        assert that:
+            When ``gennum`` is called, then ``NumFactory()`` runs.
+        """
+        _context_dummy = Context.root({}).resolve('key', {})
+        _options_dummy = Options.default()
+        params_list = (
+            (None, None, False, None),
+            (None, None, False, _options_dummy),
+            ({"type": "number"}, None, False, None),
+            ({"type": "number"}, None, True, None),
+            (None, _context_dummy, False, None),
+            (None, _context_dummy, False, _options_dummy),
+        )
+
+        for schema, context, is_validated, options in params_list:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.NumFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factory.NumFactory.gen'):
+                gennum(schema, context=context, schema_is_validated=is_validated, options=options)
+                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
+
+    def test_when_gennum_then_call_gen(self):
         """ Normalized System Test
 
         ``gennum()`` is wrapper of ``NumFactory#gen()``.
@@ -35,10 +61,10 @@ class TestGennum(unittest.TestCase):
         )
 
         for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
+            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
+                    mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
-            # TODO: schema, schema_is_validated についても assert する
 
 
 class TestNumFactory(unittest.TestCase):
@@ -249,7 +275,9 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'Minimum value must be lower than or equal to the maximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_exclusive_minimum_maximum(self):
         """ Semi-normalized System Test
@@ -276,7 +304,9 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "maximum": maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'ExclusiveMinimum value must be lower than the maximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -303,7 +333,9 @@ class TestNumFactory(unittest.TestCase):
                     "minimum": minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'Minimum value must be lower than the exclusiveMaximum value'):
+                    NumFactory(schema).gen()
 
     def test_gen_with_param_conflict_exclusive_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
@@ -330,4 +362,6 @@ class TestNumFactory(unittest.TestCase):
                     "exclusiveMinimum": exclusive_minimum,
                     "exclusiveMaximum": exclusive_maximum,
                 }
-                self.assertRaises(SchemaConflictError, lambda: NumFactory(schema).gen())
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            'ExclusiveMinimum value must be lower than the exclusiveMaximum value'):
+                    NumFactory(schema).gen()
