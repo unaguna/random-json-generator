@@ -1,7 +1,12 @@
 import unittest
+from unittest import mock
 
 import ranjg
+from ranjg import Options
 from ranjg.error import OptionsFileIOError
+from ranjg.factory import NoneFactory, BoolFactory, IntFactory, NumFactory, StrFactory, ListFactory, DictFactory
+
+from .res import sample_schema
 
 
 class TestOptions(unittest.TestCase):
@@ -44,3 +49,47 @@ class TestOptions(unittest.TestCase):
 
         with self.assertRaisesRegex(OptionsFileIOError, options_file):
             ranjg.options.load(options_file)
+
+    def test_genlist_carry_options_over(self):
+        case_list = (
+            (sample_schema('null'), NoneFactory),
+            (sample_schema('boolean'), BoolFactory),
+            (sample_schema('integer'), IntFactory),
+            (sample_schema('number'), NumFactory),
+            (sample_schema('string'), StrFactory),
+            (sample_schema('object'), DictFactory),
+        )
+
+        for items, clz in case_list:
+            with self.subTest(clz=clz):
+                options = Options()
+                schema = {"type": "array", "minItems": 1, "maxItems": 1, "items": items}
+                with mock.patch(f'{clz}.gen') as mock_gen:
+                    ranjg.gen(schema, options=options)
+
+                self.assertGreaterEqual(len(mock_gen.call_args_list), 1)
+                for call in mock_gen.call_args_list:
+                    self.assertIn('options', call[1])
+                    self.assertIs(options, call[1]['options'])
+
+    def test_gendict_carry_options_over(self):
+        case_list = (
+            (sample_schema('null'), NoneFactory),
+            (sample_schema('boolean'), BoolFactory),
+            (sample_schema('integer'), IntFactory),
+            (sample_schema('number'), NumFactory),
+            (sample_schema('string'), StrFactory),
+            (sample_schema('array'), ListFactory),
+        )
+
+        for items, clz in case_list:
+            with self.subTest(clz=clz):
+                options = Options()
+                schema = {"type": "object", "required": ["p1"], "properties": {"p1": items}}
+                with mock.patch(f'{clz}.gen') as mock_gen:
+                    ranjg.gen(schema, options=options)
+
+                self.assertGreaterEqual(len(mock_gen.call_args_list), 1)
+                for call in mock_gen.call_args_list:
+                    self.assertIn('options', call[1])
+                    self.assertIs(options, call[1]['options'])
