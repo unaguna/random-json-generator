@@ -3,10 +3,12 @@ from typing import Optional, Union, Iterable
 from . import MultiFactory
 from .__common import Factory
 from .__function import _create_factory_by_type
+from .._context import SchemaContext
 
 
 def create_factory(schema: Optional[dict], *,
                    schema_is_validated: bool = False,
+                   context: Optional[SchemaContext] = None,
                    gen_type: Union[str, None] = None) -> Factory:
     """Returns a ranjg.factory.Factory instance according to the schema.
 
@@ -15,6 +17,9 @@ def create_factory(schema: Optional[dict], *,
             JSON schema object. See also :doc:`ranjg-json-schema`.
         schema_is_validated (bool, optional):
             Whether the schema is already validated or not.
+            (In normal usage, this argument is not specified.)
+        context (SchemaContext, optional):
+            The context of factory construction.
             (In normal usage, this argument is not specified.)
         gen_type (str, optional):
             If specified, ignore ``schema.type`` and create a factory that generates values of the specified type.
@@ -42,6 +47,7 @@ def create_factory(schema: Optional[dict], *,
         gen_type = schema.get("type")
 
     if isinstance(gen_type, Iterable) and not isinstance(gen_type, str):
-        return MultiFactory(schema, schema_is_validated=schema_is_validated)
+        return MultiFactory(schema, schema_is_validated=schema_is_validated, context=context)
     else:
-        return _create_factory_by_type(gen_type, schema=schema, schema_is_validated=schema_is_validated)
+        return _create_factory_by_type(gen_type, schema=schema, schema_is_validated=schema_is_validated,
+                                       context=context)
