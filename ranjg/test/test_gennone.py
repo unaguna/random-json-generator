@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 from ranjg import gennone, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import NoneFactory
 
 
@@ -20,7 +20,7 @@ class TestGennone(unittest.TestCase):
         assert that:
             When ``gennone`` is called, then ``NoneFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -46,7 +46,7 @@ class TestGennone(unittest.TestCase):
         assert that:
             When ``gennone`` is called, then ``NoneFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),

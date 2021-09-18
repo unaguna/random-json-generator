@@ -2,7 +2,7 @@ import random
 from typing import Optional
 
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..options import Options
 
 
@@ -14,7 +14,7 @@ class BoolFactory(Factory[bool]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> bool:
+            context: Optional[GenerationContext] = None) -> bool:
         if options is None:
             options = Options.default()
 

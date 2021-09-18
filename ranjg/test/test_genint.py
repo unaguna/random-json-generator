@@ -5,7 +5,7 @@ from unittest import mock
 import jsonschema
 
 from ranjg import genint, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import IntFactory
 from ..factory.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
 from ranjg.error import SchemaConflictError
@@ -25,7 +25,7 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``genint`` is called, then ``IntFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -51,7 +51,7 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``genint`` is called, then ``IntFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),

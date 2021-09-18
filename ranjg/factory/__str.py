@@ -5,12 +5,12 @@ from typing import Optional
 import rstr
 
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..error import SchemaConflictError
 from ..options import Options
 
 
-def _normalize_schema(schema: dict, options: Options, context: Context) -> dict:
+def _normalize_schema(schema: dict, options: Options, context: GenerationContext) -> dict:
     """Schema normalization.
 
     To make it easier to use for randomly generation, set items to ``schema`` object.
@@ -58,11 +58,11 @@ class StrFactory(Factory[str]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> str:
+            context: Optional[GenerationContext] = None) -> str:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(self._schema)
+            context = GenerationContext.root(self._schema)
 
         schema = _normalize_schema(self._schema, options, context)
 

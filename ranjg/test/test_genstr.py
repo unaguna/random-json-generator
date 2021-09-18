@@ -3,7 +3,7 @@ from unittest import mock
 
 import jsonschema
 from ranjg import genstr, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import StrFactory
 from ranjg.error import InvalidSchemaError, SchemaConflictError
 
@@ -22,7 +22,7 @@ class TestGenstr(unittest.TestCase):
         assert that:
             When ``genstr`` is called, then ``StrFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -48,7 +48,7 @@ class TestGenstr(unittest.TestCase):
         assert that:
             When ``genstr`` is called, then ``StrFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),

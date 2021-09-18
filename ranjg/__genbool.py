@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ._context import Context
+from ._context import GenerationContext
 from .options import Options
 from .factory import BoolFactory
 
@@ -9,7 +9,7 @@ def genbool(schema: Optional[dict] = None,
             *,
             schema_is_validated: bool = False,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> bool:
+            context: Optional[GenerationContext] = None) -> bool:
     """Generate a random boolean value according to the JSON schema.
 
     Args:

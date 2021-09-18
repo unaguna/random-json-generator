@@ -3,7 +3,7 @@ from typing import Optional, List, Iterable
 
 from .__function import _create_factory_by_type
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..options import Options
 
 
@@ -27,6 +27,6 @@ class MultiFactory(Factory[None]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> None:
+            context: Optional[GenerationContext] = None) -> None:
         factory = random.choice(self._factories)
         return factory.gen(options=options, context=context)

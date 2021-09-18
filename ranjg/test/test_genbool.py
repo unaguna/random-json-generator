@@ -2,7 +2,7 @@ import unittest
 from unittest import mock
 
 from ranjg import genbool, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import BoolFactory
 
 
@@ -20,7 +20,7 @@ class TestGenbool(unittest.TestCase):
         assert that:
             When ``genbool`` is called, then ``BoolFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -46,7 +46,7 @@ class TestGenbool(unittest.TestCase):
         assert that:
             When ``genbool`` is called, then ``BoolFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),

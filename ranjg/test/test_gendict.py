@@ -5,7 +5,7 @@ import jsonschema
 
 from ranjg import gendict, Options
 from .res import sample_schema
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import DictFactory
 from ..factory.__dict import _schema_of
 
@@ -24,7 +24,7 @@ class TestGendict(unittest.TestCase):
         assert that:
             When ``gendict`` is called, then ``DictFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -50,7 +50,7 @@ class TestGendict(unittest.TestCase):
         assert that:
             When ``gendict`` is called, then ``DictFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),

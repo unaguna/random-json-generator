@@ -3,7 +3,7 @@ from typing import Optional
 
 import ranjg
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..options import Options
 from ..util.listutil import diff
 
@@ -32,11 +32,11 @@ class DictFactory(Factory[dict]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> dict:
+            context: Optional[GenerationContext] = None) -> dict:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(self._schema)
+            context = GenerationContext.root(self._schema)
 
         generated = dict()
 

@@ -4,7 +4,7 @@ from typing import Optional
 
 from .__common import Factory
 from ..__number_range import NumberRange
-from .._context import Context
+from .._context import GenerationContext
 from ..options import Options
 from ..error import SchemaConflictError, GenerateError
 
@@ -61,7 +61,7 @@ def _apply_default(number_range: NumberRange) -> NumberRange:
             return number_range
 
 
-def _check_consistency(number_range: NumberRange, context: Context):
+def _check_consistency(number_range: NumberRange, context: GenerationContext):
     """Check the instance in consistency
 
     Attributes:
@@ -143,11 +143,11 @@ class NumFactory(Factory[float]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> float:
+            context: Optional[GenerationContext] = None) -> float:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(self._schema)
+            context = GenerationContext.root(self._schema)
 
         # 生成する数値の範囲
         _check_consistency(self._number_range, context)

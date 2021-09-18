@@ -1,7 +1,7 @@
 from typing import Optional
 
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..options import Options
 
 
@@ -13,5 +13,5 @@ class NoneFactory(Factory[None]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> None:
+            context: Optional[GenerationContext] = None) -> None:
         return None

@@ -2,7 +2,7 @@ import abc
 from typing import TypeVar, Generic, Optional
 
 from ..options import Options
-from .._context import Context
+from .._context import GenerationContext
 from ..schema import validate as validate_schema
 
 _T = TypeVar('_T')
@@ -19,5 +19,5 @@ class Factory(abc.ABC, Generic[_T]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> _T:
+            context: Optional[GenerationContext] = None) -> _T:
         pass

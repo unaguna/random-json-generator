@@ -1,10 +1,10 @@
-from .._context import Context
+from .._context import GenerationContext
 
 
 class GenerateError(Exception):
     """Errors during randomly generation.
     """
-    def __init__(self, message: str, context: Context):
+    def __init__(self, message: str, context: GenerationContext):
         super(GenerateError, self).__init__(message)
         self.context = context
 

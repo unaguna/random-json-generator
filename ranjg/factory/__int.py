@@ -3,7 +3,7 @@ import random
 from typing import Optional, Union, Tuple
 
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext
 from ..error import SchemaConflictError
 from ..options import Options
 from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclusive_maximum
@@ -26,9 +26,9 @@ class IntFactory(Factory[int]):
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> int:
+            context: Optional[GenerationContext] = None) -> int:
         if context is None:
-            context = Context.root(self._schema)
+            context = GenerationContext.root(self._schema)
 
         if self._schema_minimum is not None and self._schema_maximum is not None and \
                 self._schema_minimum > self._schema_maximum:

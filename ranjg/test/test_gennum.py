@@ -4,7 +4,7 @@ from unittest import mock
 import jsonschema
 
 from ranjg import gennum, Options
-from .._context import Context
+from .._context import GenerationContext
 from ranjg.error import SchemaConflictError
 from ..factory import NumFactory
 
@@ -23,7 +23,7 @@ class TestGennum(unittest.TestCase):
         assert that:
             When ``gennum`` is called, then ``NumFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -49,7 +49,7 @@ class TestGennum(unittest.TestCase):
         assert that:
             When ``gennum`` is called, then ``NumFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
