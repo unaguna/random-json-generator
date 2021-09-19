@@ -5,13 +5,12 @@ import ranjg.factory
 from .__common import Factory
 from .._context import GenerationContext, SchemaContext
 from ..options import Options
-from ..util.listutil import diff
 
 
 class DictFactory(Factory[dict]):
     _property_factories: Dict[str, Factory]
     _required_keys: Iterable[str]
-    _not_required_keys: Iterable[str]
+    _properties: Dict[str, dict]
 
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
@@ -25,7 +24,7 @@ class DictFactory(Factory[dict]):
                                     for prop, prop_schema in self._schema.get("properties", {}).items()}
 
         self._required_keys = self._schema.get("required", tuple())
-        self._not_required_keys = diff(self._property_factories.keys(), self._required_keys)
+        self._properties = self._schema.get("properties", dict())
 
     def _get_properties_factory(self, property_name: str) -> Factory:
         return self._property_factories[property_name]
@@ -69,7 +68,7 @@ class DictFactory(Factory[dict]):
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
-        for prop_key in self._not_required_keys:
+        for prop_key in self._properties.keys():
             # すでに生成or棄却済みの項目は生成しない。
             if generated_keys.get(prop_key) is not None:
                 continue
