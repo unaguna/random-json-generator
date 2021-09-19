@@ -19,7 +19,8 @@ class DictFactory(Factory[dict]):
         if context is None:
             context = SchemaContext.root(self._schema)
 
-        self._property_factories = {prop: ranjg.factory.create_factory(prop_schema, schema_is_validated=True,
+        self._property_factories = {prop: ranjg.factory.create_factory(prop_schema,
+                                                                       schema_is_validated=self.schema_is_validated,
                                                                        context=context.resolve(prop, prop_schema))
                                     for prop, prop_schema in self._schema.get("properties", {}).items()}
 

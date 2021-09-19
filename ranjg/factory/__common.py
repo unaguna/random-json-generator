@@ -10,14 +10,15 @@ _T = TypeVar('_T')
 
 class Factory(abc.ABC, Generic[_T]):
     _schema: dict
+    #: True であれば、_schema 全体が (子要素のスキーマも含め) validated。
+    _schema_is_validated: bool = False
 
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext]):
-        # スキーマの不正判定
-        if schema is not None and not schema_is_validated:
-            validate_schema(schema)
-
         self._schema = schema if schema is not None else {}
+        self._schema_is_validated = schema_is_validated
+
+        self.validate_schema()
 
     @abc.abstractmethod
     def gen(self,
@@ -25,6 +26,23 @@ class Factory(abc.ABC, Generic[_T]):
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> _T:
         pass
+
+    @property
+    def schema_is_validated(self) -> bool:
+        return self._schema_is_validated
+
+    def validate_schema(self) -> None:
+        """validate schema
+
+        It determines if the schema is free of irregularities.
+
+        Raises:
+            InvalidSchemaError:
+                When the schema is invalid
+        """
+        if not self._schema_is_validated:
+            validate_schema(self._schema)
+            self._schema_is_validated = True
 
     def gen_as_child(self, *,
                      # 入力漏れを防ぐため、引数にデフォルト値は設定しない。

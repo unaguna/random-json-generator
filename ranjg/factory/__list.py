@@ -110,14 +110,15 @@ class ListFactory(Factory[list]):
         self._min_items, self._max_items = _apply_default_length(min_items, max_items)
 
         if _schema_is_tuple_validation(self._schema):
-            self._tuple_items_factory = [ranjg.factory.create_factory(item_schema, schema_is_validated=True,
+            self._tuple_items_factory = [ranjg.factory.create_factory(item_schema,
+                                                                      schema_is_validated=self.schema_is_validated,
                                                                       context=context.resolve(i, item_schema))
                                          for i, item_schema in enumerate(self._schema["items"])]
             additional_items_schema: Union[bool, dict, None] = self._schema.get("additionalItems")
             if additional_items_schema is not None and not isinstance(additional_items_schema, bool):
                 self._other_items_factory = \
                     ranjg.factory.create_factory(additional_items_schema,
-                                                 schema_is_validated=True,
+                                                 schema_is_validated=self.schema_is_validated,
                                                  # TODO: additionalItems 用のパスを検討
                                                  context=context.resolve('additionalItems', additional_items_schema))
             else:
@@ -127,7 +128,7 @@ class ListFactory(Factory[list]):
             items_schema = self._schema.get("items")
             if items_schema is not None:
                 self._other_items_factory = ranjg.factory.create_factory(items_schema,
-                                                                         schema_is_validated=True,
+                                                                         schema_is_validated=self.schema_is_validated,
                                                                          # TODO: items 用のパスを検討
                                                                          context=context.resolve('items', items_schema))
             else:
