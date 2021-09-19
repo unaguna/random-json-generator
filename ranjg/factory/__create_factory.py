@@ -27,6 +27,11 @@ def create_factory(schema: Optional[dict], *,
     Returns:
         A factory to generate values according the schema.
 
+    Raises:
+        SchemaConflictError:
+            When the schema specified as arguments has confliction.
+            In other words, when no value can satisfy the schema.
+
     Examples:
         The following code is most simple usage.
 
