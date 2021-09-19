@@ -141,14 +141,8 @@ class ListFactory(Factory[list]):
             return ranjg.factory.create_factory(options.default_schema_of_items)
 
     def _get_items_factory_list(self, item_count: int, options: Options) -> Iterable[Factory]:
-        # タプル指定である場合
-        if _schema_is_tuple_validation(self._schema):
-            return fix_length(self._tuple_items_factory, item_count,
-                              padding_item=self._get_other_items_factory(options))
-
-        # リスト指定である場合
-        else:
-            return item_count * [self._get_other_items_factory(options)]
+        return fix_length(self._tuple_items_factory, item_count,
+                          padding_item=self._get_other_items_factory(options))
 
     def gen(self,
             *,
