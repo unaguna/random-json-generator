@@ -219,7 +219,7 @@ class TestListFactory(unittest.TestCase):
                 self.assertEqual(len(generated), threshold)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_param_conflict_min_max(self):
+    def test_with_param_conflict_min_max(self):
         """ Semi-normalized System Test
 
         When ``schema.minItems`` and ``schema.maxItems`` specified, ``ListFactory(schema).gen()`` returns a list of
@@ -227,7 +227,7 @@ class TestListFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.minItems > properties.maxItems``, ``ListFactory(schema).gen()`` raised
+            When the schema has ``properties.minItems > properties.maxItems``, ``ListFactory(schema)`` raised
             SchemaConflictError.
         """
         thresholds_list = ((0, 10),
@@ -240,7 +240,7 @@ class TestListFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range of length specified by the schema'):
-                    ListFactory(schema).gen()
+                    ListFactory(schema)
 
     def test_gen_with_single_items(self):
         """ Normalized System Test
@@ -482,7 +482,7 @@ class TestListFactory(unittest.TestCase):
                         self.assertIsInstance(generated_item, _type_to_cls(schema_item["type"]))
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_tuple_items_and_too_great_minItems_and_additional_false(self):
+    def test_with_tuple_items_and_too_great_minItems_and_additional_false(self):
         """ Semi-normalized System Test
 
         When ``schema.minItems`` is specified, the result list must have at least ``minItems`` elements. On the other
@@ -492,7 +492,7 @@ class TestListFactory(unittest.TestCase):
 
         assert that:
             When ``schema.additionalItems`` is ``false`` and ``len(schema.items) < schema.minItems``,
-            ``ListFactory(schema).gen()`` raises SchemaConflictError.
+            ``ListFactory(schema)`` raises SchemaConflictError.
         """
         schema = {
             "type": "array",
@@ -507,7 +507,7 @@ class TestListFactory(unittest.TestCase):
         with self.assertRaisesRegex(SchemaConflictError,
                                     'In tuple validation, when "additionalItems" is false, '
                                     '"minItems" must be less than or equal to size of "items".'):
-            ListFactory(schema).gen()
+            ListFactory(schema)
 
     def test_gen_with_tuple_items_and_minItems_and_additional_false(self):
         """ Normalized System Test

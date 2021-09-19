@@ -267,15 +267,15 @@ class TestStrFactory(unittest.TestCase):
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_conflicting_length(self):
+    def test_with_conflicting_length(self):
         """ Semi-normalized System Test
 
         When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string
         value with a length ``x`` satisfied ``minLength <= x <= maxLength``. As a result, when
-        ``minLength > maxLength``, ``StrFactory(schema).gen()`` raises SchemaConflictError.
+        ``minLength > maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
 
         assert that:
-            When ``schema.minLength > schema.maxLength``, ``StrFactory(schema).gen()`` raises SchemaConflictError.
+            When ``schema.minLength > schema.maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
         """
         thresholds_list = ((0, 1),
                            (12, 15))
@@ -285,7 +285,7 @@ class TestStrFactory(unittest.TestCase):
                 schema = {"minLength": min_length, "maxLength": max_length}
                 with self.assertRaisesRegex(SchemaConflictError,
                                             '"minLength" must be lower than or equal to the "maxLength" value'):
-                    StrFactory(schema).gen()
+                    StrFactory(schema)
 
     def test_gen_with_pattern(self):
         """ Normalized System Test
