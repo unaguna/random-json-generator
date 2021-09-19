@@ -153,18 +153,17 @@ class ListFactory(Factory[list]):
         if context is None:
             context = GenerationContext.root(self._schema)
 
-        # 生成するリスト
-        result = []
-
         # 生成する list の大きさ
         item_count = random.randint(self._min_items, self._max_items)
+
+        # 生成するリスト
+        result = [None] * item_count
 
         # 各要素のファクトリ
         item_factory_list = self._get_items_factory_list(item_count, options)
 
         # 要素を1つずつ生成
         for key, item_factory in enumerate(item_factory_list):
-            generated_item = item_factory.gen(options=options, context=context.resolve(key, item_factory._schema))
-            result.append(generated_item)
+            result[key] = item_factory.gen(options=options, context=context.resolve(key, item_factory._schema))
 
         return result
