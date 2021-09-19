@@ -9,12 +9,15 @@ _T = TypeVar('_T')
 
 
 class Factory(abc.ABC, Generic[_T]):
+    _schema: dict
 
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext]):
         # スキーマの不正判定
         if schema is not None and not schema_is_validated:
             validate_schema(schema)
+
+        self._schema = schema if schema is not None else {}
 
     @abc.abstractmethod
     def gen(self,

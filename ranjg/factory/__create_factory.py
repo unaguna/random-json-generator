@@ -1,6 +1,6 @@
 from typing import Optional, Union, Iterable
 
-from . import MultiFactory
+from .__multitype import MultiFactory
 from .__common import Factory
 from .__function import _create_factory_by_type
 from .._context import SchemaContext

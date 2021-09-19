@@ -7,7 +7,6 @@ from ranjg import gendict, Options
 from .res import sample_schema
 from .._context import GenerationContext
 from ..factory import DictFactory
-from ..factory.__dict import _schema_of
 
 
 class TestGendict(unittest.TestCase):
@@ -338,70 +337,3 @@ class TestDictFactory(unittest.TestCase):
                 schema_nest = {"type": "object", "required": ["parent"], "properties": {"parent": schema}}
                 generated = DictFactory(schema_nest).gen(options=options)
                 self.assertTrue(key not in generated["parent"])
-
-
-class TestSchemaOf(unittest.TestCase):
-    """Test class of ``_schema_of``
-
-    Test ``ranjg.factory.__dict._schema_of``
-    """
-
-    def test_schema_of_uses_default(self):
-        """ Normalized System Test
-
-        ``_schema_of`` returns the default schema when ``key`` is not contained in neither ``properties`` or
-        ``priority_properties``.
-
-        assert that:
-            When both of a property and a priority_property don't contain ``key``, ``_schema_of`` returns default.
-        """
-        properties = {"p1": {"type": "boolean"}}
-        priority_properties = {"p2": {"type": "boolean"}}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
-
-        schema = _schema_of("px", properties=properties, priority_properties=priority_properties,
-                            default_schema=default_schema)
-
-        self.assertDictEqual(schema, default_schema)
-
-    def test_schema_of_uses_properties(self):
-        """ Normalized System Test
-
-        ``_schema_of`` returns the schema in ``properties`` when ``key`` is contained in ``properties`` and not in
-        ``priority_properties``.
-
-        assert that:
-            When a property contains ``key`` and a priority_property doesn't contain ``key``, ``_schema_of`` returns
-            ``property[key]``.
-        """
-        key = "p1"
-        properties = {key: {"type": "string"}}
-        priority_properties = {"p2": {"type": "boolean"}}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
-
-        schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
-                            default_schema=default_schema)
-
-        self.assertDictEqual(schema, properties[key])
-
-    def test_schema_of_uses_priority_property(self):
-        """ Normalized System Test
-
-        ``_schema_of`` returns the schema in ``priority_property`` when ``key`` is contained in ``priority_property``.
-        In this case, ``properties`` is ignored.
-
-        assert that:
-            When a priority_property contains ``key``, ``_schema_of`` returns ``priority_property[key]``.
-        """
-        key = "p2"
-        properties_list = ({"p1": {"type": "boolean"}},
-                           {"p1": {"type": "boolean"}, key: {"type": "boolean"}})
-        priority_properties = {key: {"type": "number"}}
-        default_schema = {"type": "integer", "maximum": -100, "minimum": -100}
-
-        for properties in properties_list:
-            with self.subTest(properties=properties):
-                schema = _schema_of(key, properties=properties, priority_properties=priority_properties,
-                                    default_schema=default_schema)
-
-                self.assertDictEqual(schema, priority_properties[key])

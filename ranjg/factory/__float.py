@@ -136,8 +136,6 @@ class NumFactory(Factory[float]):
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
-        self._schema = schema if schema is not None else {}
-
         # 生成する数値の範囲
         self._number_range = NumberRange.from_schema(self._schema)
 

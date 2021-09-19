@@ -18,8 +18,6 @@ class IntFactory(Factory[int]):
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
-        self._schema = schema if schema is not None else {}
-
         # Convert float or exclusive value in schema to integer inclusive value.
         self._schema_minimum = _get_inclusive_integer_minimum(self._schema)
         self._schema_maximum = _get_inclusive_integer_maximum(self._schema)
