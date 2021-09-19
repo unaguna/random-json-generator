@@ -10,7 +10,6 @@ from ..jsonschema.normalize import normalize_exclusive_minimum, normalize_exclus
 
 
 class IntFactory(Factory[int]):
-    _schema: dict
     _schema_minimum: Optional[int]
     _schema_maximum: Optional[int]
 
@@ -18,23 +17,23 @@ class IntFactory(Factory[int]):
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
         # Convert float or exclusive value in schema to integer inclusive value.
         self._schema_minimum = _get_inclusive_integer_minimum(self._schema)
         self._schema_maximum = _get_inclusive_integer_maximum(self._schema)
-
-    def gen(self,
-            *,
-            options: Optional[Options] = None,
-            context: Optional[GenerationContext] = None) -> int:
-        if context is None:
-            context = GenerationContext.root(self._schema)
 
         if self._schema_minimum is not None and self._schema_maximum is not None and \
                 self._schema_minimum > self._schema_maximum:
             raise SchemaConflictError("There are no integers in the range specified by the schema.", context)
 
-        minimum, maximum = _apply_default(self._schema_minimum, self._schema_maximum)
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[GenerationContext] = None) -> int:
 
+        minimum, maximum = _apply_default(self._schema_minimum, self._schema_maximum)
         return random.randint(minimum, maximum)
 
 

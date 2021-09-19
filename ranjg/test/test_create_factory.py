@@ -52,7 +52,7 @@ class TestCreateFactory(unittest.TestCase):
             ({"type": "null"}, ),
             ({"type": "boolean"}, ),
             ({"type": "integer", "minimum": 100, "maximum": 100}, ),
-            ({"type": "number", "minimum": 10.25, "maximum": 10.25}, ),
+            ({"type": "number", "minimum": 10.25, "maximum": 11.25}, ),
             ({"type": "string", "pattern": "st"}, ),
             ({"type": "array", "minItems": 1, "maxItems": 1}, ),
             ({"type": "object", "required": ["p1"]}, ),

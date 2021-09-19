@@ -61,7 +61,7 @@ def _apply_default(number_range: NumberRange) -> NumberRange:
             return number_range
 
 
-def _check_consistency(number_range: NumberRange, context: GenerationContext):
+def _check_consistency(number_range: NumberRange, context: SchemaContext):
     """Check the instance in consistency
 
     Attributes:
@@ -129,15 +129,19 @@ def _little_less(number: float) -> float:
 
 
 class NumFactory(Factory[float]):
-    _schema: dict
     _number_range: NumberRange
 
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
         # 生成する数値の範囲
-        self._number_range = NumberRange.from_schema(self._schema)
+        number_range = NumberRange.from_schema(self._schema)
+        _check_consistency(number_range, context)
+        self._number_range = _apply_default(number_range)
 
     def gen(self,
             *,
@@ -148,19 +152,15 @@ class NumFactory(Factory[float]):
         if context is None:
             context = GenerationContext.root(self._schema)
 
-        # 生成する数値の範囲
-        _check_consistency(self._number_range, context)
-        number_range = _apply_default(self._number_range)
-
         # 境界値を許容しない Schema であっても、境界値を含む乱数生成を行うため、
         # Schema に合致する値を引くまで生成を繰り返す。
         for i in range(options.regeneration_attempt_limit):
-            generated = random.uniform(number_range.minimum, number_range.maximum)
+            generated = random.uniform(self._number_range.minimum, self._number_range.maximum)
 
             if generated == float("inf") or generated == float("-inf") or generated == float("NaN"):
                 raise GenerateError("Error by too large or too small maximum or minimum", context)
 
-            if generated in number_range:
+            if generated in self._number_range:
                 break
         else:
             raise GenerateError("No valid value generated on loop.", context)

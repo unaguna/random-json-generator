@@ -21,9 +21,6 @@ def _normalize_schema(schema: dict, options: Options, context: GenerationContext
     Returns:
         New schema based on ``schema`` and the default values.
     """
-    if schema.get("minLength", float("-inf")) > schema.get("maxLength", float("inf")):
-        raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.", context)
-
     n_schema = schema.copy()
     n_schema.setdefault("pattern", None)
 
@@ -53,6 +50,12 @@ class StrFactory(Factory[str]):
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(StrFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
+
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
+        if self._schema.get("minLength", float("-inf")) > self._schema.get("maxLength", float("inf")):
+            raise SchemaConflictError("\"minLength\" must be lower than or equal to the \"maxLength\" value.", context)
 
     def gen(self,
             *,

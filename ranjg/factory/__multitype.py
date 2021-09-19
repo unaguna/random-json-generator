@@ -8,7 +8,6 @@ from ..options import Options
 
 
 class MultiFactory(Factory[None]):
-    _schema: dict
     _factories: List[Factory]
 
     def __init__(self, schema: Optional[dict], *,
