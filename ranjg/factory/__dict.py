@@ -34,13 +34,17 @@ class DictFactory(Factory[dict]):
                     *,
                     options: Options) -> Factory:
         if key in options.priority_schema_of_properties:
-            # TODO: options 用の context を指定する
-            return ranjg.factory.create_factory(options.priority_schema_of_properties[key])
+            schema = options.priority_schema_of_properties[key]
+            return ranjg.factory.create_factory(schema,
+                                                context=SchemaContext.for_options(
+                                                    schema, path=('priority_schema_of_properties', key)))
         elif key in self._property_factories:
             return self._property_factories[key]
         else:
-            # TODO: options 用の context を指定する
-            return ranjg.factory.create_factory(options.default_schema_of_properties)
+            schema = options.default_schema_of_properties
+            return ranjg.factory.create_factory(schema,
+                                                context=SchemaContext.for_options(
+                                                    schema, path=('default_schema_of_properties',)))
 
     def gen(self,
             *,

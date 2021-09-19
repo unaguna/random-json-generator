@@ -138,8 +138,10 @@ class ListFactory(Factory[list]):
         if self._other_items_factory is not None:
             return self._other_items_factory
         else:
-            # TODO: options 用の context を指定する
-            return ranjg.factory.create_factory(options.default_schema_of_items)
+            schema = options.default_schema_of_items
+            return ranjg.factory.create_factory(schema,
+                                                context=SchemaContext.for_options(
+                                                    schema, path=('default_schema_of_items',)))
 
     def _get_items_factory_list(self, item_count: int, options: Options) -> Iterable[Factory]:
         return fix_length(self._tuple_items_factory, item_count,
