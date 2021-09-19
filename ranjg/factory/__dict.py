@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Dict, Iterable
+from typing import Optional, Dict, Iterable, Any
 
 import ranjg.factory
 from .__common import Factory
@@ -50,11 +50,11 @@ class DictFactory(Factory[dict]):
         if context is None:
             context = GenerationContext.root(self._schema)
 
-        generated = dict()
+        generated: Dict[str, Any] = dict()
 
         # すでに生成or棄却が済んだキー
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
-        generated_keys = dict()
+        generated_keys: Dict[str, bool] = dict()
 
         # 必須項目を生成する
         for required_key in self._required_keys:
