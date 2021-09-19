@@ -1,5 +1,5 @@
 import abc
-from typing import TypeVar, Generic, Optional
+from typing import TypeVar, Generic, Optional, Union
 
 from ..options import Options
 from .._context import GenerationContext, SchemaContext
@@ -25,3 +25,36 @@ class Factory(abc.ABC, Generic[_T]):
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> _T:
         pass
+
+    def gen_as_child(self, *,
+                     # 入力漏れを防ぐため、引数にデフォルト値は設定しない。
+                     options: Options,
+                     parent_context: GenerationContext,
+                     child_key: Union[str, int]) -> _T:
+        """Generate value as another dict or list.
+
+        It is wrapper of ``Factory#gen`` for ranjg development since it is called in ``ListFactory#gen`` etc..
+        Normally, there is no need for users of ranjg to use this method.
+
+        This method is provided for the purpose of not creating bugs in child element generation.
+        As part of this, to prevent omission of argument specification, no default argument is provided.
+
+        In order to fulfill the purpose of this method's existence, this method should be used when creating child
+        elements in ranjg.
+
+        Args:
+            options (Options):
+                The options for generation.
+                Usually, the options used to generate the parent element is specified as is.
+            parent_context (GenerationContext):
+                The context of construction.
+                Usually, the context used to generate the parent element is specified as is.
+            child_key (str|int):
+                The path to the generated element from the parent element.
+                If the parent element is a dict, it is a string; if it is a list, it is an integer.
+
+        Returns:
+            Generated something.
+        """
+        return self.gen(options=options,
+                        context=parent_context.resolve(child_key, self._schema))

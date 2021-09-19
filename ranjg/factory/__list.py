@@ -164,6 +164,8 @@ class ListFactory(Factory[list]):
 
         # 要素を1つずつ生成
         for key, item_factory in enumerate(item_factory_list):
-            result[key] = item_factory.gen(options=options, context=context.resolve(key, item_factory._schema))
+            result[key] = item_factory.gen_as_child(options=options,
+                                                    parent_context=context,
+                                                    child_key=key)
 
         return result

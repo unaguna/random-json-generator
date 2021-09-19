@@ -63,8 +63,9 @@ class DictFactory(Factory[dict]):
                 continue
 
             next_factory = self._factory_of(required_key, options=options)
-            generated[required_key] = next_factory.gen(options=options,
-                                                       context=context.resolve(required_key, next_factory._schema))
+            generated[required_key] = next_factory.gen_as_child(options=options,
+                                                                parent_context=context,
+                                                                child_key=required_key)
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
@@ -79,8 +80,9 @@ class DictFactory(Factory[dict]):
                 continue
 
             next_factory = self._factory_of(prop_key, options=options)
-            generated[prop_key] = next_factory.gen(options=options,
-                                                   context=context.resolve(prop_key, next_factory._schema))
+            generated[prop_key] = next_factory.gen_as_child(options=options,
+                                                            parent_context=context,
+                                                            child_key=prop_key)
             generated_keys[prop_key] = True
 
         return generated
