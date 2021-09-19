@@ -133,25 +133,22 @@ class ListFactory(Factory[list]):
             else:
                 self._other_items_factory = None
 
-    def _get_items_factory_list(self, item_count: int, options: Options) -> Iterable[Factory]:
-        default_schema_of_items = options.default_schema_of_items
+    def _get_other_items_factory(self, options: Options) -> Factory:
+        if self._other_items_factory is not None:
+            return self._other_items_factory
+        else:
+            # TODO: options 用の context を指定する
+            return ranjg.factory.create_factory(options.default_schema_of_items)
 
+    def _get_items_factory_list(self, item_count: int, options: Options) -> Iterable[Factory]:
         # タプル指定である場合
         if _schema_is_tuple_validation(self._schema):
-            if self._other_items_factory is not None:
-                return fix_length(self._tuple_items_factory, item_count, padding_item=self._other_items_factory)
-            else:
-                # TODO: options 用の context を指定する
-                return fix_length(self._tuple_items_factory, item_count,
-                                  padding_item=ranjg.factory.create_factory(default_schema_of_items))
+            return fix_length(self._tuple_items_factory, item_count,
+                              padding_item=self._get_other_items_factory(options))
 
         # リスト指定である場合
         else:
-            if self._other_items_factory is not None:
-                return item_count * [self._other_items_factory]
-            else:
-                # TODO: options 用の context を指定する
-                return item_count * [ranjg.factory.create_factory(default_schema_of_items)]
+            return item_count * [self._get_other_items_factory(options)]
 
     def gen(self,
             *,
