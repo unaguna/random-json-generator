@@ -1,5 +1,5 @@
 import random
-from typing import Optional, Dict
+from typing import Optional, Dict, Iterable
 
 import ranjg.factory
 from .__common import Factory
@@ -9,7 +9,9 @@ from ..util.listutil import diff
 
 
 class DictFactory(Factory[dict]):
-    _properties: Dict[str, Factory]
+    _property_factories: Dict[str, Factory]
+    _required_keys: Iterable[str]
+    _not_required_keys: Iterable[str]
 
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
@@ -18,12 +20,15 @@ class DictFactory(Factory[dict]):
         if context is None:
             context = SchemaContext.root(self._schema)
 
-        self._properties = {prop: ranjg.factory.create_factory(prop_schema, schema_is_validated=True,
-                                                               context=context.resolve(prop, prop_schema))
-                            for prop, prop_schema in self._schema.get("properties", {}).items()}
+        self._property_factories = {prop: ranjg.factory.create_factory(prop_schema, schema_is_validated=True,
+                                                                       context=context.resolve(prop, prop_schema))
+                                    for prop, prop_schema in self._schema.get("properties", {}).items()}
+
+        self._required_keys = self._schema.get("required", tuple())
+        self._not_required_keys = diff(self._property_factories.keys(), self._required_keys)
 
     def _get_properties_factory(self, property_name: str) -> Factory:
-        return self._properties[property_name]
+        return self._property_factories[property_name]
 
     def _factory_of(self, key: str,
                     *,
@@ -31,8 +36,8 @@ class DictFactory(Factory[dict]):
         if key in options.priority_schema_of_properties:
             # TODO: options 用の context を指定する
             return ranjg.factory.create_factory(options.priority_schema_of_properties[key])
-        elif key in self._properties:
-            return self._properties[key]
+        elif key in self._property_factories:
+            return self._property_factories[key]
         else:
             # TODO: options 用の context を指定する
             return ranjg.factory.create_factory(options.default_schema_of_properties)
@@ -52,12 +57,8 @@ class DictFactory(Factory[dict]):
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
         generated_keys = dict()
 
-        required: list = self._schema.get("required", [])
-        properties: dict = self._schema.get("properties", {})
-        not_required = diff(properties.keys(), required)
-
         # 必須項目を生成する
-        for required_key in required:
+        for required_key in self._required_keys:
             # すでに生成済みの項目は生成しない。ただし、棄却済みであるものは生成する。
             if generated_keys.get(required_key) is True:
                 continue
@@ -68,7 +69,7 @@ class DictFactory(Factory[dict]):
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
-        for prop_key in not_required:
+        for prop_key in self._not_required_keys:
             # すでに生成or棄却済みの項目は生成しない。
             if generated_keys.get(prop_key) is not None:
                 continue
