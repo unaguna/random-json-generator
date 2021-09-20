@@ -1,70 +1,9 @@
 import unittest
-from unittest import mock
 
 import jsonschema
 
-from ranjg import gennum, Options
-from .._context import GenerationContext
 from ranjg.error import SchemaConflictError
 from ..factories import NumFactory
-
-
-class TestGennum(unittest.TestCase):
-    """Test class of ``gennum``
-
-    Test ``ranjg.gennum``
-    """
-
-    def test_when_gennum_then_call_init(self):
-        """ Normalized System Test
-
-        ``gennum()`` is wrapper of ``NumFactory#gen()``.
-
-        assert that:
-            When ``gennum`` is called, then ``NumFactory()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "number"}, None, False, None),
-            ({"type": "number"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factories.NumFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factories.NumFactory.gen'):
-                gennum(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
-
-    def test_when_gennum_then_call_gen(self):
-        """ Normalized System Test
-
-        ``gennum()`` is wrapper of ``NumFactory#gen()``.
-
-        assert that:
-            When ``gennum`` is called, then ``NumFactory#gen()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "number"}, None, False, None),
-            ({"type": "number"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factories.NumFactory.gen') as mock_gen:
-                gennum(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(context=context, options=options)
 
 
 class TestNumFactory(unittest.TestCase):
