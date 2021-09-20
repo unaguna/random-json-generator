@@ -5,7 +5,7 @@ import random
 import re
 import string
 import sys
-from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type
+from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type, GenericMeta
 
 import rstr
 
@@ -20,7 +20,19 @@ from .util.listutil import fix_length
 _T = TypeVar('_T')
 
 
-class Factory(abc.ABC, Generic[_T]):
+class MetaFactory(GenericMeta, abc.ABCMeta):
+    def __call__(cls: Type['Factory'], *args, **kwargs):
+        obj: Factory = cls.__new__(cls, *args, **kwargs)
+
+        # サブクラスの __init__ で使用しない引数を削除
+        if "gen_type" in kwargs:
+            del kwargs["gen_type"]
+
+        obj.__init__(*args, **kwargs)
+        return obj
+
+
+class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
     _schema: dict
     #: True であれば、_schema 全体が (子要素のスキーマも含め) validated。
     _schema_is_validated: bool = False
@@ -161,8 +173,7 @@ class Factory(abc.ABC, Generic[_T]):
 class NoneFactory(Factory[None]):
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(NoneFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
     def gen(self,
@@ -175,8 +186,7 @@ class NoneFactory(Factory[None]):
 class BoolFactory(Factory[bool]):
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(BoolFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
     def gen(self,
@@ -194,8 +204,7 @@ class IntFactory(Factory[int]):
     _schema_maximum: Optional[int]
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(IntFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         if context is None:
@@ -453,8 +462,7 @@ class NumFactory(Factory[float]):
     _number_range: NumberRange
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(NumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         if context is None:
@@ -528,8 +536,7 @@ class StrFactory(Factory[str]):
     _schema: dict
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(StrFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         if context is None:
@@ -655,8 +662,7 @@ class ListFactory(Factory[list]):
     _other_items_factory: Optional[Factory]
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(ListFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         if context is None:
@@ -736,8 +742,7 @@ class DictFactory(Factory[dict]):
     _properties: Dict[str, dict]
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         if context is None:
@@ -821,8 +826,7 @@ class MultiFactory(Factory[None]):
     _factories: List[Factory]
 
     def __init__(self, schema: Optional[dict], *,
-                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None,
-                 gen_type: Union[str, None] = None):
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(MultiFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
         # schema['type'] がリストでない場合 (strであるばあいを含む) やリストが空である場合例外を生じる
