@@ -1,7 +1,7 @@
 import random
 from typing import Optional, Dict, Iterable, Any
 
-import ranjg.factory
+import ranjg.factories
 from .__common import Factory
 from .._context import GenerationContext, SchemaContext
 from ..options import Options
@@ -19,9 +19,9 @@ class DictFactory(Factory[dict]):
         if context is None:
             context = SchemaContext.root(self._schema)
 
-        self._property_factories = {prop: ranjg.factory.create_factory(prop_schema,
-                                                                       schema_is_validated=self.schema_is_validated,
-                                                                       context=context.resolve(prop, prop_schema))
+        self._property_factories = {prop: ranjg.factories.create_factory(prop_schema,
+                                                                         schema_is_validated=self.schema_is_validated,
+                                                                         context=context.resolve(prop, prop_schema))
                                     for prop, prop_schema in self._schema.get("properties", {}).items()}
 
         self._required_keys = self._schema.get("required", tuple())
@@ -35,16 +35,16 @@ class DictFactory(Factory[dict]):
                     options: Options) -> Factory:
         if key in options.priority_schema_of_properties:
             schema = options.priority_schema_of_properties[key]
-            return ranjg.factory.create_factory(schema,
-                                                context=SchemaContext.for_options(
-                                                    schema, path=('priority_schema_of_properties', key)))
+            return ranjg.factories.create_factory(schema,
+                                                  context=SchemaContext.for_options(
+                                                      schema, path=('priority_schema_of_properties', key)))
         elif key in self._property_factories:
             return self._property_factories[key]
         else:
             schema = options.default_schema_of_properties
-            return ranjg.factory.create_factory(schema,
-                                                context=SchemaContext.for_options(
-                                                    schema, path=('default_schema_of_properties',)))
+            return ranjg.factories.create_factory(schema,
+                                                  context=SchemaContext.for_options(
+                                                      schema, path=('default_schema_of_properties',)))
 
     def gen(self,
             *,

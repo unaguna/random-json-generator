@@ -2,7 +2,7 @@ from typing import Optional
 
 from ._context import GenerationContext
 from .options import Options
-from .factory import NumFactory
+from .factories import NumFactory
 
 
 def gennum(schema: Optional[dict] = None,

@@ -6,7 +6,7 @@ import jsonschema
 from ranjg import gennum, Options
 from .._context import GenerationContext
 from ranjg.error import SchemaConflictError
-from ..factory import NumFactory
+from ..factories import NumFactory
 
 
 class TestGennum(unittest.TestCase):
@@ -36,8 +36,8 @@ class TestGennum(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.NumFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.NumFactory.gen'):
+                    mock.patch('ranjg.factories.NumFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factories.NumFactory.gen'):
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
 
@@ -62,7 +62,7 @@ class TestGennum(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.NumFactory.gen') as mock_gen:
+                    mock.patch('ranjg.factories.NumFactory.gen') as mock_gen:
                 gennum(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
 

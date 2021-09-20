@@ -3,7 +3,7 @@ from unittest import mock
 
 from ranjg import genbool, Options
 from .._context import GenerationContext
-from ..factory import BoolFactory
+from ..factories import BoolFactory
 
 
 class TestGenbool(unittest.TestCase):
@@ -33,8 +33,8 @@ class TestGenbool(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.BoolFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.BoolFactory.gen'):
+                    mock.patch('ranjg.factories.BoolFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factories.BoolFactory.gen'):
                 genbool(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
 
@@ -59,7 +59,7 @@ class TestGenbool(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.BoolFactory.gen') as mock_gen:
+                    mock.patch('ranjg.factories.BoolFactory.gen') as mock_gen:
                 genbool(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
 

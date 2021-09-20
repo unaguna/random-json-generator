@@ -110,27 +110,28 @@ class ListFactory(Factory[list]):
         self._min_items, self._max_items = _apply_default_length(min_items, max_items)
 
         if _schema_is_tuple_validation(self._schema):
-            self._tuple_items_factory = [ranjg.factory.create_factory(item_schema,
-                                                                      schema_is_validated=self.schema_is_validated,
-                                                                      context=context.resolve(i, item_schema))
+            self._tuple_items_factory = [ranjg.factories.create_factory(item_schema,
+                                                                        schema_is_validated=self.schema_is_validated,
+                                                                        context=context.resolve(i, item_schema))
                                          for i, item_schema in enumerate(self._schema["items"])]
             additional_items_schema: Union[bool, dict, None] = self._schema.get("additionalItems")
             if additional_items_schema is not None and not isinstance(additional_items_schema, bool):
                 self._other_items_factory = \
-                    ranjg.factory.create_factory(additional_items_schema,
-                                                 schema_is_validated=self.schema_is_validated,
-                                                 # TODO: additionalItems 用のパスを検討
-                                                 context=context.resolve('additionalItems', additional_items_schema))
+                    ranjg.factories.create_factory(additional_items_schema,
+                                                   schema_is_validated=self.schema_is_validated,
+                                                   # TODO: additionalItems 用のパスを検討
+                                                   context=context.resolve('additionalItems', additional_items_schema))
             else:
                 self._other_items_factory = None
         else:
             self._tuple_items_factory = tuple()
             items_schema = self._schema.get("items")
             if items_schema is not None:
-                self._other_items_factory = ranjg.factory.create_factory(items_schema,
-                                                                         schema_is_validated=self.schema_is_validated,
-                                                                         # TODO: items 用のパスを検討
-                                                                         context=context.resolve('items', items_schema))
+                self._other_items_factory = ranjg.factories.create_factory(items_schema,
+                                                                           schema_is_validated=self.schema_is_validated,
+                                                                           # TODO: items 用のパスを検討
+                                                                           context=context.resolve('items',
+                                                                                                   items_schema))
             else:
                 self._other_items_factory = None
 
@@ -139,9 +140,9 @@ class ListFactory(Factory[list]):
             return self._other_items_factory
         else:
             schema = options.default_schema_of_items
-            return ranjg.factory.create_factory(schema,
-                                                context=SchemaContext.for_options(
-                                                    schema, path=('default_schema_of_items',)))
+            return ranjg.factories.create_factory(schema,
+                                                  context=SchemaContext.for_options(
+                                                      schema, path=('default_schema_of_items',)))
 
     def _get_items_factory_list(self, item_count: int, options: Options) -> Iterable[Factory]:
         return fix_length(self._tuple_items_factory, item_count,

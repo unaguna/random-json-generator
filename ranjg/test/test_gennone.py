@@ -3,7 +3,7 @@ from unittest import mock
 
 from ranjg import gennone, Options
 from .._context import GenerationContext
-from ..factory import NoneFactory
+from ..factories import NoneFactory
 
 
 class TestGennone(unittest.TestCase):
@@ -33,8 +33,8 @@ class TestGennone(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.NoneFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.NoneFactory.gen'):
+                    mock.patch('ranjg.factories.NoneFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factories.NoneFactory.gen'):
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
 
@@ -59,7 +59,7 @@ class TestGennone(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.NoneFactory.gen') as mock_gen:
+                    mock.patch('ranjg.factories.NoneFactory.gen') as mock_gen:
                 gennone(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
 

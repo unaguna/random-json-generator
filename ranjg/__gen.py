@@ -5,7 +5,7 @@ from typing import Optional, TextIO, Iterable
 from ._context import GenerationContext
 from .options import Options
 from .options import load as load_options
-from .factory import create_factory
+from .factories import create_factory
 from .schema import load as load_schema
 from .schema import validate as validate_schema
 from .util.numutil import is_integer

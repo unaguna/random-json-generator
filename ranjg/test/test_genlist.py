@@ -7,8 +7,8 @@ import jsonschema
 from ranjg import genlist, Options
 from ranjg._context import GenerationContext
 from .res import sample_schema
-from ..factory import ListFactory
-from ..factory.__list import _get_range_of_length
+from ..factories import ListFactory
+from ..factories.__list import _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 
@@ -39,8 +39,8 @@ class TestGenlist(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.ListFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.ListFactory.gen'):
+                    mock.patch('ranjg.factories.ListFactory.__init__', return_value=None) as mock_gen, \
+                    mock.patch('ranjg.factories.ListFactory.gen'):
                 genlist(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
 
@@ -65,7 +65,7 @@ class TestGenlist(unittest.TestCase):
 
         for schema, context, is_validated, options in params_list:
             with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.ListFactory.gen') as mock_gen:
+                    mock.patch('ranjg.factories.ListFactory.gen') as mock_gen:
                 genlist(schema, context=context, schema_is_validated=is_validated, options=options)
                 mock_gen.assert_called_once_with(context=context, options=options)
 

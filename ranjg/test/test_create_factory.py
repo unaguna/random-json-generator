@@ -1,13 +1,13 @@
 import itertools
 import unittest
 
-from ranjg.factory import *
+from ranjg.factories import *
 
 
 class TestCreateFactory(unittest.TestCase):
     """Test class of ``create_factory``
 
-    Test ``ranjg.factory.create_factory``
+    Test ``ranjg.factories.create_factory``
     """
 
     def test_create_factory(self):

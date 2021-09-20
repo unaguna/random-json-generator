@@ -15,7 +15,7 @@ def _create_factory_by_type(gen_type: str, *,
                             schema: dict,
                             context: Optional[SchemaContext] = None,
                             schema_is_validated: bool = False) -> Factory:
-    """Returns a ranjg.factory.Factory instance according to the gen_type.
+    """Returns a ranjg.factories.Factory instance according to the gen_type.
 
     Args:
         gen_type (str):
