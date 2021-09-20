@@ -5,10 +5,10 @@ import ranjg
 from ranjg.factories import *
 
 
-class TestCreateFactory(unittest.TestCase):
-    """Test class of ``create_factory``
+class TestFactory(unittest.TestCase):
+    """Test class of ``Factory``
 
-    Test ``__init__`` of ``ranjg.Factory``
+    Test ``ranjg.Factory``
     """
 
     def test_create_factory(self):
