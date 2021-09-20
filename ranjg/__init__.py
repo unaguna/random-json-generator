@@ -1,3 +1,4 @@
+from .factories import Factory
 from .__gen import gen
 from .__gennone import gennone
 from .__genbool import genbool

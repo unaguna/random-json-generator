@@ -6,8 +6,7 @@ import jsonschema
 
 from ranjg import genint, Options
 from .._context import GenerationContext
-from ..factories import IntFactory
-from ..factories.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
+from ..factories import IntFactory, _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
 from ranjg.error import SchemaConflictError
 
 

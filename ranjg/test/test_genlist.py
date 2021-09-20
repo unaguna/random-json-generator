@@ -7,8 +7,7 @@ import jsonschema
 from ranjg import genlist, Options
 from ranjg._context import GenerationContext
 from .res import sample_schema
-from ..factories import ListFactory
-from ..factories.__list import _get_range_of_length
+from ..factories import ListFactory, _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
 
 

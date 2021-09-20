@@ -2,10 +2,10 @@ import itertools
 import json
 from typing import Optional, TextIO, Iterable
 
+import ranjg
 from ._context import GenerationContext
 from .options import Options
 from .options import load as load_options
-from .factories import create_factory
 from .schema import load as load_schema
 from .schema import validate as validate_schema
 from .util.numutil import is_integer
@@ -151,7 +151,7 @@ def gen(schema: dict = None,
     else:
         output_list = ((None, None),)
 
-    factory = create_factory(schema, schema_is_validated=True)
+    factory = ranjg.Factory(schema, schema_is_validated=True)
 
     # メソッドの戻り値を保持するリストを作成
     if return_none:
