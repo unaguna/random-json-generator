@@ -4,7 +4,7 @@ from unittest import mock
 import ranjg
 from ranjg import Options
 from ranjg.error import OptionsFileIOError
-from ranjg.factory import NoneFactory, BoolFactory, IntFactory, NumFactory, StrFactory, ListFactory, DictFactory
+from ranjg.factories import NoneFactory, BoolFactory, IntFactory, NumFactory, StrFactory, ListFactory, DictFactory
 
 from .res import sample_schema
 

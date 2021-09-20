@@ -1,7 +1,7 @@
 import unittest
 from unittest import mock
 
-from ranjg.factory import *
+from ranjg.factories import *
 
 
 class TestMultiFactory(unittest.TestCase):

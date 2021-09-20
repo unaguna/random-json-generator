@@ -1,13 +1,14 @@
 import itertools
 import unittest
 
-from ranjg.factory import *
+import ranjg
+from ranjg.factories import *
 
 
-class TestCreateFactory(unittest.TestCase):
-    """Test class of ``create_factory``
+class TestFactory(unittest.TestCase):
+    """Test class of ``Factory``
 
-    Test ``ranjg.factory.create_factory``
+    Test ``ranjg.Factory``
     """
 
     def test_create_factory(self):
@@ -30,7 +31,7 @@ class TestCreateFactory(unittest.TestCase):
             with self.subTest(clz=clz.__name__):
                 # 確率的事象につき、何度か試す
                 for _ in range(10):
-                    factory = create_factory(schema)
+                    factory = ranjg.Factory(schema)
                     generated = factory.gen()
 
                     self.assertIsInstance(factory, clz)
@@ -60,5 +61,5 @@ class TestCreateFactory(unittest.TestCase):
 
         for (gen_type, clz), (schema,) in itertools.product(gen_type_list, schema_list):
             with self.subTest(gen_type=gen_type, schema=schema):
-                factory = create_factory(schema, gen_type=gen_type)
+                factory = ranjg.Factory(schema, gen_type=gen_type)
                 self.assertIsInstance(factory, clz)

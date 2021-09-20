@@ -1,73 +1,13 @@
 import itertools
 import unittest
 from typing import Sequence
-from unittest import mock
 
 import jsonschema
-from ranjg import genlist, Options
+from ranjg import Options
 from ranjg._context import GenerationContext
 from .res import sample_schema
-from ..factory import ListFactory
-from ..factory.__list import _get_range_of_length
+from ..factories import ListFactory, _get_range_of_length
 from ranjg.error import SchemaConflictError, InvalidSchemaError
-
-
-class TestGenlist(unittest.TestCase):
-    """Test class of ``genlist``
-
-    Test ``ranjg.genlist``
-    """
-
-    def test_when_genlist_then_call_init(self):
-        """ Normalized System Test
-
-        ``genlist()`` is wrapper of ``ListFactory#gen()``.
-
-        assert that:
-            When ``genlist`` is called, then ``ListFactory()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "array"}, None, False, None),
-            ({"type": "array"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.ListFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.ListFactory.gen'):
-                genlist(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
-
-    def test_when_genlist_then_call_gen(self):
-        """ Normalized System Test
-
-        ``genlist()`` is wrapper of ``BoolFactory#gen()``.
-
-        assert that:
-            When ``genlist`` is called, then ``BoolFactory#gen()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "array"}, None, False, None),
-            ({"type": "array"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.ListFactory.gen') as mock_gen:
-                genlist(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(context=context, options=options)
 
 
 class TestListFactory(unittest.TestCase):

@@ -1,69 +1,9 @@
 import unittest
-from unittest import mock
 
 import jsonschema
-from ranjg import genstr, Options
-from .._context import GenerationContext
-from ..factory import StrFactory
+from ranjg import Options
+from ..factories import StrFactory
 from ranjg.error import InvalidSchemaError, SchemaConflictError, GenerateConflictError
-
-
-class TestGenstr(unittest.TestCase):
-    """Test class of ``genstr``
-
-    Test ``ranjg.genstr``
-    """
-
-    def test_when_gennum_then_call_init(self):
-        """ Normalized System Test
-
-        ``genstr()`` is wrapper of ``StrFactory#gen()``.
-
-        assert that:
-            When ``genstr`` is called, then ``StrFactory()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "string"}, None, False, None),
-            ({"type": "string"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.StrFactory.__init__', return_value=None) as mock_gen, \
-                    mock.patch('ranjg.factory.StrFactory.gen'):
-                genstr(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, schema_is_validated=is_validated)
-
-    def test_when_gennum_then_call_gen(self):
-        """ Normalized System Test
-
-        ``genstr()`` is wrapper of ``StrFactory#gen()``.
-
-        assert that:
-            When ``genstr`` is called, then ``StrFactory#gen()`` runs.
-        """
-        _context_dummy = GenerationContext.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "string"}, None, False, None),
-            ({"type": "string"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with self.subTest(schema=schema, is_validated=is_validated, options=(options is not None)), \
-                    mock.patch('ranjg.factory.StrFactory.gen') as mock_gen:
-                genstr(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(context=context, options=options)
 
 
 class TestStrFactory(unittest.TestCase):
