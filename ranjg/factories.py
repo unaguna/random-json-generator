@@ -5,7 +5,7 @@ import random
 import re
 import string
 import sys
-from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List
+from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type
 
 import rstr
 
@@ -35,28 +35,9 @@ class Factory(abc.ABC, Generic[_T]):
         if gen_type is None:
             gen_type = schema.get("type")
 
+        # 実際に生成されるインスタンスの型を決定
         if cls is Factory:
-            if isinstance(gen_type, Iterable) and not isinstance(gen_type, str):
-                cls = MultiFactory
-            elif gen_type is None:
-                # TODO: NoneFactory 固定でよいか要検討
-                cls = NoneFactory
-            elif gen_type == "null":
-                cls = NoneFactory
-            elif gen_type == "integer":
-                cls = IntFactory
-            elif gen_type == "number":
-                cls = NumFactory
-            elif gen_type == "boolean":
-                cls = BoolFactory
-            elif gen_type == "string":
-                cls = StrFactory
-            elif gen_type == "object":
-                cls = DictFactory
-            elif gen_type == "array":
-                cls = ListFactory
-            else:
-                raise ValueError(f"Unsupported type: {gen_type}")
+            cls = cls._decide_concrete(gen_type)
 
         return object.__new__(cls)
 
@@ -103,6 +84,21 @@ class Factory(abc.ABC, Generic[_T]):
         self._schema_is_validated = schema_is_validated
 
         self.validate_schema()
+
+    @classmethod
+    def _decide_concrete(cls, gen_type: Union[str, Iterable[str], None]) -> Type['Factory']:
+        if isinstance(gen_type, str):
+            if gen_type in _FACTORY_MAP:
+                return _FACTORY_MAP[gen_type]
+            else:
+                raise ValueError(f"Unsupported type: {gen_type}")
+        elif isinstance(gen_type, Iterable):
+            return MultiFactory
+        elif gen_type is None:
+            # TODO: NoneFactory 固定でよいか要検討
+            return NoneFactory
+        else:
+            raise ValueError(f"Unsupported type: {gen_type}")
 
     @abc.abstractmethod
     def gen(self,
@@ -846,3 +842,14 @@ class MultiFactory(Factory[None]):
             context: Optional[GenerationContext] = None) -> None:
         factory = random.choice(self._factories)
         return factory.gen(options=options, context=context)
+
+
+_FACTORY_MAP: Dict[str, Type[Factory]] = {
+    'null': NoneFactory,
+    'boolean': BoolFactory,
+    'integer': IntFactory,
+    'number': NumFactory,
+    'string': StrFactory,
+    'array': ListFactory,
+    'object': DictFactory,
+}
