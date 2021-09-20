@@ -9,12 +9,12 @@ from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence,
 
 import rstr
 
+from . import schemas
 from ._number_range import NumberRange
 from .error import SchemaConflictError, GenerateError, GenerateConflictError
-from .jsonschema.normalize import normalize_exclusive_maximum, normalize_exclusive_minimum
+from .schemas.normalize import normalize_exclusive_maximum, normalize_exclusive_minimum
 from .options import Options
 from ._context import GenerationContext, SchemaContext
-from .schema import validate as validate_schema
 from .util.listutil import fix_length
 
 _T = TypeVar('_T')
@@ -121,7 +121,7 @@ class Factory(abc.ABC, Generic[_T]):
                 When the schema is invalid
         """
         if not self._schema_is_validated:
-            validate_schema(self._schema)
+            schemas.validate(self._schema)
             self._schema_is_validated = True
 
     def gen_as_child(self, *,

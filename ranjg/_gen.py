@@ -3,11 +3,10 @@ import json
 from typing import Optional, TextIO, Iterable
 
 import ranjg
+from . import schemas
 from ._context import GenerationContext
 from .options import Options
 from .options import load as load_options
-from .schema import load as load_schema
-from .schema import validate as validate_schema
 from .util.numutil import is_integer
 
 
@@ -129,11 +128,11 @@ def gen(schema: dict = None,
 
     # スキーマファイルを読み込み
     if schema_file is not None:
-        schema = load_schema(schema_file)
+        schema = schemas.load(schema_file)
 
     # スキーマの不正判定
     if not schema_is_validated:
-        validate_schema(schema)
+        schemas.validate(schema)
 
     # オプションファイルを読み込み
     if options_file is not None:
