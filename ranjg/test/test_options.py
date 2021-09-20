@@ -93,3 +93,73 @@ class TestOptions(unittest.TestCase):
                 for call in mock_gen.call_args_list:
                     self.assertIn('options', call[1])
                     self.assertIs(options, call[1]['options'])
+
+    def test_factory_construction_from_default_schema_of_items(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_items`` is used to construct a factory, argument ``context`` has ``key_path``.
+        """
+        schema = {"type": "array", "minItems": 1, "maxItems": 1}
+        default_schema = sample_schema('string')
+
+        with mock.patch(f'{StrFactory}.__init__') as mock_init:
+            # 試験は StrFactory.__init__ の引数について行うので、呼び出し後の動作は不要。
+            # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
+            mock_init.side_effect = ValueError('I am mock.')
+
+            with self.assertRaisesRegex(ValueError, 'I am mock.'):
+                ListFactory(schema).gen(options=Options(default_schema_of_items=default_schema))
+
+        self.assertGreaterEqual(len(mock_init.call_args_list), 1)
+        for call_args in mock_init.call_args_list:
+            context = call_args[1]['context']
+            self.assertTupleEqual(tuple(context.key_path), ('default_schema_of_items',))
+            self.assertTrue(context._is_for_options)
+
+    def test_factory_construction_from_default_schema_of_properties(self):
+        """ Normalized System Test
+
+        When ``options.default_schema_of_properties`` is used to construct a factory, argument ``context`` has
+        ``key_path``.
+        """
+        schema = {"type": "object", "required": ["p1"]}
+        default_schema = sample_schema('string')
+
+        with mock.patch(f'{StrFactory}.__init__') as mock_init:
+            # 試験は StrFactory.__init__ の引数について行うので、呼び出し後の動作は不要。
+            # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
+            mock_init.side_effect = ValueError('I am mock.')
+
+            with self.assertRaisesRegex(ValueError, 'I am mock.'):
+                DictFactory(schema).gen(options=Options(default_schema_of_properties=default_schema))
+
+        self.assertGreaterEqual(len(mock_init.call_args_list), 1)
+        for call_args in mock_init.call_args_list:
+            context = call_args[1]['context']
+            self.assertTupleEqual(tuple(context.key_path), ('default_schema_of_properties',))
+            self.assertTrue(context._is_for_options)
+
+    def test_factory_construction_from_priority_schema_of_properties(self):
+        """ Normalized System Test
+
+        When ``options.priority_schema_of_properties`` is used to construct a factory, argument ``context`` has
+        ``key_path``.
+        """
+        schema = {"type": "object", "required": ["p1"]}
+        priority_schema = {
+            "p1": sample_schema('string'),
+        }
+
+        with mock.patch(f'{StrFactory}.__init__') as mock_init:
+            # 試験は Factory.__init__ の引数について行うので、呼び出し後の動作は不要。
+            # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
+            mock_init.side_effect = ValueError('I am mock.')
+
+            with self.assertRaisesRegex(ValueError, 'I am mock.'):
+                DictFactory(schema).gen(options=Options(priority_schema_of_properties=priority_schema))
+
+        self.assertGreaterEqual(len(mock_init.call_args_list), 1)
+        for call_args in mock_init.call_args_list:
+            context = call_args[1]['context']
+            self.assertTupleEqual(tuple(context.key_path), ('priority_schema_of_properties', 'p1'))
+            self.assertTrue(context._is_for_options)
