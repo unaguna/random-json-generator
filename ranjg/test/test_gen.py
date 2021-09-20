@@ -9,8 +9,7 @@ import unittest
 import jsonschema
 import ranjg.options
 from ranjg import gen
-from ..error import InvalidSchemaError
-from ..error.__schema_file_io_error import SchemaFileIOError
+from ..error import InvalidSchemaError, SchemaFileIOError
 
 
 class TestGen(unittest.TestCase):
