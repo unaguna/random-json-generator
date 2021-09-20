@@ -9,7 +9,7 @@ from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence,
 
 import rstr
 
-from .__number_range import NumberRange
+from ._number_range import NumberRange
 from .error import SchemaConflictError, GenerateError, GenerateConflictError
 from .jsonschema.normalize import normalize_exclusive_maximum, normalize_exclusive_minimum
 from .options import Options

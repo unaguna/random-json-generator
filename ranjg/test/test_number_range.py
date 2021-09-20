@@ -1,13 +1,13 @@
 import itertools
 import unittest
 
-from ..__number_range import _from_schema, _normalize_minimum, _normalize_maximum
+from .._number_range import _from_schema, _normalize_minimum, _normalize_maximum
 
 
 class TestFromSchema(unittest.TestCase):
     """Test class of ``from_schema``
 
-    Test ``ranjg.__number_range._from_schema``
+    Test ``ranjg._number_range._from_schema``
     """
 
     def test_make_range_with_empty_schema(self):
@@ -56,7 +56,7 @@ class TestFromSchema(unittest.TestCase):
 class TestNormalizeMinimum(unittest.TestCase):
     """Test class of ``_normalize_minimum``
 
-    Test ``ranjg.__number_range._normalize_minimum``
+    Test ``ranjg._number_range._normalize_minimum``
     """
 
     def test_normalize_min_with_no_args(self):
@@ -181,7 +181,7 @@ class TestNormalizeMinimum(unittest.TestCase):
 class TestNormalizeMaximum(unittest.TestCase):
     """Test class of ``_normalize_maximum``
 
-    Test ``ranjg.__number_range._normalize_maximum``
+    Test ``ranjg._number_range._normalize_maximum``
     """
 
     def test_normalize_max_with_no_args(self):
