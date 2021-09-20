@@ -1,3 +1,3 @@
 from .factories import Factory
-from .__gen import gen
+from ._gen import gen
 from .options import Options
