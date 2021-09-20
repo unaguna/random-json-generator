@@ -1,30 +1,9 @@
-from typing import Iterable, TypeVar, Callable
+from typing import Iterable, TypeVar, Callable, Sequence
 
 _T = TypeVar('_T')
 
 
-def diff(base: Iterable, removed: Iterable) -> list:
-    """Subtraction of the list.
-
-    Args:
-        base: A base list.
-        removed: A list of elements to be stripped from the base.
-
-    Returns:
-        A list contains only elements in ``base`` and not in ``removed``.
-    """
-    result = list(base).copy()
-    for value in removed:
-        try:
-            result.remove(value)
-        except ValueError:
-            # do nothing
-            continue
-
-    return result
-
-
-def fix_length(base: list, length: int, padding_item) -> list:
+def fix_length(base: Sequence, length: int, padding_item) -> Sequence:
     """Generating a list with a different length to the base list.
 
     If the length of ``base`` is equal to or greater than ``length``, it returns a list of ``length - 1`` elements from
@@ -45,7 +24,7 @@ def fix_length(base: list, length: int, padding_item) -> list:
     if len(base) >= length:
         return base[:length]
     else:
-        return base.copy() + [padding_item] * (length - len(base))
+        return list(base) + [padding_item] * (length - len(base))
 
 
 def count(function: Callable[[_T], bool], iterable: Iterable[_T]) -> int:

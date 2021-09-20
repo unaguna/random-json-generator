@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ._context import Context
+from ._context import GenerationContext
 from .options import Options
 from .factory import NoneFactory
 
@@ -9,7 +9,7 @@ def gennone(schema: Optional[dict] = None,
             *,
             schema_is_validated: bool = False,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> None:
+            context: Optional[GenerationContext] = None) -> None:
     """Generate ``None``.
 
     Args:

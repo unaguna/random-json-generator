@@ -4,7 +4,7 @@ from unittest import mock
 import jsonschema
 
 from ranjg import gennum, Options
-from .._context import Context
+from .._context import GenerationContext
 from ranjg.error import SchemaConflictError
 from ..factory import NumFactory
 
@@ -23,7 +23,7 @@ class TestGennum(unittest.TestCase):
         assert that:
             When ``gennum`` is called, then ``NumFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -49,7 +49,7 @@ class TestGennum(unittest.TestCase):
         assert that:
             When ``gennum`` is called, then ``NumFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -253,7 +253,7 @@ class TestNumFactory(unittest.TestCase):
                 self.assertLessEqual(generated, maximum)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_param_conflict_minimum_maximum(self):
+    def test_with_param_conflict_minimum_maximum(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified, the result number
@@ -261,7 +261,7 @@ class TestNumFactory(unittest.TestCase):
         raised.
 
         assert that:
-            When the schema has ``properties.minimum > properties.maximum`, ``NumFactory(schema).gen()`` raised
+            When the schema has ``properties.minimum > properties.maximum`, ``NumFactory(schema)`` raised
             SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -277,9 +277,9 @@ class TestNumFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'Minimum value must be lower than or equal to the maximum value'):
-                    NumFactory(schema).gen()
+                    NumFactory(schema)
 
-    def test_gen_with_param_conflict_exclusive_minimum_maximum(self):
+    def test_with_param_conflict_exclusive_minimum_maximum(self):
         """ Semi-normalized System Test
 
         When both ``properties.exclusive_minimum: number`` and ``properties.maximum`` are specified, the result number
@@ -287,7 +287,7 @@ class TestNumFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.maximum <= properties.exclusive_minimum`, ``NumFactory(schema).gen()``
+            When the schema has ``properties.maximum <= properties.exclusive_minimum`, ``NumFactory(schema)``
             raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -306,9 +306,9 @@ class TestNumFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'ExclusiveMinimum value must be lower than the maximum value'):
-                    NumFactory(schema).gen()
+                    NumFactory(schema)
 
-    def test_gen_with_param_conflict_minimum_exclusive_maximum(self):
+    def test_with_param_conflict_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.exclusive_maximum: number`` are specified, the result number
@@ -316,7 +316,7 @@ class TestNumFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.exclusive_maximum <= properties.minimum`, ``NumFactory(schema).gen()``
+            When the schema has ``properties.exclusive_maximum <= properties.minimum`, ``NumFactory(schema)``
             raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
@@ -335,9 +335,9 @@ class TestNumFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'Minimum value must be lower than the exclusiveMaximum value'):
-                    NumFactory(schema).gen()
+                    NumFactory(schema)
 
-    def test_gen_with_param_conflict_exclusive_minimum_exclusive_maximum(self):
+    def test_with_param_conflict_exclusive_minimum_exclusive_maximum(self):
         """ Semi-normalized System Test
 
         When both ``properties.exclusive_minimum: number`` and ``properties.exclusive_maximum: number`` are specified,
@@ -346,7 +346,7 @@ class TestNumFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.exclusive_minimum >= properties.exclusive_maximum`,
-            ``NumFactory(schema).gen()`` raised SchemaConflictError.
+            ``NumFactory(schema)`` raised SchemaConflictError.
         """
         thresholds_list = ((-1.5, -1.2),
                            (-1.2, -1.2),
@@ -364,4 +364,4 @@ class TestNumFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'ExclusiveMinimum value must be lower than the exclusiveMaximum value'):
-                    NumFactory(schema).gen()
+                    NumFactory(schema)

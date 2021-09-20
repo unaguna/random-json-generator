@@ -5,7 +5,7 @@ from unittest import mock
 import jsonschema
 
 from ranjg import genint, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import IntFactory
 from ..factory.__int import _get_inclusive_integer_minimum, _get_inclusive_integer_maximum
 from ranjg.error import SchemaConflictError
@@ -25,7 +25,7 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``genint`` is called, then ``IntFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -51,7 +51,7 @@ class TestGenint(unittest.TestCase):
         assert that:
             When ``genint`` is called, then ``IntFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -496,7 +496,7 @@ class TestIntFactory(unittest.TestCase):
                 self.assertLess(generated, exclusive_maximum)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_param_conflict_min_max(self):
+    def test_with_param_conflict_min_max(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified, the result number
@@ -504,7 +504,7 @@ class TestIntFactory(unittest.TestCase):
         raised.
 
         assert that:
-            When the schema has ``properties.minimum > properties.maximum``, ``IntFactory(schema).gen()`` raised
+            When the schema has ``properties.minimum > properties.maximum``, ``IntFactory(schema)`` raised
             SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
@@ -521,9 +521,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_min_exMax(self):
+    def test_with_param_conflict_min_exMax(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.exclusiveMaximum`` are specified, the result number
@@ -531,7 +531,7 @@ class TestIntFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.minimum => properties.exclusiveMaximum``, ``IntFactory(schema).gen()``
+            When the schema has ``properties.minimum => properties.exclusiveMaximum``, ``IntFactory(schema)``
             raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
@@ -551,9 +551,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_min_max_exMax_true(self):
+    def test_with_param_conflict_min_max_exMax_true(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMaximum`` is
@@ -562,7 +562,7 @@ class TestIntFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.minimum => properties.maximum`` and ``schema.exclusiveMaximum is True``,
-            ``IntFactory(schema).gen()`` raised SchemaConflictError.
+            ``IntFactory(schema)`` raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
                            (-10, -10),
@@ -582,9 +582,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_min_max_exMax_false(self):
+    def test_with_param_conflict_min_max_exMax_false(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMaximum`` is
@@ -593,7 +593,7 @@ class TestIntFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.minimum > properties.maximum`` and ``schema.exclusiveMaximum is False``,
-            ``IntFactory(schema).gen()`` raised SchemaConflictError.
+            ``IntFactory(schema)`` raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
                            (-10, 0),
@@ -610,9 +610,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_exMin_max(self):
+    def test_with_param_conflict_exMin_max(self):
         """ Semi-normalized System Test
 
         When both ``properties.exclusiveMinimum`` and ``properties.maximum`` are specified, the result number
@@ -620,7 +620,7 @@ class TestIntFactory(unittest.TestCase):
         SchemaConflictError is raised.
 
         assert that:
-            When the schema has ``properties.exclusiveMinimum => properties.maximum``, ``IntFactory(schema).gen()``
+            When the schema has ``properties.exclusiveMinimum => properties.maximum``, ``IntFactory(schema)``
             raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
@@ -640,9 +640,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_min_max_exMin_true(self):
+    def test_with_param_conflict_min_max_exMin_true(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMinimum`` is
@@ -651,7 +651,7 @@ class TestIntFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.minimum => properties.maximum`` and ``schema.exclusiveMinimum is True``,
-            ``IntFactory(schema).gen()`` raised SchemaConflictError.
+            ``IntFactory(schema)`` raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
                            (-10, -10),
@@ -671,9 +671,9 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
-    def test_gen_with_param_conflict_min_max_exMin_false(self):
+    def test_with_param_conflict_min_max_exMin_false(self):
         """ Semi-normalized System Test
 
         When both ``properties.minimum`` and ``properties.maximum`` are specified and ``schema.exclusiveMinimum`` is
@@ -682,7 +682,7 @@ class TestIntFactory(unittest.TestCase):
 
         assert that:
             When the schema has ``properties.minimum > properties.maximum`` and ``schema.exclusiveMinimum is False``,
-            ``IntFactory(schema).gen()`` raised SchemaConflictError.
+            ``IntFactory(schema)`` raised SchemaConflictError.
         """
         thresholds_list = ((-10, -5),
                            (-10, 0),
@@ -699,7 +699,7 @@ class TestIntFactory(unittest.TestCase):
                 }
                 with self.assertRaisesRegex(SchemaConflictError,
                                             'There are no integers in the range specified by the schema'):
-                    IntFactory(schema).gen()
+                    IntFactory(schema)
 
     def test_gen_with_param_minimum_exclusiveMinimum(self):
         """ Normalized System Test

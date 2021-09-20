@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ._context import Context
+from ._context import GenerationContext
 from .options import Options
 from .factory import ListFactory
 
@@ -9,7 +9,7 @@ def genlist(schema: Optional[dict] = None,
             *,
             schema_is_validated: bool = False,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> list:
+            context: Optional[GenerationContext] = None) -> list:
     """Generate a random list according to the JSON schema.
 
     This function ignores ``schema.type`` because it is basically designed to be called by ``ranjg.gen``.

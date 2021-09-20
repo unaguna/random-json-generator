@@ -3,9 +3,9 @@ from unittest import mock
 
 import jsonschema
 from ranjg import genstr, Options
-from .._context import Context
+from .._context import GenerationContext
 from ..factory import StrFactory
-from ranjg.error import InvalidSchemaError, SchemaConflictError
+from ranjg.error import InvalidSchemaError, SchemaConflictError, GenerateConflictError
 
 
 class TestGenstr(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestGenstr(unittest.TestCase):
         assert that:
             When ``genstr`` is called, then ``StrFactory()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -48,7 +48,7 @@ class TestGenstr(unittest.TestCase):
         assert that:
             When ``genstr`` is called, then ``StrFactory#gen()`` runs.
         """
-        _context_dummy = Context.root({}).resolve('key', {})
+        _context_dummy = GenerationContext.root({}).resolve('key', {})
         _options_dummy = Options.default()
         params_list = (
             (None, None, False, None),
@@ -267,15 +267,15 @@ class TestStrFactory(unittest.TestCase):
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_conflicting_length(self):
+    def test_with_conflicting_length(self):
         """ Semi-normalized System Test
 
         When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string
         value with a length ``x`` satisfied ``minLength <= x <= maxLength``. As a result, when
-        ``minLength > maxLength``, ``StrFactory(schema).gen()`` raises SchemaConflictError.
+        ``minLength > maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
 
         assert that:
-            When ``schema.minLength > schema.maxLength``, ``StrFactory(schema).gen()`` raises SchemaConflictError.
+            When ``schema.minLength > schema.maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
         """
         thresholds_list = ((0, 1),
                            (12, 15))
@@ -285,7 +285,7 @@ class TestStrFactory(unittest.TestCase):
                 schema = {"minLength": min_length, "maxLength": max_length}
                 with self.assertRaisesRegex(SchemaConflictError,
                                             '"minLength" must be lower than or equal to the "maxLength" value'):
-                    StrFactory(schema).gen()
+                    StrFactory(schema)
 
     def test_gen_with_pattern(self):
         """ Normalized System Test
@@ -533,7 +533,7 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         for options in options_list:
             with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
-                with self.assertRaisesRegex(SchemaConflictError,
+                with self.assertRaisesRegex(GenerateConflictError,
                                             '"options.default_min_length_of_string" must be lower than or equal to '
                                             'the "options.default_max_length_of_string" value'):
                     StrFactory(schema).gen(options=options)

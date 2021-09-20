@@ -1,71 +1,80 @@
 import random
-from typing import Optional
+from typing import Optional, Dict, Iterable, Any
 
-import ranjg
+import ranjg.factory
 from .__common import Factory
-from .._context import Context
+from .._context import GenerationContext, SchemaContext
 from ..options import Options
-from ..util.listutil import diff
-
-
-def _schema_of(key: str,
-               *,
-               properties: dict,
-               priority_properties: dict,
-               default_schema: dict) -> dict:
-    if key in priority_properties:
-        return priority_properties[key]
-    elif key in properties:
-        return properties[key]
-    else:
-        return default_schema
 
 
 class DictFactory(Factory[dict]):
-    _schema: dict
+    _property_factories: Dict[str, Factory]
+    _required_keys: Iterable[str]
+    _properties: Dict[str, dict]
 
-    def __init__(self, schema: Optional[dict], *, schema_is_validated: bool = False):
-        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated)
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(DictFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
 
-        self._schema = schema if schema is not None else {}
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
+        self._property_factories = {prop: ranjg.factory.create_factory(prop_schema,
+                                                                       schema_is_validated=self.schema_is_validated,
+                                                                       context=context.resolve(prop, prop_schema))
+                                    for prop, prop_schema in self._schema.get("properties", {}).items()}
+
+        self._required_keys = self._schema.get("required", tuple())
+        self._properties = self._schema.get("properties", dict())
+
+    def _get_properties_factory(self, property_name: str) -> Factory:
+        return self._property_factories[property_name]
+
+    def _factory_of(self, key: str,
+                    *,
+                    options: Options) -> Factory:
+        if key in options.priority_schema_of_properties:
+            schema = options.priority_schema_of_properties[key]
+            return ranjg.factory.create_factory(schema,
+                                                context=SchemaContext.for_options(
+                                                    schema, path=('priority_schema_of_properties', key)))
+        elif key in self._property_factories:
+            return self._property_factories[key]
+        else:
+            schema = options.default_schema_of_properties
+            return ranjg.factory.create_factory(schema,
+                                                context=SchemaContext.for_options(
+                                                    schema, path=('default_schema_of_properties',)))
 
     def gen(self,
             *,
             options: Optional[Options] = None,
-            context: Optional[Context] = None) -> dict:
+            context: Optional[GenerationContext] = None) -> dict:
         if options is None:
             options = Options.default()
         if context is None:
-            context = Context.root(self._schema)
+            context = GenerationContext.root(self._schema)
 
-        generated = dict()
+        generated: Dict[str, Any] = dict()
 
         # すでに生成or棄却が済んだキー
         # それぞれのキーは生成された場合は True, 棄却された場合は False を値に持つ。
-        generated_keys = dict()
-
-        required: list = self._schema.get("required", [])
-        properties: dict = self._schema.get("properties", {})
-        not_required = diff(properties.keys(), required)
+        generated_keys: Dict[str, bool] = dict()
 
         # 必須項目を生成する
-        for required_key in required:
+        for required_key in self._required_keys:
             # すでに生成済みの項目は生成しない。ただし、棄却済みであるものは生成する。
             if generated_keys.get(required_key) is True:
                 continue
 
-            next_schema = _schema_of(required_key,
-                                     properties=properties,
-                                     priority_properties=options.priority_schema_of_properties,
-                                     default_schema=options.default_schema_of_properties)
-            generated[required_key] = ranjg.gen(next_schema,
-                                                schema_is_validated=True,
-                                                options=options,
-                                                context=context.resolve(required_key, next_schema))
+            next_factory = self._factory_of(required_key, options=options)
+            generated[required_key] = next_factory.gen_as_child(options=options,
+                                                                parent_context=context,
+                                                                child_key=required_key)
             generated_keys[required_key] = True
 
         # 必須でない項目を生成する
-        for prop_key in not_required:
+        for prop_key in self._properties.keys():
             # すでに生成or棄却済みの項目は生成しない。
             if generated_keys.get(prop_key) is not None:
                 continue
@@ -75,14 +84,10 @@ class DictFactory(Factory[dict]):
                 generated_keys[prop_key] = False
                 continue
 
-            next_schema = _schema_of(prop_key,
-                                     properties=properties,
-                                     priority_properties=options.priority_schema_of_properties,
-                                     default_schema=options.default_schema_of_properties)
-            generated[prop_key] = ranjg.gen(next_schema,
-                                            schema_is_validated=True,
-                                            options=options,
-                                            context=context.resolve(prop_key, next_schema))
+            next_factory = self._factory_of(prop_key, options=options)
+            generated[prop_key] = next_factory.gen_as_child(options=options,
+                                                            parent_context=context,
+                                                            child_key=prop_key)
             generated_keys[prop_key] = True
 
         return generated

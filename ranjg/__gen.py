@@ -2,7 +2,7 @@ import itertools
 import json
 from typing import Optional, TextIO, Iterable
 
-from ._context import Context
+from ._context import GenerationContext
 from .options import Options
 from .options import load as load_options
 from .factory import create_factory
@@ -27,7 +27,7 @@ def gen(schema: dict = None,
         multiplicity: Optional[int] = None,
         schema_is_validated: bool = False,
         return_none: bool = False,
-        context: Optional[Context] = None):
+        context: Optional[GenerationContext] = None):
     """Generate something randomly according to the JSON schema.
 
     This function is not fully compliant with the JSON schema, and unsupported parameters in the schema are ignored.
@@ -94,7 +94,7 @@ def gen(schema: dict = None,
             (If it is False, the result contains all outputs.
             In particular, if it is repeated a lot, such as when a large list is specified in output_file_list,
             it may overwhelm memory.)
-        context (Context):
+        context (GenerationContext):
             The context of construction.
             (In normal usage, this argument is not specified. This argument is for using this function recursively.)
 
