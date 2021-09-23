@@ -45,7 +45,7 @@ class TestEnumFactory(unittest.TestCase):
     def test_init_with_empty_enum(self):
         """ Semi-normalized System Test
 
-        ``EnumFactory(schema)`` raises error if ``schema.enum`` is empty Iterable.
+        ``EnumFactory(schema)`` raises error if ``schema.enum`` is empty sequence.
         """
         schema = {'enum': []}
 
@@ -73,7 +73,7 @@ class TestEnumFactory(unittest.TestCase):
     def test_init_without_enum_schema(self):
         """ Semi-normalized System Test
 
-        ``EnumFactory(schema)`` raises error if ``schema.enum`` is not iterable.
+        ``EnumFactory(schema)`` raises error if ``schema.enum`` is not sequence.
         """
         schema_list = (
             {'type': 'integer'},
@@ -86,4 +86,3 @@ class TestEnumFactory(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,
                                             "schema for EnumFactory must have an array 'enum'"):
                     EnumFactory(schema)
-

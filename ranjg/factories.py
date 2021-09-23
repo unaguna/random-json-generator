@@ -867,10 +867,8 @@ class EnumFactory(Factory[None]):
 
         enum_values = self._schema.get('enum')
 
-        if not isinstance(enum_values, Iterable):
+        if not isinstance(enum_values, Sequence):
             raise ValueError(f"schema for {self.__class__.__name__} must have an array 'enum'")
-
-        enum_values = list(enum_values)
 
         if len(enum_values) <= 0:
             raise SchemaConflictError('schema.enum must contain at least 1 value', context)
