@@ -64,3 +64,21 @@ class TestEnumFactory(unittest.TestCase):
                 with self.assertRaisesRegex(SchemaConflictError,
                                             "At least 1 value of schema.enum must satisfy the schema"):
                     EnumFactory(schema)
+
+    def test_init_without_enum_schema(self):
+        """ Semi-normalized System Test
+
+        ``EnumFactory(schema)`` raises error if ``schema.enum`` is not iterable.
+        """
+        schema_list = (
+            {'type': 'integer'},
+            {'enum': None},
+            {'enum': 5},
+        )
+
+        for schema in schema_list:
+            with self.subTest(schema=schema):
+                with self.assertRaisesRegex(ValueError,
+                                            "schema for EnumFactory must have an array 'enum'"):
+                    EnumFactory(schema)
+
