@@ -45,12 +45,9 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
         if schema is None:
             schema = {}
 
-        if gen_type is None:
-            gen_type = schema.get("type")
-
         # 実際に生成されるインスタンスの型を決定
         if cls is Factory:
-            cls = cls._decide_concrete(gen_type)
+            cls = cls._decide_concrete(gen_type, schema.get('type'))
 
         return object.__new__(cls)
 
@@ -99,7 +96,12 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
         self.validate_schema()
 
     @classmethod
-    def _decide_concrete(cls, gen_type: Union[str, Iterable[str], None]) -> Type['Factory']:
+    def _decide_concrete(cls,
+                         gen_type: Union[str, Iterable[str], None],
+                         schema_type: Union[str, Iterable[str], None]) -> Type['Factory']:
+        if gen_type is None:
+            gen_type = schema_type
+
         if isinstance(gen_type, str):
             if gen_type in _FACTORY_MAP:
                 return _FACTORY_MAP[gen_type]
