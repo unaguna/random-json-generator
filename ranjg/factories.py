@@ -7,6 +7,7 @@ import string
 import sys
 from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type, GenericMeta
 
+import jsonschema
 import rstr
 
 from . import schemas
@@ -849,15 +850,45 @@ class MultiFactory(Factory[None]):
 
 
 class EnumFactory(Factory[None]):
+    _enum_values: Sequence
+
     def __init__(self, schema: Optional[dict], *,
                  schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
         super(EnumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
+
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
+        enum_values = self._schema.get('enum')
+
+        if not isinstance(enum_values, Iterable):
+            raise ValueError(f"schema for {self.__class__.__name__} must have an array 'enum'")
+
+        enum_values = list(enum_values)
+
+        if len(enum_values) <= 0:
+            raise SchemaConflictError('schema.enum must contain at least 1 value', context)
+
+        self._enum_values = list(filter(lambda v: _value_satisfies_schema(v, self._schema), enum_values))
+
+        if len(self._enum_values) <= 0:
+            raise SchemaConflictError('At least 1 value of schema.enum must satisfy the schema', context)
 
     def gen(self,
             *,
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> None:
-        pass
+        return random.choice(self._enum_values)
+
+
+def _value_satisfies_schema(value, schema: dict) -> bool:
+    try:
+        # TODO: 使用する validator を検討
+        jsonschema.validate(value, schema)
+    except jsonschema.ValidationError:
+        return False
+
+    return True
 
 
 _FACTORY_MAP: Dict[str, Type[Factory]] = {
