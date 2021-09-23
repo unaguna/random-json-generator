@@ -17,7 +17,7 @@ class TestEnumFactory(unittest.TestCase):
             (['1', 2.0, 1.5], {}, {'1', 2.0, 1.5}),
             (['1', 2.0, 1.5], {'type': 'integer'}, {2.0}),
             (['1', 2.0, 1.5], {'maximum': 1.9}, {'1', 1.5}),
-            ([['a', 'b'], {'a': 'b'}], {}, [['a', 'b'], {'a': 'b'}]),
+            ([['a', 'b'], {'a': 'b'}], {}, [('list', 'a', 'b'), ('dict', ('a', 'b'))]),
         )
 
         for enum, schema, expected_set in case_list:
@@ -31,9 +31,14 @@ class TestEnumFactory(unittest.TestCase):
                 # 確率的事象につき複数回行う
                 for _ in range(20):
                     generated = factory.gen()
-                    result_set.add(generated)
+                    if isinstance(generated, list):
+                        result_set.add(('list', *generated))
+                    elif isinstance(generated, dict):
+                        result_set.add(('dict', *generated.items()))
+                    else:
+                        result_set.add(generated)
 
-                self.assertGreaterEqual(len(result_set), 2)
+                self.assertGreaterEqual(len(result_set), min(len(expected_set), 2))
                 for value in result_set:
                     self.assertIn(value, expected_set)
 
