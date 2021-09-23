@@ -47,7 +47,7 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
 
         # 実際に生成されるインスタンスの型を決定
         if cls is Factory:
-            cls = cls._decide_concrete(gen_type, schema.get('type'))
+            cls = cls._decide_concrete(gen_type, schema.get('type'), schema.get('enum'))
 
         return object.__new__(cls)
 
@@ -98,8 +98,12 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
     @classmethod
     def _decide_concrete(cls,
                          gen_type: Union[str, Iterable[str], None],
-                         schema_type: Union[str, Iterable[str], None]) -> Type['Factory']:
+                         schema_type: Union[str, Iterable[str], None],
+                         schema_enum: Union[Iterable, None]) -> Type['Factory']:
         if gen_type is None:
+            if schema_enum is not None:
+                return EnumFactory
+
             gen_type = schema_type
 
         if isinstance(gen_type, str):
