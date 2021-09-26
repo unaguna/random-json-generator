@@ -1,5 +1,6 @@
 import abc
 import collections
+import copy
 import math
 import random
 import re
@@ -882,7 +883,8 @@ class EnumFactory(Factory[None]):
             *,
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> None:
-        return random.choice(self._enum_values)
+        value = random.choice(self._enum_values)
+        return copy.deepcopy(value)
 
 
 def _value_satisfies_schema(value, schema: dict) -> bool:
