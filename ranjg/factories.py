@@ -889,12 +889,12 @@ class EnumFactory(Factory[None]):
 
         value = random.choice(self._enum_values)
 
-        if options.enum_copy_style == ranjg.options.NO_COPY:
+        if options.enum_copy_style == ranjg.options.DEEP_COPY:
+            return copy.deepcopy(value)
+        elif options.enum_copy_style == ranjg.options.NO_COPY:
             return value
         elif options.enum_copy_style == ranjg.options.SHALLOW_COPY:
             return copy.copy(value)
-        elif options.enum_copy_style == ranjg.options.DEEP_COPY:
-            return copy.deepcopy(value)
         else:
             raise GenerateError('options.enum_copy_style is invalid value: ' + options.enum_copy_style, context=context)
 
