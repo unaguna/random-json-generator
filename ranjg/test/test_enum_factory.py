@@ -1,5 +1,7 @@
 import unittest
+from typing import Sequence, Dict
 
+from ranjg import Options
 from ranjg.error import SchemaConflictError
 from ranjg.factories import EnumFactory
 
@@ -48,8 +50,8 @@ class TestEnumFactory(unittest.TestCase):
         The returned value equals to one of values in schema.enum but not same object.
         """
         result_list = (
-            [1, 2],
-            {'a': 'b'},
+            [[1], 2],
+            {'a': {'b': 'c'}},
         )
 
         for result in result_list:
@@ -59,6 +61,13 @@ class TestEnumFactory(unittest.TestCase):
 
                 self.assertEqual(actual, result)
                 self.assertIsNot(actual, result)
+
+                if isinstance(actual, Sequence):
+                    self.assertIsNot(actual[0], result[0])
+                elif isinstance(actual, Dict):
+                    self.assertIsNot(actual['a'], result['a'])
+                else:
+                    assert False
 
     def test_init_with_empty_enum(self):
         """ Semi-normalized System Test
@@ -104,3 +113,71 @@ class TestEnumFactory(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,
                                             "schema for EnumFactory must have an array 'enum'"):
                     EnumFactory(schema)
+
+    def test_gen_with_option_no_copy(self):
+        """ Normalized System Test
+
+        If ``options.enum_copy_style == 'NO_COPY'``, generated value has same id with one of ``schema.enum``.
+        """
+        result_list = (
+            [1, 2],
+            {'a': 'b'},
+        )
+
+        for result in result_list:
+            schema = {'enum': [result]}
+            with self.subTest(result=result):
+                actual = EnumFactory(schema).gen(options=Options(enum_copy_style='NO_COPY'))
+
+                self.assertEqual(actual, result)
+                self.assertIs(actual, result)
+
+    def test_gen_with_option_shallow_copy(self):
+        """ Normalized System Test
+
+        If ``options.enum_copy_style == 'SHALLOW_COPY'``, generated value is shallow copy of one of ``schema.enum``.
+        """
+        result_list = (
+            [[1], 2],
+            {'a': {'b': 'c'}},
+        )
+
+        for result in result_list:
+            schema = {'enum': [result]}
+            with self.subTest(result=result):
+                actual = EnumFactory(schema).gen(options=Options(enum_copy_style='SHALLOW_COPY'))
+
+                self.assertEqual(actual, result)
+                self.assertIsNot(actual, result)
+
+                if isinstance(actual, Sequence):
+                    self.assertIs(actual[0], result[0])
+                elif isinstance(actual, Dict):
+                    self.assertIs(actual['a'], result['a'])
+                else:
+                    assert False
+
+    def test_gen_with_option_deep_copy(self):
+        """ Normalized System Test
+
+        If ``options.enum_copy_style == 'DEEP_COPY'``, generated value is deep copy of one of ``schema.enum``.
+        """
+        result_list = (
+            [[1], 2],
+            {'a': {'b': 'c'}},
+        )
+
+        for result in result_list:
+            schema = {'enum': [result]}
+            with self.subTest(result=result):
+                actual = EnumFactory(schema).gen(options=Options(enum_copy_style='DEEP_COPY'))
+
+                self.assertEqual(actual, result)
+                self.assertIsNot(actual, result)
+
+                if isinstance(actual, Sequence):
+                    self.assertIsNot(actual[0], result[0])
+                elif isinstance(actual, Dict):
+                    self.assertIsNot(actual['a'], result['a'])
+                else:
+                    assert False
