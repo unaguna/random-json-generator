@@ -873,7 +873,7 @@ class EnumFactory(Factory[None]):
         if len(enum_values) <= 0:
             raise SchemaConflictError('schema.enum must contain at least 1 value', context)
 
-        self._enum_values = list(filter(lambda v: _value_satisfies_schema(v, self._schema), enum_values))
+        self._enum_values = tuple(filter(lambda v: _value_satisfies_schema(v, self._schema), enum_values))
 
         if len(self._enum_values) <= 0:
             raise SchemaConflictError('At least 1 value of schema.enum must satisfy the schema', context)
