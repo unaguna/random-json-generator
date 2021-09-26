@@ -11,6 +11,7 @@ from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence,
 import jsonschema
 import rstr
 
+import ranjg
 from . import schemas
 from ._number_range import NumberRange
 from .error import SchemaConflictError, GenerateError, GenerateConflictError
@@ -883,8 +884,19 @@ class EnumFactory(Factory[None]):
             *,
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> None:
+        if options is None:
+            options = Options.default()
+
         value = random.choice(self._enum_values)
-        return copy.deepcopy(value)
+
+        if options.enum_copy_style == ranjg.options.NO_COPY:
+            return value
+        elif options.enum_copy_style == ranjg.options.SHALLOW_COPY:
+            return copy.copy(value)
+        elif options.enum_copy_style == ranjg.options.DEEP_COPY:
+            return copy.deepcopy(value)
+        else:
+            raise GenerateError('options.enum_copy_style is invalid value: ' + options.enum_copy_style, context=context)
 
 
 def _value_satisfies_schema(value, schema: dict) -> bool:
