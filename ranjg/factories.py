@@ -1,5 +1,6 @@
 import abc
 import collections
+import copy
 import math
 import random
 import re
@@ -7,8 +8,10 @@ import string
 import sys
 from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type, GenericMeta
 
+import jsonschema
 import rstr
 
+import ranjg
 from . import schemas
 from ._number_range import NumberRange
 from .error import SchemaConflictError, GenerateError, GenerateConflictError
@@ -44,12 +47,9 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
         if schema is None:
             schema = {}
 
-        if gen_type is None:
-            gen_type = schema.get("type")
-
         # 実際に生成されるインスタンスの型を決定
         if cls is Factory:
-            cls = cls._decide_concrete(gen_type)
+            cls = cls._decide_concrete(gen_type, schema.get('type'), schema.get('enum'))
 
         return object.__new__(cls)
 
@@ -98,7 +98,16 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
         self.validate_schema()
 
     @classmethod
-    def _decide_concrete(cls, gen_type: Union[str, Iterable[str], None]) -> Type['Factory']:
+    def _decide_concrete(cls,
+                         gen_type: Union[str, Iterable[str], None],
+                         schema_type: Union[str, Iterable[str], None],
+                         schema_enum: Union[Iterable, None]) -> Type['Factory']:
+        if gen_type is None:
+            if schema_enum is not None:
+                return EnumFactory
+
+            gen_type = schema_type
+
         if isinstance(gen_type, str):
             if gen_type in _FACTORY_MAP:
                 return _FACTORY_MAP[gen_type]
@@ -846,6 +855,58 @@ class MultiFactory(Factory[None]):
             context: Optional[GenerationContext] = None) -> None:
         factory = random.choice(self._factories)
         return factory.gen(options=options, context=context)
+
+
+class EnumFactory(Factory[None]):
+    _enum_values: Sequence
+
+    def __init__(self, schema: Optional[dict], *,
+                 schema_is_validated: bool = False, context: Optional[SchemaContext] = None):
+        super(EnumFactory, self).__init__(schema, schema_is_validated=schema_is_validated, context=context)
+
+        if context is None:
+            context = SchemaContext.root(self._schema)
+
+        enum_values = self._schema.get('enum')
+
+        if not isinstance(enum_values, Sequence):
+            raise ValueError(f"schema for {self.__class__.__name__} must have an array 'enum'")
+
+        if len(enum_values) <= 0:
+            raise SchemaConflictError('schema.enum must contain at least 1 value', context)
+
+        self._enum_values = tuple(filter(lambda v: _value_satisfies_schema(v, self._schema), enum_values))
+
+        if len(self._enum_values) <= 0:
+            raise SchemaConflictError('At least 1 value of schema.enum must satisfy the schema', context)
+
+    def gen(self,
+            *,
+            options: Optional[Options] = None,
+            context: Optional[GenerationContext] = None) -> None:
+        if options is None:
+            options = Options.default()
+
+        value = random.choice(self._enum_values)
+
+        if options.enum_copy_style == ranjg.options.DEEP_COPY:
+            return copy.deepcopy(value)
+        elif options.enum_copy_style == ranjg.options.NO_COPY:
+            return value
+        elif options.enum_copy_style == ranjg.options.SHALLOW_COPY:
+            return copy.copy(value)
+        else:
+            raise GenerateError('options.enum_copy_style is invalid value: ' + options.enum_copy_style, context=context)
+
+
+def _value_satisfies_schema(value, schema: dict) -> bool:
+    try:
+        # TODO: 使用する validator を検討
+        jsonschema.validate(value, schema)
+    except jsonschema.ValidationError:
+        return False
+
+    return True
 
 
 _FACTORY_MAP: Dict[str, Type[Factory]] = {

@@ -5,6 +5,11 @@ from typing import NamedTuple, Union
 from .error import OptionsFileIOError
 
 
+NO_COPY = 'NO_COPY'
+SHALLOW_COPY = 'SHALLOW_COPY'
+DEEP_COPY = 'DEEP_COPY'
+
+
 class Options(NamedTuple):
     """Options of ``ranjg.gen``.
 
@@ -47,6 +52,17 @@ class Options(NamedTuple):
     #: In list generation, it is used to generate elements for which no schema is specified.
     #: For example, when `item` is specified as tuple format, and minLength is greater than its length.
     default_schema_of_items: dict = {"type": "null"}
+
+    #: In generation from enum, it specifies how to generate an output value from elements in schema.enum.
+    #: For example, if schema.enum contains objects of type list or dict as its content,
+    #: and the result value is returned as it is,
+    #: any change operation on the result value will change the way schema works.
+    #:
+    #: If it is options.NO_COPY, generated value has same id for one of element in schema.enum.
+    #: If it is options.SHALLOW_COPY, generated value is shallow copy of one of element in schema.enum.
+    #: If it is options.DEEP_COPY, generated value is deep copy of one of element in schema.enum.
+    #: See the description of copy pickle for information on shallow copy and deep copy.
+    enum_copy_style: str = DEEP_COPY
 
     @classmethod
     @lru_cache(maxsize=1)

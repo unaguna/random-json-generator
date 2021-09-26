@@ -1,7 +1,6 @@
 import itertools
 import unittest
 
-import ranjg
 from ranjg.factories import *
 
 
@@ -14,18 +13,21 @@ class TestFactory(unittest.TestCase):
     def test_create_factory(self):
         """ Normalized System Test
         """
-        case_list = ((NoneFactory, {'type': 'null'}, (None,)),
-                     (BoolFactory, {'type': 'boolean'}, (True, False)),
-                     (IntFactory, {'type': 'integer', 'minimum': 0, 'maximum': 0}, (0,)),
-                     (NumFactory, {'type': 'number', 'minimum': 0, 'maximum': 0}, (0.0,)),
-                     (StrFactory, {'type': 'string', 'pattern': 'test'}, ('test',)),
-                     (ListFactory, {'type': 'array', 'maxItems': 0}, (list(),)),
-                     (DictFactory,
-                      {'type': 'object', 'required': ['p1'], 'properties': {'p1': {'type': 'null'}}},
-                      (dict(p1=None),)),
-                     (MultiFactory,
-                      {'type': ['object', 'null'], 'required': ['p1'], 'properties': {'p1': {'type': 'null'}}},
-                      (dict(p1=None), None)),)
+        case_list = (
+            (NoneFactory, {'type': 'null'}, (None,)),
+            (BoolFactory, {'type': 'boolean'}, (True, False)),
+            (IntFactory, {'type': 'integer', 'minimum': 0, 'maximum': 0}, (0,)),
+            (NumFactory, {'type': 'number', 'minimum': 0, 'maximum': 0}, (0.0,)),
+            (StrFactory, {'type': 'string', 'pattern': 'test'}, ('test',)),
+            (ListFactory, {'type': 'array', 'maxItems': 0}, (list(),)),
+            (DictFactory,
+             {'type': 'object', 'required': ['p1'], 'properties': {'p1': {'type': 'null'}}},
+             (dict(p1=None),)),
+            (MultiFactory,
+             {'type': ['object', 'null'], 'required': ['p1'], 'properties': {'p1': {'type': 'null'}}},
+             (dict(p1=None), None)),
+            (EnumFactory, {'enum': ['value1', 1]}, ('value1', 1)),
+        )
 
         for clz, schema, expected_list in case_list:
             with self.subTest(clz=clz.__name__):
@@ -57,6 +59,7 @@ class TestFactory(unittest.TestCase):
             ({"type": "string", "pattern": "st"}, ),
             ({"type": "array", "minItems": 1, "maxItems": 1}, ),
             ({"type": "object", "required": ["p1"]}, ),
+            ({'enum': ['value1', 1]}, ),
         )
 
         for (gen_type, clz), (schema,) in itertools.product(gen_type_list, schema_list):
