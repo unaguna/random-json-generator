@@ -42,6 +42,24 @@ class TestEnumFactory(unittest.TestCase):
                 for value in result_set:
                     self.assertIn(value, expected_set)
 
+    def test_gen_return_copied_object(self):
+        """ Normalized System Test
+
+        The returned value equals to one of values in schema.enum but not same object.
+        """
+        result_list = (
+            [1, 2],
+            {'a': 'b'},
+        )
+
+        for result in result_list:
+            schema = {'enum': [result]}
+            with self.subTest(result=result):
+                actual = EnumFactory(schema).gen()
+
+                self.assertEqual(actual, result)
+                self.assertIsNot(actual, result)
+
     def test_init_with_empty_enum(self):
         """ Semi-normalized System Test
 
