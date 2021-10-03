@@ -28,7 +28,14 @@ import random
 import re
 import string
 import sys
-from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type, GenericMeta
+from typing import TypeVar, Generic, Optional, Union, Iterable, Tuple, Sequence, Dict, Any, List, Type
+
+try:
+    from typing import GenericMeta  # python 3.6
+except ImportError:
+    # in 3.7, GenericMeta doesn't exist but we don't need it
+    class GenericMeta(type):
+        pass
 
 import jsonschema
 import rstr
