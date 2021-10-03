@@ -23,6 +23,7 @@ The following pages show keywords of ranjg-JSON-schema.
    :maxdepth: 2
    :caption: References:
 
+   ranjg-json-schema_enum
    ranjg-json-schema_type
    ranjg-json-schema_null
    ranjg-json-schema_string
