@@ -1,62 +1,28 @@
 import unittest
-from unittest import mock
 
 import jsonschema
-from ranjg import genstr, Options
-from .._context import Context
-from .._generator import StrGenerator
-from ranjg.error import InvalidSchemaError, SchemaConflictError
+from ranjg import Options
+from ..factories import StrFactory
+from ranjg.error import InvalidSchemaError, SchemaConflictError, GenerateConflictError
 
 
-class TestGenstr(unittest.TestCase):
-    """Test class of ``genstr``
+class TestStrFactory(unittest.TestCase):
+    """Test class of ``StrFactory``
 
-    Test ``ranjg.genstr``
-    """
-
-    def test_genstr(self):
-        """ Normalized System Test
-
-        ``genstr()`` is wrapper of ``StrGenerator#gen()``.
-
-        assert that:
-            When ``genstr`` is called, then ``StrGenerator#gen()`` runs.
-        """
-        _context_dummy = Context.root({}).resolve('key', {})
-        _options_dummy = Options.default()
-        params_list = (
-            (None, None, False, None),
-            (None, None, False, _options_dummy),
-            ({"type": "string"}, None, False, None),
-            ({"type": "string"}, None, True, None),
-            (None, _context_dummy, False, None),
-            (None, _context_dummy, False, _options_dummy),
-        )
-
-        for schema, context, is_validated, options in params_list:
-            with mock.patch('ranjg._generator.StrGenerator.gen') as mock_gen:
-                genstr(schema, context=context, schema_is_validated=is_validated, options=options)
-                mock_gen.assert_called_once_with(schema, context=context, schema_is_validated=is_validated,
-                                                 options=options)
-
-
-class TestStrGenerator(unittest.TestCase):
-    """Test class of ``StrGenerator``
-
-    Test ``StrGenerator``
+    Test ``StrFactory``
     """
 
     def test_gen_with_empty_schema(self):
         """ Normalized System Test
 
-        ``StrGenerator().gen(schema)`` returns a string value. When ``schema`` is empty, the result contains only
+        ``StrFactory(schema).gen()`` returns a string value. When ``schema`` is empty, the result contains only
         alphabets.
 
         assert that:
-            When the schema is empty, ``StrGenerator().gen(schema)`` returns ``str`` value contains only alphabets.
+            When the schema is empty, ``StrFactory(schema).gen()`` returns ``str`` value contains only alphabets.
         """
         schema = {}
-        generated = StrGenerator().gen(schema)
+        generated = StrFactory(schema).gen()
         self.assertIsInstance(generated, str)
         self.assertTrue(generated.isalpha())
         jsonschema.validate(generated, schema)
@@ -64,25 +30,25 @@ class TestStrGenerator(unittest.TestCase):
     def test_gen_with_maxLength_0(self):
         """ Normalized System Test
 
-        When ``schema.maxLength`` is specified, ``StrGenerator().gen(schema)`` returns a string value with a length of
+        When ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string value with a length of
         ``maxLength`` or less.
 
         assert that:
-            When ``schema.maxLength == 0``, ``StrGenerator().gen(schema)`` returns the empty string.
+            When ``schema.maxLength == 0``, ``StrFactory(schema).gen()`` returns the empty string.
         """
         schema = {"maxLength": 0}
-        generated = StrGenerator().gen(schema)
+        generated = StrFactory(schema).gen()
         self.assertEqual(generated, "")
         jsonschema.validate(generated, schema)
 
     def test_gen_with_maxLength(self):
         """ Normalized System Test
 
-        When ``schema.maxLength`` is specified, ``StrGenerator().gen(schema)`` returns a string value with a length of
+        When ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string value with a length of
         ``maxLength`` or less.
 
         assert that:
-            When ``schema.maxLength``, ``StrGenerator().gen(schema)`` returns a string with a length of ``maxLength`` or
+            When ``schema.maxLength``, ``StrFactory(schema).gen()`` returns a string with a length of ``maxLength`` or
             less.
         """
         threshold_list = (1, 2, 3, 1.0)
@@ -90,7 +56,7 @@ class TestStrGenerator(unittest.TestCase):
         for max_length in threshold_list:
             with self.subTest(max_length=max_length):
                 schema = {"maxLength": max_length}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
@@ -98,53 +64,62 @@ class TestStrGenerator(unittest.TestCase):
     def test_gen_with_negative_maxLength(self):
         """ Semi-normalized System Test
 
-        ``schema.maxLength`` must be non-negative. When ``schema.maxLength < 0``, ``StrGenerator().gen(schema)`` raises
+        ``schema.maxLength`` must be non-negative. When ``schema.maxLength < 0``, ``StrFactory(schema).gen()`` raises
         InvalidSchemaError.
 
         assert that:
-            When ``schema.maxLength < 0``, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.maxLength < 0``, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "maxLength": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{schema.get("maxLength")} is less than the minimum of 0'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_integer_maxLength(self):
         """ Semi-normalized System Test
 
         ``schema.maxLength`` must be integer. More precisely, ``maxLength`` must be a number value divided by 1. When
-        ``schema.maxLength`` cannot divided by 1, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+        ``schema.maxLength`` cannot divided by 1, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
 
         assert that:
-            When ``schema.maxLength`` cannot divided by 1, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.maxLength`` cannot divided by 1, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "maxLength": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{schema.get("maxLength")} is not a multiple of 1'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_number_maxLength(self):
         """ Semi-normalized System Test
 
-        ``schema.maxLength`` must be number. When ``schema.maxLength`` isn't number, ``StrGenerator().gen(schema)``
+        ``schema.maxLength`` must be number. When ``schema.maxLength`` isn't number, ``StrFactory(schema).gen()``
         raises InvalidSchemaError.
 
         assert that:
-            When ``schema.maxLength`` isn't number, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.maxLength`` isn't number, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "maxLength": "1"
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["maxLength"\]:\s+'
+                                    fr'{repr(schema.get("maxLength"))} is not of type \'number\''):
+            StrFactory(schema).gen()
 
     def test_gen_with_minLength(self):
         """ Normalized System Test
 
-        When ``schema.minLength`` is specified, ``StrGenerator().gen(schema)`` returns a string value with a length of
+        When ``schema.minLength`` is specified, ``StrFactory(schema).gen()`` returns a string value with a length of
         ``minLength`` or more.
 
         assert that:
-            When ``schema.minLength`` is specified, ``StrGenerator().gen(schema)`` returns the string value and it's
+            When ``schema.minLength`` is specified, ``StrFactory(schema).gen()`` returns the string value and it's
             length is greater than or equal to ``minLength``.
         """
         threshold_list = (1, 2, 3, 1.0)
@@ -152,7 +127,7 @@ class TestStrGenerator(unittest.TestCase):
         for min_length in threshold_list:
             with self.subTest(min_length=min_length):
                 schema = {"minLength": min_length}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertGreaterEqual(len(generated), min_length)
                 jsonschema.validate(generated, schema)
@@ -160,54 +135,63 @@ class TestStrGenerator(unittest.TestCase):
     def test_gen_with_negative_minLength(self):
         """ Semi-normalized System Test
 
-        ``schema.minLength`` must be non-negative. When ``schema.minLength < 0``, ``StrGenerator().gen(schema)`` raises
+        ``schema.minLength`` must be non-negative. When ``schema.minLength < 0``, ``StrFactory(schema).gen()`` raises
         InvalidSchemaError.
 
         assert that:
-            When ``schema.minLength < 0``, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.minLength < 0``, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "minLength": -1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{schema.get("minLength")} is less than the minimum of 0'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_integer_minLength(self):
         """ Semi-normalized System Test
 
         ``schema.minLength`` must be integer. More precisely, ``minLength`` must be a number value divided by 1. When
-        ``schema.minLength`` cannot divided by 1, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+        ``schema.minLength`` cannot divided by 1, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
 
         assert that:
-            When ``schema.minLength`` cannot divided by 1, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.minLength`` cannot divided by 1, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "minLength": 1.1
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{schema.get("minLength")} is not a multiple of 1'):
+            StrFactory(schema).gen()
 
     def test_gen_with_non_number_minLength(self):
         """ Semi-normalized System Test
 
-        ``schema.minLength`` must be number. When ``schema.minLength`` isn't number, ``StrGenerator().gen(schema)``
+        ``schema.minLength`` must be number. When ``schema.minLength`` isn't number, ``StrFactory(schema).gen()``
         raises InvalidSchemaError.
 
         assert that:
-            When ``schema.minLength`` isn't number, ``StrGenerator().gen(schema)`` raises InvalidSchemaError.
+            When ``schema.minLength`` isn't number, ``StrFactory(schema).gen()`` raises InvalidSchemaError.
         """
         schema = {
             "minLength": "1"
         }
-        self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+        with self.assertRaisesRegex(InvalidSchemaError,
+                                    fr'On instance\["minLength"\]:\s+'
+                                    fr'{repr(schema.get("minLength"))} is not of type \'number\''):
+            StrFactory(schema).gen()
 
     def test_gen_with_length(self):
         """ Normalized System Test
 
-        When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrGenerator().gen(schema)`` returns a string
+        When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string
         value with a length ``x`` satisfied ``minLength <= x <= maxLength``. As a result, when ``minLength`` and
         ``maxLength`` have same value, the length of the result equals them.
 
         assert that:
-            When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrGenerator().gen(schema)`` returns the
+            When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns the
             string with a length ``x`` satisfies ``minLength <= x <= maxLength``.
         """
         thresholds_list = ((0, 1),
@@ -217,21 +201,21 @@ class TestStrGenerator(unittest.TestCase):
         for min_length, max_length in thresholds_list:
             with self.subTest(min_length=min_length, max_length=max_length):
                 schema = {"minLength": min_length, "maxLength": max_length}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertGreaterEqual(len(generated), min_length)
                 self.assertLessEqual(len(generated), max_length)
                 jsonschema.validate(generated, schema)
 
-    def test_gen_with_conflicting_length(self):
+    def test_with_conflicting_length(self):
         """ Semi-normalized System Test
 
-        When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrGenerator().gen(schema)`` returns a string
+        When ``schema.minLength`` and ``schema.maxLength`` is specified, ``StrFactory(schema).gen()`` returns a string
         value with a length ``x`` satisfied ``minLength <= x <= maxLength``. As a result, when
-        ``minLength > maxLength``, ``StrGenerator().gen(schema)`` raises SchemaConflictError.
+        ``minLength > maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
 
         assert that:
-            When ``schema.minLength > schema.maxLength``, ``StrGenerator().gen(schema)`` raises SchemaConflictError.
+            When ``schema.minLength > schema.maxLength``, ``StrFactory(schema)`` raises SchemaConflictError.
         """
         thresholds_list = ((0, 1),
                            (12, 15))
@@ -239,7 +223,9 @@ class TestStrGenerator(unittest.TestCase):
         for max_length, min_length in thresholds_list:
             with self.subTest(min_length=min_length, max_length=max_length):
                 schema = {"minLength": min_length, "maxLength": max_length}
-                self.assertRaises(SchemaConflictError, lambda: StrGenerator().gen(schema))
+                with self.assertRaisesRegex(SchemaConflictError,
+                                            '"minLength" must be lower than or equal to the "maxLength" value'):
+                    StrFactory(schema)
 
     def test_gen_with_pattern(self):
         """ Normalized System Test
@@ -247,7 +233,7 @@ class TestStrGenerator(unittest.TestCase):
         When ``schema.pattern`` is specified, the return value satisfies this as regular expression.
 
         assert that:
-            When ``schema.pattern`` is valid as regular expression, ``StrGenerator().gen(schema)`` returns a string
+            When ``schema.pattern`` is valid as regular expression, ``StrFactory(schema).gen()`` returns a string
             satisfies this regular expression.
         """
         pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
@@ -256,7 +242,7 @@ class TestStrGenerator(unittest.TestCase):
         for pattern in pattern_list:
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertRegex(generated, pattern)
                 jsonschema.validate(generated, schema)
@@ -269,7 +255,7 @@ class TestStrGenerator(unittest.TestCase):
 
         assert that:
             When ``schema.pattern`` is valid as regular expression and ``schema.minLength`` contradicts ``pattern``,
-            ``StrGenerator().gen(schema)`` returns a string satisfies this regular expression.
+            ``StrFactory(schema).gen()`` returns a string satisfies this regular expression.
         """
         pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
                         "[a-z][A-Z]\\d\\d")
@@ -277,10 +263,11 @@ class TestStrGenerator(unittest.TestCase):
         for pattern in pattern_list:
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern, "minLength": 13}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertRegex(generated, pattern)
-                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+                with self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'minLength'"):
+                    jsonschema.validate(generated, schema)
 
     def test_gen_with_pattern_and_maxLength(self):
         """ Normalized System Test
@@ -290,7 +277,7 @@ class TestStrGenerator(unittest.TestCase):
 
         assert that:
             When ``schema.pattern`` is valid as regular expression and ``schema.maxLength`` contradicts ``pattern``,
-            ``StrGenerator().gen(schema)`` returns a string satisfies this regular expression.
+            ``StrFactory(schema).gen()`` returns a string satisfies this regular expression.
         """
         pattern_list = ("\\d\\d\\d-\\d\\d\\d\\d-\\d\\d\\d",
                         "[a-z][A-Z]\\d\\d")
@@ -298,20 +285,21 @@ class TestStrGenerator(unittest.TestCase):
         for pattern in pattern_list:
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern, "maxLength": 3}
-                generated = StrGenerator().gen(schema)
+                generated = StrFactory(schema).gen()
                 self.assertIsInstance(generated, str)
                 self.assertRegex(generated, pattern)
-                self.assertRaises(jsonschema.ValidationError, lambda: jsonschema.validate(generated, schema))
+                with self.assertRaisesRegex(jsonschema.ValidationError, "Failed validating 'maxLength'"):
+                    jsonschema.validate(generated, schema)
 
     def test_gen_with_illegal_pattern(self):
         """ Semi-normalized System Test
 
         When ``schema.pattern`` is specified, the return value satisfies this as regular expression. As a result,
-        when ``schema.pattern`` is invalid as regular expression, ``StrGenerator().gen(schema)`` raises
+        when ``schema.pattern`` is invalid as regular expression, ``StrFactory(schema).gen()`` raises
         InvalidSchemaError.
 
         assert that:
-            When ``schema.pattern`` is invalid as regular expression, ``StrGenerator().gen(schema)`` raises
+            When ``schema.pattern`` is invalid as regular expression, ``StrFactory(schema).gen()`` raises
             InvalidSchemaError.
         """
         pattern_list = ("[0-1",
@@ -320,7 +308,8 @@ class TestStrGenerator(unittest.TestCase):
         for pattern in pattern_list:
             with self.subTest(pattern=pattern):
                 schema = {"pattern": pattern}
-                self.assertRaises(InvalidSchemaError, lambda: StrGenerator().gen(schema))
+                with self.assertRaisesRegex(InvalidSchemaError, "is not a 'regex'"):
+                    StrFactory(schema).gen()
 
 
 class TestOptionDefaultLength(unittest.TestCase):
@@ -350,8 +339,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": str_length, "maxLength": str_length}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_default_length_with_schema_min_without_schema_max(self):
         """ Normalized System Test
@@ -374,8 +365,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": min_length}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(min_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(min_length, len(generated))
 
     def test_default_length_with_schema_max_without_schema_min(self):
         """ Normalized System Test
@@ -398,8 +391,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "maxLength": max_length}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(max_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(max_length, len(generated))
 
     def test_default_length_without_schema_min_max(self):
         """ Normalized System Test
@@ -420,8 +415,10 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string"}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_negative_default_length_range(self):
         """ Semi-normalized System Test
@@ -444,14 +441,20 @@ class TestOptionDefaultLength(unittest.TestCase):
         schema = {"type": "string", "minLength": str_length}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(target='minLength',
+                              min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
         schema = {"type": "string", "maxLength": str_length}
 
         for options in options_list:
-            generated = StrGenerator().gen(schema, options=options)
-            self.assertEqual(str_length, len(generated))
+            with self.subTest(target='maxLength',
+                              min=options.default_min_length_of_string, max=options.default_max_length_of_string,
+                              len=options.default_length_range_of_genstr):
+                generated = StrFactory(schema).gen(options=options)
+                self.assertEqual(str_length, len(generated))
 
     def test_reversed_default_length(self):
         """ Semi-normalized System Test
@@ -470,8 +473,10 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         for options in options_list:
             with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
-                with self.assertRaises(SchemaConflictError):
-                    StrGenerator().gen(schema, options=options)
+                with self.assertRaisesRegex(GenerateConflictError,
+                                            '"options.default_min_length_of_string" must be lower than or equal to '
+                                            'the "options.default_max_length_of_string" value'):
+                    StrFactory(schema).gen(options=options)
 
     def test_negative_default_min_length(self):
         """ Semi-normalized System Test
@@ -486,5 +491,5 @@ class TestOptionDefaultLength(unittest.TestCase):
 
         for options in options_list:
             with self.subTest(default_min_length_of_string=options.default_min_length_of_string):
-                generated = StrGenerator().gen(schema, options=options)
+                generated = StrFactory(schema).gen(options=options)
                 self.assertEqual(0, len(generated))

@@ -1,4 +1,4 @@
-**ranjg 0.4.0.x — Randomly json generator**
+**ranjg 0.5.0.x — Randomly json generator**
 
 **ranjg** is a package providing functions to generate random JSON data according to JSON-Schema-**LIKE** object. (It is similar to JSON schema, but does NOT support some keywords. Also see [here](#Supported-keywords-of-schema).)
 
@@ -96,13 +96,15 @@ Document (command line usage)
 -----------------------------
 You can execute ranjg with below command:
 ```sh
-python -m ranjg <schema_file_path> [-j <json_output_path>] [--options <options_file>]
+python -m ranjg <schema_file_path> [-j <json_output_path> [-n <num>] ] [--options <options_file>] [--list <multiplicity>]
 ```
 This command generates a JSON string. Each argument has the following meaning:
 
 - `<schema_file_path>`: A file path of the JSON-schema-like file. Generated JSON string will be according to this schema. ([What's "JSON-schema-*like*"?](#Supported-keywords-of-schema))
 - `-j <json_output_path>` (optional): When it's specified, a generated JSON string will be written to the specified file. When it's not specified, a generated JSON string will be written to stdout.
 - `--options <options_file>` (optional): It can be specified to use Options. See also [Options](https://unaguna.github.io/random-json-generator/ranjg-options.html).
+- `--list <multiplicity>` (optional): When it's specified, a list of length `multiplicity` is generated. Each element of the generated list specifies the schema.
+- `-n <num>` (optional): When it's specified, it repeats the generation `num` times and output each result to a different file. If you use this option, `json_output_path` must have placeholder such as `{}`.
 
 Document (python code usage)
 ----------------------------
@@ -138,6 +140,7 @@ The following keywords can be used in much the same way as in regular JSON schem
 - "pattern", "minLength", "maxLength"
     - **Warning**: When "pattern" specified, "minLength" and "maxLength" are ignored.
 - "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"
+- "enum"
 
 Options
 -------

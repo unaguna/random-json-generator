@@ -1,10 +1,11 @@
+import itertools
 import json
 import sys
 import os
 from os import path
 import random
 import shutil
-from test.support import captured_stdout
+from test.support import captured_stdout, captured_stderr
 import unittest
 from unittest.mock import patch
 import jsonschema
@@ -114,3 +115,191 @@ class TestGenMain(unittest.TestCase):
 
         self.assertEqual(output[0]["comment"], '2')
         jsonschema.validate(output, schema)
+
+    def test_gen_main_with_multiplicity(self):
+        """ Normalized System Test
+
+        Module execution received an optional argument ``--line`` as multiplicity.
+        If it's specified, it repeats the generation for the specified number of times and output the results as a list.
+
+        ``-l`` is an abbreviation for ``--line``.
+
+        assert that:
+            With an argument ``-l``, module execution output a list whose element valid schema.
+            With an argument ``--line``, perform the same action.
+        """
+        schema_file_list = ("./test-resources/schema-legal-type_str.json",
+                            "./test-resources/schema-legal-user_object.json",
+                            "./test-resources/schema-legal-list.json",)
+
+        for schema_file, arg, multiplicity in itertools.product(schema_file_list, ('-l', '--list'), range(1, 10)):
+            test_args = ["__main__.py", schema_file, arg, str(multiplicity)]
+            with self.subTest(args=test_args):
+                with open(schema_file) as fp:
+                    schema = json.load(fp)
+
+                with captured_stdout() as stdout:
+                    with patch.object(sys, 'argv', test_args):
+                        module_main()
+
+                output_str = stdout.getvalue()
+                output = json.loads(output_str)
+
+                self.assertIsInstance(output, list)
+                self.assertEqual(len(output), multiplicity)
+                for output_elem in output:
+                    jsonschema.validate(output_elem, schema)
+
+    def test_gen_main_with_illegal_multiplicity(self):
+        """ Semi-normalized System Test
+
+        When Module execution received an optional argument ``-line`` or ``-l``, it must be positive integer.
+
+        assert that:
+            With an argument ``--line`` or ``-l`` of illegal value, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        multiplicity_list = ('0', '-1', '1.1', 'e')
+
+        for multiplicity, arg in itertools.product(multiplicity_list, ('-l', '--list')):
+            with self.subTest(arg=arg, multiplicity=multiplicity):
+                test_args = ["__main__.py", schema_file, arg, multiplicity]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn(f"error: argument --list/-l: invalid positive_integer value:", stderr_str)
+
+    def test_gen_main_with_num(self):
+        """ Normalized System Test
+
+        Module execution received an optional argument ``-n`` as the number of output files.
+        If it's specified, it repeats the generation for the specified number of times and outputs to each file.
+
+        As filenames, strings in which placeholders in the string specified by ``--json_output`` are replaced with
+        sequential numbers will be used.
+
+        assert that:
+            With an argument ``-n``, module execution output to multiple files.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        output_file = path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_{}.json")
+        num = 5
+
+        test_args = ["__main__.py", schema_file, '-n', str(num), '--json_output', output_file]
+
+        with open(schema_file) as fp:
+            schema = json.load(fp)
+
+        with captured_stdout() as stdout:
+            with patch.object(sys, 'argv', test_args):
+                module_main()
+
+        # output nothing to stdout when --num is specified.
+        output_str = stdout.getvalue()
+        self.assertEqual(output_str, '')
+
+        for i in range(num):
+            with open(output_file.format(i)) as fp:
+                generated = json.load(fp)
+            jsonschema.validate(generated, schema)
+
+        self.assertFalse(path.exists(output_file.format(num)))
+
+    def test_gen_main_with_num_without_output_file(self):
+        """ Normalized System Test
+
+        When Module execution received an optional argument ``-n``, another option ``--json_output`` is required.
+
+        assert that:
+            With an argument ``-n`` and without an argument ``--json_output``, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num = 5
+
+        test_args = ["__main__.py", schema_file, '-n', str(num)]
+
+        with captured_stdout() as stdout, captured_stderr() as stderr:
+            with patch.object(sys, 'argv', test_args):
+                with self.assertRaises(SystemExit) as error_ctx:
+                    module_main()
+                self.assertEqual(error_ctx.exception.code, 2)
+
+        output_str = stdout.getvalue()
+        self.assertEqual(output_str, '')
+
+        stderr_str = stderr.getvalue()
+        self.assertIn("error: the following arguments are required when -n is specified: --json_output", stderr_str)
+
+    def test_gen_main_with_num_and_illegal_output_file(self):
+        """ Normalized System Test
+
+        When Module execution received an optional argument ``-n``, another option ``--json_output`` must have
+        one placeholder.
+
+        assert that:
+            With an argument ``-n`` and an argument ``--json_output`` without placeholder, module execution raises
+            exception.
+            With an argument ``-n`` and an argument ``--json_output`` with at most 2 placeholders, module execution
+            raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num = 5
+
+        output_file_list = (
+            path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_and_illegal_output_file.json"),
+            path.join(self.TEST_TMP_DIR_PRE, "test_gen_main_with_num_and_illegal_output_file_{}{}.json"),
+        )
+
+        for output_file in output_file_list:
+            with self.subTest(output_file=output_file):
+
+                test_args = ["__main__.py", schema_file, '-n', str(num), '--json_output', output_file]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn("error: "
+                              "when -n is specified, --json_output must have exactly one placeholder such as '{}'",
+                              stderr_str)
+
+    def test_gen_main_with_illegal_file_num(self):
+        """ Semi-normalized System Test
+
+        When Module execution received an optional argument ``-n``, it must be positive integer.
+
+        assert that:
+            With an argument ``-n`` and illegal value, module execution raises exception.
+        """
+        schema_file = "./test-resources/schema-legal-user_object.json"
+        num_list = ('0', '-1', '1.1', 'e')
+
+        for num in num_list:
+            with self.subTest(num=num):
+                test_args = ["__main__.py", schema_file, '-n', num]
+
+                with captured_stdout() as stdout, captured_stderr() as stderr:
+                    with patch.object(sys, 'argv', test_args):
+                        with self.assertRaises(SystemExit) as error_ctx:
+                            module_main()
+                        self.assertEqual(error_ctx.exception.code, 2)
+
+                output_str = stdout.getvalue()
+                self.assertEqual(output_str, '')
+
+                stderr_str = stderr.getvalue()
+                self.assertIn("error: argument -n: invalid positive_integer value:", stderr_str)

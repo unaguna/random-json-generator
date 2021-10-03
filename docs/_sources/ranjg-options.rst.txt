@@ -24,6 +24,7 @@ The following pages show keywords of Options.
    :maxdepth: 2
    :caption: References:
 
+   ranjg-options_enum
    ranjg-options_string
    ranjg-options_boolean
    ranjg-options_array

@@ -1,0 +1,10 @@
+###### dependent to ranjg ######
+jsonschema
+rstr
+
+###### dependent for tests ######
+setuptools
+
+###### dependent for document ######
+Sphinx
+sphinx_rtd_theme

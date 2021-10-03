@@ -1,10 +1,8 @@
-import json
-
 import jsonschema
 
-from .error import InvalidSchemaError, SchemaFileIOError
+from ..error import InvalidSchemaError
 
-# スキーマのスキーマ
+#: スキーマのスキーマ
 __meta_schema = {
     "type": "object",
     "additionalProperties": True,
@@ -60,7 +58,7 @@ __meta_schema = {
     },
 }
 
-# 使用する validator
+#: 使用する validator
 __SCHEMA_VALIDATOR = jsonschema.Draft7Validator(__meta_schema,
                                                 format_checker=jsonschema.draft7_format_checker)
 
@@ -81,19 +79,3 @@ def validate(schema: dict):
         return
 
     raise InvalidSchemaError(validate_error_list)
-
-
-def load(filepath: str) -> dict:
-    """load a schema file
-
-    Raises:
-        SchemaFileIOError:
-            When loading file is failed
-    """
-    try:
-        with open(filepath) as fp:
-            loaded_schema = json.load(fp)
-    except json.decoder.JSONDecodeError as e:
-        raise SchemaFileIOError(f'This file cannot be parsed as schema: {filepath}') from e
-
-    return loaded_schema
