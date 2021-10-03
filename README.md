@@ -138,6 +138,7 @@ The following keywords can be used in much the same way as in regular JSON schem
 - "pattern", "minLength", "maxLength"
     - **Warning**: When "pattern" specified, "minLength" and "maxLength" are ignored.
 - "minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum"
+- "enum"
 
 Options
 -------
