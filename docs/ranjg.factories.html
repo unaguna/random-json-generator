@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ranjg.factories package &mdash; random-json-generator  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="ranjg.options package" href="ranjg.options.html" />
+    <link rel="prev" title="ranjg.error package" href="ranjg.error.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> random-json-generator
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick-start-code.html">Quick Start (Python Code)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="ranjg.html">ranjg package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ranjg.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="ranjg.error.html">ranjg.error package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">ranjg.factories package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-ranjg.factories">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ranjg.options.html">ranjg.options package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg.html#module-ranjg">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ranjg-options.html">Options</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">random-json-generator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="ranjg.html">ranjg package</a> &raquo;</li>
+      <li>ranjg.factories package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ranjg.factories.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="ranjg-factories-package">
+<h1>ranjg.factories package<a class="headerlink" href="#ranjg-factories-package" title="Permalink to this headline"></a></h1>
+<section id="module-ranjg.factories">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-ranjg.factories" title="Permalink to this headline"></a></h2>
+<p>The package of factories.</p>
+<p>A factory is constructed with a schema and generate values according to the schema.</p>
+<p>Generating values according to the schema can also be accomplished using <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code>,
+but each time <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> is run, a Factory is internally generated.
+Therefore, if you want to generate values repeatedly with the same schema,
+it is recommended to generate the Factory only once and use its method <code class="docutils literal notranslate"><span class="pre">gen</span></code> repeatedly.</p>
+<p class="rubric">Examples</p>
+<p>The following code is most simple usage.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema_dict</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;string&#39;</span> <span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">factory</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">Factory</span><span class="p">(</span><span class="n">schema_dict</span><span class="p">)</span>    <span class="c1"># -&gt; A factory according to the schema</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated_1</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>  <span class="c1"># -&gt; A value according to the schema</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated_2</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>  <span class="c1"># -&gt; A value according to the schema (Almost certainly different than before.)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated_3</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">gen</span><span class="p">()</span>  <span class="c1"># It can be generated as many times as you want.</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">factory.gen</span></code> can receive a keyword argument <code class="docutils literal notranslate"><span class="pre">options</span></code>.
+See also <a class="reference internal" href="ranjg-options.html"><span class="doc">Options</span></a> to know about options.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ranjg.factories.Factory">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">ranjg.factories.</span></span><span class="sig-name descname"><span class="pre">Factory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ranjg.factories.Factory" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">_T</span></code>]</p>
+<p>Returns a Factory instance according to the schema.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>schema</strong> (<em>dict</em><em>, </em><em>optional</em>) – JSON schema object. See also <a class="reference internal" href="ranjg-json-schema.html"><span class="doc">ranjg-JSON-schema</span></a>.</p></li>
+<li><p><strong>schema_is_validated</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether the schema is already validated or not.
+(In normal usage, this argument is not specified.)</p></li>
+<li><p><strong>context</strong> (<em>SchemaContext</em><em>, </em><em>optional</em>) – The context of factory construction.
+(In normal usage, this argument is not specified.)</p></li>
+<li><p><strong>gen_type</strong> (<em>str</em><em>, </em><em>optional</em>) – If specified, ignore <code class="docutils literal notranslate"><span class="pre">schema.type</span></code> and create a factory that generates values of the specified type.
+(In normal usage, this argument is not specified.)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A factory to generate values according the schema.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ranjg.error.html#ranjg.error.SchemaConflictError" title="ranjg.error.SchemaConflictError"><strong>SchemaConflictError</strong></a> – When the schema specified as arguments has conflict.
+    In other words, when no value can satisfy the schema.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="ranjg.factories.Factory.gen">
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">gen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options"><span class="pre">ranjg.options.Options</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ranjg._context.GenerationContext</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_T</span></span></span><a class="headerlink" href="#ranjg.factories.Factory.gen" title="Permalink to this definition"></a></dt>
+<dd><p>Generate value according to the schema specified for the factory construction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>options</strong> (<a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options"><em>Options</em></a><em>, </em><em>optional</em>) – The options for generation.</p></li>
+<li><p><strong>context</strong> (<em>GenerationContext</em><em>, </em><em>optional</em>) – The context of generation.
+(In normal usage, this argument is not specified. This argument is for using this function recursively.)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated something.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ranjg.error.html#ranjg.error.GenerateError" title="ranjg.error.GenerateError"><strong>GenerateError</strong></a> – If an unforeseen error arises.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ranjg.factories.Factory.gen_as_child">
+<span class="sig-name descname"><span class="pre">gen_as_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options"><span class="pre">ranjg.options.Options</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">ranjg._context.GenerationContext</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">_T</span></span></span><a class="headerlink" href="#ranjg.factories.Factory.gen_as_child" title="Permalink to this definition"></a></dt>
+<dd><p>Generate value as another dict or list.</p>
+<p>It is wrapper of <code class="docutils literal notranslate"><span class="pre">Factory#gen</span></code> for ranjg development since it is called in <code class="docutils literal notranslate"><span class="pre">ListFactory#gen</span></code> etc..
+Normally, <strong>there is no need for users of ranjg to use this method</strong>.</p>
+<p>This method is provided for the purpose of not creating bugs in child element generation.
+As part of this, to prevent omission of argument specification, no default argument is provided.</p>
+<p>In order to fulfill the purpose of this method’s existence, this method should be used when creating child
+elements in ranjg.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>options</strong> (<a class="reference internal" href="ranjg.options.html#ranjg.options.Options" title="ranjg.options.Options"><em>Options</em></a>) – The options for generation.
+Usually, the options used to generate the parent element is specified as is.</p></li>
+<li><p><strong>parent_context</strong> (<em>GenerationContext</em>) – The context of construction.
+Usually, the context used to generate the parent element is specified as is.</p></li>
+<li><p><strong>child_key</strong> (<em>str</em><em>|</em><em>int</em>) – The path to the generated element from the parent element.
+If the parent element is a dict, it is a string; if it is a list, it is an integer.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Generated something.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ranjg.factories.Factory.schema_is_validated">
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">schema_is_validated</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#ranjg.factories.Factory.schema_is_validated" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ranjg.factories.Factory.validate_schema">
+<span class="sig-name descname"><span class="pre">validate_schema</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#ranjg.factories.Factory.validate_schema" title="Permalink to this definition"></a></dt>
+<dd><p>validate schema</p>
+<p>It determines if the schema is free of irregularities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="ranjg.error.html#ranjg.error.InvalidSchemaError" title="ranjg.error.InvalidSchemaError"><strong>InvalidSchemaError</strong></a> – When the schema is invalid</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ranjg.error.html" class="btn btn-neutral float-left" title="ranjg.error package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ranjg.options.html" class="btn btn-neutral float-right" title="ranjg.options package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2021, k-izumi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
