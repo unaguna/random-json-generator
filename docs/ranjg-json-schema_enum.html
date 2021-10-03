@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Boolean Generation &mdash; random-json-generator  documentation</title>
+  <title>Enum &mdash; random-json-generator  documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Array Generation" href="ranjg-json-schema_array.html" />
-    <link rel="prev" title="Number Generation" href="ranjg-json-schema_number.html" /> 
+    <link rel="next" title="Type" href="ranjg-json-schema_type.html" />
+    <link rel="prev" title="ranjg-JSON-schema" href="ranjg-json-schema.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,12 +43,15 @@
 <li class="toctree-l1"><a class="reference internal" href="quick-start-command.html">Quick Start (Command Line)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ranjg.html">ranjg package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="ranjg-json-schema.html">ranjg-JSON-schema</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_enum.html">Enum</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Enum</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#filtering-candidates-by-other-keywords">Filtering candidates by other keywords</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_type.html">Type</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_null.html">Null Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_string.html">String Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_number.html">Number Generation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Boolean Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_boolean.html">Boolean Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_array.html">Array Generation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ranjg-json-schema_object.html">Object Generation</a></li>
 </ul>
@@ -71,9 +74,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
           <li><a href="ranjg-json-schema.html">ranjg-JSON-schema</a> &raquo;</li>
-      <li>Boolean Generation</li>
+      <li>Enum</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/ranjg-json-schema_boolean.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/ranjg-json-schema_enum.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -81,29 +84,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="boolean-generation">
-<h1>Boolean Generation<a class="headerlink" href="#boolean-generation" title="Permalink to this headline"></a></h1>
-<p>When <code class="docutils literal notranslate"><span class="pre">boolean</span></code> is adopted as <a class="reference internal" href="ranjg-json-schema_type.html"><span class="doc">type</span></a>, <code class="docutils literal notranslate"><span class="pre">ranjg.gen</span></code> returns <code class="docutils literal notranslate"><span class="pre">True</span></code> or <code class="docutils literal notranslate"><span class="pre">False</span></code> randomly. Then the other keywords are ignored.</p>
+  <section id="enum">
+<h1>Enum<a class="headerlink" href="#enum" title="Permalink to this headline"></a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">enum</span></code> keyword prescribes the candidates of value to generate.</p>
+<p>For example:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">ranjg</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;boolean&#39;</span> <span class="p">}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns True or False</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">type</span><span class="p">(</span><span class="n">generated</span><span class="p">)</span>
-<span class="go">&lt;class &#39;bool&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">schema</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">],</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">generated</span> <span class="o">=</span> <span class="n">ranjg</span><span class="o">.</span><span class="n">gen</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>  <span class="c1"># -&gt; returns a random value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">generated</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">generated</span> <span class="o">==</span> <span class="s1">&#39;a&#39;</span>
 </pre></div>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">note</dt>
-<dd class="field-odd"><p>It returns True with a probability of <code class="docutils literal notranslate"><span class="pre">options.default_prob_of_true_given_bool</span></code> and False with the remaining probability. See also <a class="reference internal" href="ranjg-options_boolean.html"><span class="doc">Options for Boolean Generation</span></a>.</p>
+<section id="filtering-candidates-by-other-keywords">
+<h2>Filtering candidates by other keywords<a class="headerlink" href="#filtering-candidates-by-other-keywords" title="Permalink to this headline"></a></h2>
+<p>Not every element in <code class="docutils literal notranslate"><span class="pre">schema.enum</span></code> is a candidate.
+If keywords is set other than <code class="docutils literal notranslate"><span class="pre">enum</span></code>, elements that violate them will be excluded from the candidate list.</p>
+<dl class="field-list">
+<dt class="field-odd">warning</dt>
+<dd class="field-odd"><p>One of the features of the <code class="docutils literal notranslate"><span class="pre">jsonschema</span></code> package is used to determine if a candidate satisfies the schema.
+That is, the genuine JSON schema is used for this determination, not ranjg-JSON-schema.</p>
+<p>It is unstable because it does not particularly specify which draft will be used.
+Whenever possible, try not to specify other keywords when specifying <code class="docutils literal notranslate"><span class="pre">enum</span></code>.</p>
 </dd>
 </dl>
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="ranjg-json-schema_number.html" class="btn btn-neutral float-left" title="Number Generation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ranjg-json-schema_array.html" class="btn btn-neutral float-right" title="Array Generation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ranjg-json-schema.html" class="btn btn-neutral float-left" title="ranjg-JSON-schema" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ranjg-json-schema_type.html" class="btn btn-neutral float-right" title="Type" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

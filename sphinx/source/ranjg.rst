@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 1
 
    ranjg.error
+   ranjg.factories
    ranjg.options
 
 Module contents

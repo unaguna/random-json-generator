@@ -1,3 +1,25 @@
+"""The package of factories.
+
+A factory is constructed with a schema and generate values according to the schema.
+
+Generating values according to the schema can also be accomplished using ``ranjg.gen``,
+but each time ``ranjg.gen`` is run, a Factory is internally generated.
+Therefore, if you want to generate values repeatedly with the same schema,
+it is recommended to generate the Factory only once and use its method ``gen`` repeatedly.
+
+Examples:
+    The following code is most simple usage.
+
+    >>> import ranjg
+    >>> schema_dict = { 'type': 'string' }
+    >>> factory = ranjg.Factory(schema_dict)    # -> A factory according to the schema
+    >>> generated_1 = factory.gen()  # -> A value according to the schema
+    >>> generated_2 = factory.gen()  # -> A value according to the schema (Almost certainly different than before.)
+    >>> generated_3 = factory.gen()  # It can be generated as many times as you want.
+
+    ``factory.gen`` can receive a keyword argument ``options``.
+    See also :doc:`ranjg-options` to know about options.
+"""
 import abc
 import collections
 import copy
@@ -36,6 +58,28 @@ class MetaFactory(GenericMeta, abc.ABCMeta):
 
 
 class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
+    """Returns a Factory instance according to the schema.
+
+    Args:
+        schema (dict, optional):
+            JSON schema object. See also :doc:`ranjg-json-schema`.
+        schema_is_validated (bool, optional):
+            Whether the schema is already validated or not.
+            (In normal usage, this argument is not specified.)
+        context (SchemaContext, optional):
+            The context of factory construction.
+            (In normal usage, this argument is not specified.)
+        gen_type (str, optional):
+            If specified, ignore ``schema.type`` and create a factory that generates values of the specified type.
+            (In normal usage, this argument is not specified.)
+    Returns:
+        A factory to generate values according the schema.
+
+    Raises:
+        SchemaConflictError:
+            When the schema specified as arguments has conflict.
+            In other words, when no value can satisfy the schema.
+    """
     _schema: dict
     #: True であれば、_schema 全体が (子要素のスキーマも含め) validated。
     _schema_is_validated: bool = False
@@ -57,41 +101,6 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
                  schema_is_validated: bool = False,
                  context: Optional[SchemaContext] = None,
                  gen_type: Union[str, None] = None):
-        """Returns a Factory instance according to the schema.
-
-        Args:
-            schema (dict, optional):
-                JSON schema object. See also :doc:`ranjg-json-schema`.
-            schema_is_validated (bool, optional):
-                Whether the schema is already validated or not.
-                (In normal usage, this argument is not specified.)
-            context (SchemaContext, optional):
-                The context of factory construction.
-                (In normal usage, this argument is not specified.)
-            gen_type (str, optional):
-                If specified, ignore ``schema.type`` and create a factory that generates values of the specified type.
-                (In normal usage, this argument is not specified.)
-        Returns:
-            A factory to generate values according the schema.
-
-        Raises:
-            SchemaConflictError:
-                When the schema specified as arguments has confliction.
-                In other words, when no value can satisfy the schema.
-
-        Examples:
-            The following code is most simple usage.
-
-            >>> import ranjg
-            >>> schema_dict = { 'type': 'string' }
-            >>> factory = ranjg.Factory(schema_dict)    # -> A factory according the schema
-            >>> generated_1 = factory.gen()  # -> A value according the schema
-            >>> generated_2 = factory.gen()  # -> A value according the schema (Almost certainly different than before.)
-            >>> generated_3 = factory.gen()  # It can be generated as many times as you want.
-
-            ``factory.gen`` can receive a keyword argument ``options``.
-            See also :doc:`ranjg-options` to know about options.
-        """
         self._schema = schema if schema is not None else {}
         self._schema_is_validated = schema_is_validated
 
@@ -126,7 +135,22 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
             *,
             options: Optional[Options] = None,
             context: Optional[GenerationContext] = None) -> _T:
-        pass
+        """Generate value according to the schema specified for the factory construction.
+
+        Args:
+            options (Options, optional):
+                The options for generation.
+            context (GenerationContext, optional):
+                The context of generation.
+                (In normal usage, this argument is not specified. This argument is for using this function recursively.)
+
+        Returns:
+            Generated something.
+
+        Raises:
+            GenerateError:
+                If an unforeseen error arises.
+        """
 
     @property
     def schema_is_validated(self) -> bool:
@@ -153,7 +177,7 @@ class Factory(abc.ABC, Generic[_T], metaclass=MetaFactory):
         """Generate value as another dict or list.
 
         It is wrapper of ``Factory#gen`` for ranjg development since it is called in ``ListFactory#gen`` etc..
-        Normally, there is no need for users of ranjg to use this method.
+        Normally, **there is no need for users of ranjg to use this method**.
 
         This method is provided for the purpose of not creating bugs in child element generation.
         As part of this, to prevent omission of argument specification, no default argument is provided.
