@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from ranjg.factories import *
+from .res import class_path
 
 
 class TestMultiFactory(unittest.TestCase):
@@ -54,7 +55,7 @@ class TestMultiFactory(unittest.TestCase):
 
         for schema, clz in case_list:
             with self.subTest(clz=clz.__name__):
-                with mock.patch(f'{clz}.gen') as mock_gen:
+                with mock.patch(f'{class_path(clz)}.gen') as mock_gen:
                     MultiFactory(schema).gen()
                     mock_gen.assert_called()
 
