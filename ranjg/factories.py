@@ -21,7 +21,7 @@ Examples:
     See also :doc:`ranjg-options` to know about options.
 """
 import abc
-import collections
+import collections.abc as collections
 import copy
 import math
 import random
