@@ -1,5 +1,5 @@
 ###### dependent to ranjg ######
-jsonschema
+jsonschema == 3.2.0
 rstr
 
 ###### dependent for tests ######

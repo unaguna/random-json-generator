@@ -4,7 +4,7 @@ from unittest import mock
 import ranjg
 from ranjg.factories import NoneFactory, BoolFactory, IntFactory, NumFactory, StrFactory, ListFactory, DictFactory
 
-from .res import sample_schema
+from .res import sample_schema, class_path
 from .._context import GenerationContext
 
 
@@ -29,7 +29,7 @@ class TestContext(unittest.TestCase):
             with self.subTest(clz=clz):
                 schema = {"type": "array", "minItems": 1, "maxItems": 1, "items": items}
                 parent_context = GenerationContext(path, schema)
-                with mock.patch(f'{clz}.gen') as mock_gen:
+                with mock.patch(f'{class_path(clz)}.gen') as mock_gen:
                     ranjg.gen(schema, context=parent_context)
 
                 self.assertGreaterEqual(len(mock_gen.call_args_list), 1)
@@ -52,7 +52,7 @@ class TestContext(unittest.TestCase):
             with self.subTest(clz=clz):
                 schema = {"type": "object", "required": ["p1"], "properties": {"p1": items}}
                 parent_context = GenerationContext(path, schema)
-                with mock.patch(f'{clz}.gen') as mock_gen:
+                with mock.patch(f'{class_path(clz)}.gen') as mock_gen:
                     ranjg.gen(schema, context=parent_context)
 
                 self.assertGreaterEqual(len(mock_gen.call_args_list), 1)

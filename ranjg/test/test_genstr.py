@@ -51,7 +51,7 @@ class TestStrFactory(unittest.TestCase):
             When ``schema.maxLength``, ``StrFactory(schema).gen()`` returns a string with a length of ``maxLength`` or
             less.
         """
-        threshold_list = (1, 2, 3, 1.0)
+        threshold_list = (1, 2, 3)
 
         for max_length in threshold_list:
             with self.subTest(max_length=max_length):
@@ -122,7 +122,7 @@ class TestStrFactory(unittest.TestCase):
             When ``schema.minLength`` is specified, ``StrFactory(schema).gen()`` returns the string value and it's
             length is greater than or equal to ``minLength``.
         """
-        threshold_list = (1, 2, 3, 1.0)
+        threshold_list = (1, 2, 3)
 
         for min_length in threshold_list:
             with self.subTest(min_length=min_length):

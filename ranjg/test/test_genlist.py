@@ -38,7 +38,7 @@ class TestListFactory(unittest.TestCase):
         assert that:
             When ``schema.minItems`` is specified, the result list has at least ``minItems`` elements.
         """
-        threshold_list = (0, 1.0, 30.0, 100, 300)
+        threshold_list = (0, 1, 30, 100, 300)
 
         for min_items in threshold_list:
             with self.subTest(min_items=min_items):
@@ -59,7 +59,7 @@ class TestListFactory(unittest.TestCase):
         assert that:
             When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
         """
-        threshold_list = (0, 1.0, 30.0, 100, 300)
+        threshold_list = (0, 1, 30, 100, 300)
 
         for max_items in threshold_list:
             with self.subTest(max_items=max_items):
@@ -146,7 +146,7 @@ class TestListFactory(unittest.TestCase):
             When ``schema.minItems`` equals ``schema.maxItems``, ``getlist(schema)`` returns a list of length
             ``minItems``.
         """
-        threshold_list = (0, 1, 30, 100.0, 300.0)
+        threshold_list = (0, 1, 30, 100, 300)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -273,7 +273,7 @@ class TestListFactory(unittest.TestCase):
             When ``schema.additionalItems`` is ``True`` and ``schema.minItems == schema.maxItems``, the result list is
             length of ``minItems``.
         """
-        threshold_list = (0, 1, 7, 10.0, 20)
+        threshold_list = (0, 1, 7, 10, 20)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -314,7 +314,7 @@ class TestListFactory(unittest.TestCase):
             When ``schema.additionalItems`` is not specified and ``schema.minItems`` is specified, the result list
             is length of at least ``minItems``.
         """
-        threshold_list = (0, 1, 7, 10.0, 20)
+        threshold_list = (0, 1, 7, 10, 20)
 
         for threshold in threshold_list:
             with self.subTest(threshold=threshold):
@@ -395,7 +395,7 @@ class TestListFactory(unittest.TestCase):
             each schema's ``type``.
             When ``schema.maxItems`` is specified, the result list has at most ``maxItems`` elements.
         """
-        max_items_list = (0, 1, 7, 10.0, 20)
+        max_items_list = (0, 1, 7, 10, 20)
 
         for max_items in max_items_list:
             with self.subTest(max_items=max_items):

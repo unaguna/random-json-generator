@@ -82,3 +82,7 @@ def sample_schema(typ: Union[str, type]) -> dict:
 
 def _type_to_type_str(t: type) -> str:
     return __TYPE_MAP[t]
+
+
+def class_path(clz) -> str:
+    return f'{clz.__module__}.{clz.__name__}'

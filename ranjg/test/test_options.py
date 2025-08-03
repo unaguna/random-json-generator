@@ -6,7 +6,7 @@ from ranjg import Options
 from ranjg.error import OptionsFileIOError
 from ranjg.factories import NoneFactory, BoolFactory, IntFactory, NumFactory, StrFactory, ListFactory, DictFactory
 
-from .res import sample_schema
+from .res import sample_schema, class_path
 
 
 class TestOptions(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestOptions(unittest.TestCase):
             with self.subTest(clz=clz):
                 options = Options()
                 schema = {"type": "array", "minItems": 1, "maxItems": 1, "items": items}
-                with mock.patch(f'{clz}.gen') as mock_gen:
+                with mock.patch(f'{class_path(clz)}.gen') as mock_gen:
                     ranjg.gen(schema, options=options)
 
                 self.assertGreaterEqual(len(mock_gen.call_args_list), 1)
@@ -86,7 +86,7 @@ class TestOptions(unittest.TestCase):
             with self.subTest(clz=clz):
                 options = Options()
                 schema = {"type": "object", "required": ["p1"], "properties": {"p1": items}}
-                with mock.patch(f'{clz}.gen') as mock_gen:
+                with mock.patch(f'{class_path(clz)}.gen') as mock_gen:
                     ranjg.gen(schema, options=options)
 
                 self.assertGreaterEqual(len(mock_gen.call_args_list), 1)
@@ -109,7 +109,7 @@ class TestOptions(unittest.TestCase):
         for default_schema, path_suffix in case_list:
             with self.subTest(path_suffix=path_suffix):
 
-                with mock.patch(f'{StrFactory}.__init__') as mock_init:
+                with mock.patch(f'{class_path(StrFactory)}.__init__') as mock_init:
                     # 試験は StrFactory.__init__ の引数について行うので、呼び出し後の動作は不要。
                     # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
                     mock_init.side_effect = ValueError('I am mock.')
@@ -140,7 +140,7 @@ class TestOptions(unittest.TestCase):
         for default_schema, path_suffix in case_list:
             with self.subTest(path_suffix=path_suffix):
 
-                with mock.patch(f'{StrFactory}.__init__') as mock_init:
+                with mock.patch(f'{class_path(StrFactory)}.__init__') as mock_init:
                     # 試験は StrFactory.__init__ の引数について行うので、呼び出し後の動作は不要。
                     # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
                     mock_init.side_effect = ValueError('I am mock.')
@@ -173,7 +173,7 @@ class TestOptions(unittest.TestCase):
 
             with self.subTest(path_suffix=path_suffix):
 
-                with mock.patch(f'{StrFactory}.__init__') as mock_init:
+                with mock.patch(f'{class_path(StrFactory)}.__init__') as mock_init:
                     # 試験は Factory.__init__ の引数について行うので、呼び出し後の動作は不要。
                     # 下手に先へ進むと本来の __init__ が行う処理が行われていないせいでバグるので、ここで例外を出す。
                     mock_init.side_effect = ValueError('I am mock.')
